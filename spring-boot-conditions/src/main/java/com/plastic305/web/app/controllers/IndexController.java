@@ -59,6 +59,10 @@ public class IndexController {
 		if (cliente.getSuffering() !=null) {
 			//Si tiene alguna de las enfermedades a analizar
 			// 0: no aceptadas, 1: aceptadas, 2: depende doctor, 3: warning
+			
+			//AQUI RECORRER LA LISTA DE CONDITIONS...
+				// SI ALGUNA ES 0...SE JODIÓ
+			    // Y ASÍ
 			Suffering s = sService.findOne(cliente.getSuffering());
 			switch (s.getAccepted()) {
 				case 0: // Si no es aceptada
@@ -367,8 +371,8 @@ public class IndexController {
 		return "somedoctors";
 	}
 	
-// PROGRAMANDO
 //****************
+// *******EN USO******
 	@GetMapping({"result"})
 	public String result(Client cliente, Model model, SessionStatus st) {
 		model.addAttribute("choice_h", "Answers to the questionnaire");
@@ -398,6 +402,7 @@ public class IndexController {
 				
 		}
 		model.addAttribute("choices", choices);
+		st.setComplete();
 		return "result";
 	}
 	

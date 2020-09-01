@@ -31,15 +31,29 @@
 										<li th:text="${text2client}" class="list-group-item active bg-info text-center font-weight-bold"></li>
 										<li class="list-group-item">
 											<div class="container newspaper1">
+											
+											
+						<!--						<div th:each="s: ${sList}" class="row">
+													<div class="mx-3 my-2"> 
+														<input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}"
+															    th:checked="${#lists.contains(client.conditionsList, s)}"> 
+													</div>
+													<div class="mx-2 my-2"> 
+														<label th:for="${#ids.prev('conditionsList')}" th:text="${s.name}"></label>
+													</div>
+												</div>	-->
+											
+							  			
 												<div th:each="s: ${sList}" class="row">
 													<div class="mx-3 my-2"> 
-														<input type="radio" th:field="*{suffering}" 
-																 th:value="${s.getId()}">
+														<input type="radio" th:field="*{suffering}" th:value="${s.getId()}">
 													</div>
 													<div class="mx-2 my-2">
 														<label th:for="${#ids.prev('suffering')}" th:text="${s.getName()}"></label>
 													</div>
 												</div>
+												
+												
 											</div>
 										</li><!--
 										<li th:text="'Explicación: '+ ${attribute.getBecause()}" class="list-group-item list-group-item-info font-italic">

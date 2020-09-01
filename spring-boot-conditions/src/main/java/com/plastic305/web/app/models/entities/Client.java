@@ -1,11 +1,17 @@
 package com.plastic305.web.app.models.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
@@ -24,6 +30,10 @@ public class Client implements Serializable {
 	private String surname;
 	
 	private Long suffering, combo, p1, p2, doctor, accepted;
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "client_id")
+	private List<ConditionByClient> conditionsList;
 	
 	/**
 	 * @return the accepted
@@ -148,6 +158,28 @@ public class Client implements Serializable {
 	public void setSurName(String surName) {
 		this.surname = surName;
 	}
+	
+	/**
+	 * @return the conditionsList
+	 */
+	public List<ConditionByClient> getConditionsList() {
+		return conditionsList;
+	}
+
+	/**
+	 * @param conditionsList the conditionsList to set
+	 */
+	public void setConditionsList(List<ConditionByClient> conditionsList) {
+		this.conditionsList = conditionsList;
+	}
+
+	public Client() {
+		conditionsList = new ArrayList<ConditionByClient>(); 
+	}
+
+
+
+
 	/**
 	 * 
 	 */
