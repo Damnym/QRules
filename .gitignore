@@ -1,0 +1,22 @@
+.metadata/
+backup/
+spring-boot-conditions - Copy/
+spring-boot-data-jpa/
+spring-boot-data-jpa-invoice-p/
+spring-boot-data-jpa-invoice/
+spring-boot-di/
+spring-boot-error/
+spring-boot-form/
+spring-boot-jwt/
+spring-boot-jwt2/
+spring-boot-rules3/
+spring-boot-rulesCA/
+spring-boot-scheduleinterceptor/
+spring-boot-web/
+plantillaHTML.html
+script.sql
+
+
+
+
+
