@@ -33,7 +33,7 @@ public class Client implements Serializable {
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "client_id")
-	private List<ConditionByClient> conditionsList;
+	private List<Suffering> conditionsList;
 	
 	/**
 	 * @return the accepted
@@ -162,19 +162,19 @@ public class Client implements Serializable {
 	/**
 	 * @return the conditionsList
 	 */
-	public List<ConditionByClient> getConditionsList() {
+	public List<Suffering> getConditionsList() {
 		return conditionsList;
 	}
 
 	/**
 	 * @param conditionsList the conditionsList to set
 	 */
-	public void setConditionsList(List<ConditionByClient> conditionsList) {
+	public void setConditionsList(List<Suffering> conditionsList) {
 		this.conditionsList = conditionsList;
 	}
 
 	public Client() {
-		conditionsList = new ArrayList<ConditionByClient>(); 
+		conditionsList = new ArrayList<Suffering>(); 
 	}
 
 

@@ -5,7 +5,7 @@
 	<header th:replace="layout/layout :: header"></header>
 	<div class="container py-4" >
 	  <div class="row">
-	      <div class="col-1">
+	      <div class="col">
 			<ul th:if="${eleccionestemp}" class="list-group">
 				<li th:unless="${eleccionestemp.isEmpty()}" th:text="'Respuesta al cuestionario'" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
 				<li th:each="r: ${eleccionestemp}" th:text="${r}" class="list-group-item text-left"></li>
@@ -19,7 +19,7 @@
 				</div>
 			</div>  -->
 	      </div> 
-	  	  <div class="col-10">
+	  	  <div class="col-11">
 			<div class="card bg-light" >
 				<div th:text="${msg}" class="card-header font-weight-bold" align="center"></div>
 				<div class="card-body" align="left">
@@ -32,7 +32,7 @@
 										<li class="list-group-item">
 											<div class="container newspaper1">
 												<div th:each="s: ${sList}" class="row">
-													<div class="mx-3 my-2"> 
+													<div class="mx-2 my-2"> 
 														<input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}"
 															    th:checked="${#lists.contains(client.conditionsList, s)}"> 
 													</div>

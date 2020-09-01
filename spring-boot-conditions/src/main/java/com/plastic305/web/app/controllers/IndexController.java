@@ -42,8 +42,8 @@ public class IndexController {
 	@GetMapping({"/r1", "/", "/index"})   
 	public String form(Model model) {
 		Client c =  new Client() ;
-		
-		List <Suffering> sList = sService.findAllRefusedOrWarning(); 
+		 
+		List <Suffering> sList = sService.findAll(); 
  		model.addAttribute("tittle", "Questionnaire");
  		model.addAttribute("msg", "Diseases that you have or presented");
  		model.addAttribute("text2client", "Please state if do you had or have any of these conditions") ;
@@ -56,36 +56,35 @@ public class IndexController {
 // *******EN USO******	
 	@PostMapping({"/r1", "/", "/index"})    
 	public String formProcess(Client cliente, Model model) {
-		if (cliente.getSuffering() !=null) {
-			//Si tiene alguna de las enfermedades a analizar
-			// 0: no aceptadas, 1: aceptadas, 2: depende doctor, 3: warning
-			
-			//AQUI RECORRER LA LISTA DE CONDITIONS...
-				// SI ALGUNA ES 0...SE JODIÓ
-			    // Y ASÍ
-			Suffering s = sService.findOne(cliente.getSuffering());
-			switch (s.getAccepted()) {
-				case 0: // Si no es aceptada
-					return "redirect:/no_accepted";
-				case 2: // depende doctor
-					return "redirect:/somedoctors"; 	
-				default: //  warning
-					return "redirect:/doctor_or_procedure";
-			}
+		String url = "redirect:/doctor_or_procedure" ;
+		for (Suffering c: cliente.getConditionsList()) {
+			if (c.getAccepted() == 0) 
+				return "redirect:/no_accepted";
+			else if (c.getAccepted() == 2) 
+					url = "redirect:/somedoctors";
 		}
-		else   // aceptadas
-			return "redirect:/doctor_or_procedure";
+		return url;
 	}
 		
 // *******************
 // *******EN USO******	
 	@GetMapping({"no_accepted"})     
 	public String noAccepted(Client cliente, Model model, SessionStatus st) {
-		model.addAttribute("eleccion", "Condition: " + sService.findOne(cliente.getSuffering()).getName());
+		// Aqui necesito dar todas las que no se aceptan
+		String conditionsStr = " ";
+		List<String> conditions = new ArrayList<String>();
+		for (Suffering c: cliente.getConditionsList()) {
+			conditionsStr += (c.getName() + ", ");
+			if (c.getAccepted() == 0) 
+				conditions.add(c.getName());
+		}
+		// IMPLEMENTANDO FUNCIONALIDADES PARA ESTO ARRIBA
+		model.addAttribute("eleccion", "Condition: " + conditionsStr.substring(0, conditionsStr.lastIndexOf(", ")));
 		model.addAttribute("msg", "Decision");
 		model.addAttribute("respuestas_e", "Answers to the questionnaire");
-		model.addAttribute("respuesta_r", "You suffer or suffered \"" + sService.findOne(cliente.getSuffering()).getName() +
-				                          "\", condition that makes it impossible for you to apply the desired treatment");
+		model.addAttribute("respuesta_h", "You suffer or suffered:");
+		model.addAttribute("respuesta_b", conditions);
+		model.addAttribute("respuesta_f", "Condition(s) that makes it impossible for you to apply the desired treatment");
 		st.setComplete();
 		return "no_accepted";
 	}
@@ -102,7 +101,7 @@ public class IndexController {
 	@GetMapping({"doctor_or_procedure"})   
 	public String doctorOrProcedure(Client cliente, Model model, SessionStatus s) {
 		model.addAttribute("choice_h", "Answers to the questionnaire");
-		if (cliente.getSuffering()==null) 
+		if (cliente.getSuffering()==null)  //Implementar en clienteService estas funcionalidades
 			model.addAttribute("msg", "Accepted");
 		else {
 			model.addAttribute("choice", "Condition: "  + sService.findOne(cliente.getSuffering()).getName());

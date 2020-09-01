@@ -12,5 +12,9 @@ public interface IClientService {
 	public Client findOne(Long id);
 	
 	public void delete(Long id);
+	
+	public List<String> getConditionsWithValue(int value); 
+	public String getConditionsListCSV(); 
+	public boolean haveRemark();
 
 }
