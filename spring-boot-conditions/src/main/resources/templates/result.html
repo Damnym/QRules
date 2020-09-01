@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+		<div class="row px-4 py-4" align="right">
+			<div class="col-3" align="right"></div>
+	  	   <div class="col-6" align="right">
+				<ul th:if="${choices}" class="list-group" >
+					<li th:text="${choice_h}" class="list-group-item list-group-item-primary text-center font-weight-bold"></li>
+					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left"></li>
+					<li th:text="'Remarks: ' + ${observation}" class="list-group-item text-left"></li>
+				</ul>
+	  	   </div>
+	   </div>
+	   <div class="row px-4 py-4" align="right">
+	   	<div class="col-3" align="right"></div>
+	   	<div class="col-sm-3">
+	<!--     		<a th:href="@{/r1}" th:text="'Hola'" class="btn btn-lg btn-block btn-outline-info"></a>	 -->
+	    	</div>
+	    	<div class="col-sm-3">
+	    	<a th:href="@{/r1}" th:text="'Next Client'" class="btn btn-lg btn-block btn-primary"></a>	
+	    	</div>
+	   </div>
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

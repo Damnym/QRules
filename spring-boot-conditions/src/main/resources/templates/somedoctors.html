@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+	<div class="container py-4" >
+		<div class="row">
+ 	 		<div class="col-4">
+				<ul th:if="${choice}" class="list-group" >
+					<li th:text="${choice_h}" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
+					<li th:text="${choice}" class="list-group-item text-left"></li>
+				</ul>
+		 	</div> 
+   			<div class="col-8">
+				<div class="card bg-light border-primary" >
+					<div th:text="${msg}" class="card-header bg-primary  font-weight-bold text-white" align="center"></div>
+					<div class="card-body" align="left">
+						<div class="container my-2">
+							<div class="row">
+								<div class="col-sm">
+									<ul class="list-group my-2 border-warning">  
+										<li th:text="${explanationb}" class="list-group-item "></li>
+										<li th:each="d: ${doctors}" class="list-group-item ">
+											<a th:href="@{/choice_procedure_by_doctor/} + ${d.getId()}"
+				   							   th:text="${d.getName()}" class="btn btn-lg btn-block btn-outline-info"></a>	
+										</li>
+										<li th:text="${explanationc}" class="list-group-item "></li>
+									</ul>
+									<hr />
+										<ul class="list-group my-2">  
+											<li th:text="${tips}" class="list-group-item border-success"></li>
+										</ul>
+									<hr />
+								</div>
+							</div>
+						</div>
+						<div class="row">
+	  						<div class="col-6">   <!-- choice-doctor-by-procedure-by-condition -->
+	  							<form th:action="@{/choice_doctor_by_procedure}" th:object="${client}" method="get" class="form-inline">
+									<input type="submit" value="Choice procedure" class="btn btn-lg btn-block btn-info"> 
+	  							</form>
+	  						</div>
+	  						<div class="col-6">
+	  							<form th:action="@{/result}" method="get" class="form-inline">
+									<input type="submit" value="Abort" class="btn btn-lg btn-block btn-outline-danger"> 
+		 	    				</form>
+	  						</div>
+	  					</div>
+					</div>
+				</div>
+	  		</div>
+	  	</div>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

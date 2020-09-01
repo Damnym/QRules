@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+		<div class="row px-4 py-4">
+	   	<div class="col"> <!-- GroupBox de las elecciones -->
+				<ul th:if="${choices}" class="list-group" >
+					<li th:text="${choice_h}" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
+					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left"></li>
+				</ul>
+		 	</div> 
+		 	<div class="col-9"> <!-- GroupBox para las listas de medicos y procedimientos -->
+				<div class="card bg-light" >
+	<!-- 		 		<form th:action="@{/choice-combo-by-p1-by-doctor}" th:object="${client}" method="get">   -->
+					<form id="f1"  th:object="${client}" method="get">
+						<div th:text="${cardHeader}" class="card-header font-weight-bold" align="center"></div>
+						<div class="card-body" align="justify">
+							<div class="row">
+								<div class="col-8"> <!-- GroupBox para las listas de procedimientos -->
+									<div class="card text-info bg-white border-info" >
+										<div th:text="${procedurelisth}" class="card-header border-info font-weight-bold" align="center"></div>
+										<div class="card-body" align="right">
+											<div class="container newspaper1">
+												<a th:each="p: ${procedurelist}" class="btn btn-block btn-outline-info"
+											  		th:href="@{/choice_doctor_by_procedure/} + ${p.getId()}"
+				   				  			   th:text="${p.getName()}"></a>	
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-4"> <!-- GroupBox para las listas de medicos -->
+									<div class="card text-info bg-white border-info">
+										<div th:text="${doctorlisth}" class="text-white card-header bg-info font-weight-bold" align="center"></div>
+										<div class="card-body" align="left">
+										   <div class="container">
+										   	<h4 th:unless="${doctorlist}" th:text="${doctorlistempty}" align="center"></h4>
+										   </div>
+											<div th:each="d: ${doctorlist}" class="row">
+												<div class="mx-3 my-2"> 
+													<input type="radio" th:field="*{doctor}" th:value="${d.getId()}">
+												</div>
+												<div class="mx-2 my-2">
+													<label th:for="${#ids.prev('doctor')}" th:text="${d.getName()}"></label>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+		 					</div>
+		 					<hr/>
+							<hr/>
+							<div class="row">
+								<div class="col-6">   
+									<input type="button" value="Choice procedure for combo" class="btn btn-block btn-info"
+								          onClick="actionForm(this.form.id, '/choice-combo-by-p1-by-doctor'); return false;"/>
+				<!-- 			<input type="submit" value="Choice procedure for combo" class="btn btn-block btn-info">  -->
+	  							</div>
+	  							<div class="col-6">
+	  								<input type="button" value="Finish" class="btn  btn-block btn-outline-danger"
+								          onClick="actionForm(this.form.id, '/result'); return false;" />
+				<!-- 					<a th:href="@{/result}" th:text="${'Finish'}" class="btn  btn-block btn-outline-danger"></a>	 -->
+	  							</div>
+	  						</div>
+						</div>
+					</form>
+				</div>
+	  	   </div>
+	   </div>
+	<footer th:replace="layout/layout :: footer"></footer>
+	<script
+		th:replace="js/twoForm :: javascript2Form">
+	</script>
+</body>
+</html>

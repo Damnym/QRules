@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div th:text="${tittle}" class="card-header bg-info text-white font-weight-bold" 
+				 align="center" ></div>
+			<div class="card-body">
+			<!-- sec:authorize="hasRole('ROLE_ADMIN')" 
+				<h4 align="right" class="card-tittle">
+					<a class="btn btn-secondary btn-xs" th:href="@{/product/form/}"
+				       th:text="'Registrar producto'"></a>
+				</h4>
+			-->
+				<table class="table table-striped table-bordered">
+					<!-- table-bordered -->
+					<thead align="center">
+						<tr>
+					<!--	<th style="width: 25%;" scope="col">Vista previa</th>
+					 	    <th scope="col">C�digo</th>   -->
+							<th th:text="'Name'" scope="col"></th> 
+							<th th:text="'Is Accepted'" scope="col"></th> 	
+							<th th:text="'Doctor'" scope="col"></th>
+							<!-- sec:authorize="hasRole('ROLE_ADMIN')" --> 		
+							<th th:text="Edit" scope="col"></th>
+							<!-- sec:authorize="hasRole('ROLE_ADMIN')" --> 		
+							<th th:text="Delete" scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="s: ${suffering_list}">
+							<td th:text="${s.name}"></td>
+							<td th:if="${s.accepted == 0}" 
+								th:text="'NO'" align="right"></td>
+							<td th:if="${s.accepted == 1}" 
+								th:text="'SI'" align="right"></td>
+							<td th:if="${s.accepted == 2}" 
+								th:text="'By some doctors'" align="right"></td>
+							<td th:text="''" align="right"></td>
+
+							<!-- Editar producto -->
+							<td align="center">
+							<!--	<a th:href="@{/product/form/} + ${p.id}"> --> 
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16"
+										 width="14" height="16"> 
+										 	<path fill-rule="evenodd"
+											      d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 011.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z">
+											</path>
+									 </svg>
+							 <!--   </a> -->
+							</td>
+ 
+						<!--	 Eliminar enfermedad -->
+							<td align="center">
+								<a th:href="@{/suffering/delete/} + ${s.id}"
+								   onclick="return confirm('Desea eliminar??');">
+									<svg xmlns="http://www.w3.org/2000/svg" 
+									     viewBox="0 0 12 16" width="12" height="16">
+										<path fill-rule="evenodd"
+										  	  d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z">
+								    	</path>
+									</svg>
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<nav th:replace="layout/paginator-nav :: paginator"></nav>
+			</div>
+		</div>
+	</div>
+	
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

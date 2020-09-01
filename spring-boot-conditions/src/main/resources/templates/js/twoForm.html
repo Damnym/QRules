@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<script type="text/javascript" th:fragment="javascript2Form">
+	function actionForm(formid, act)
+	{
+	    document.getElementById(formid).action=act;
+	    document.getElementById(formid).submit();
+	}
+	</script>
+</body>
+</html>

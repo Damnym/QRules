@@ -1,0 +1,15 @@
+h1.color-rojo {
+	color: red ;
+}
+
+h2.color-azul {
+	color: blue ;
+}
+
+.newspaper1 {
+  columns: 100px 3;
+}
+
+.newspaper2 {
+  columns: 100px 4;
+}
