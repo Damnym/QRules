@@ -1,6 +1,7 @@
 package com.plastic305.web.app.services;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.ProcByCombo;
 import com.plastic305.web.app.models.entities.ProcByDoct;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.Suffering;
 //import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.models.entities.SufferingByDoctor;
 
@@ -110,6 +112,7 @@ public class DoctorService implements IDoctorService{
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Procedure> findAllProcedureOfAllDoctorsByCondition(Long idC) {
 		List<Procedure> procedureList = new ArrayList<Procedure>();
 		for (Doctor doctor: this.findAllbyCondition(idC)) {
@@ -123,6 +126,7 @@ public class DoctorService implements IDoctorService{
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Doctor> findAllByConditionByProcedure(Long idC, Long idP1) {
 		List<Doctor> docList = new ArrayList<Doctor>();
 		for (Doctor doctor: this.findAllbyProcedure(idP1)) 
@@ -130,6 +134,26 @@ public class DoctorService implements IDoctorService{
 				if (idC.equals(sByD.getSuffering().getId())) 
 					docList.add(doctor);
 		return docList;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Doctor> findAllbyConditions(List<Suffering> conditions) {
+		HashSet<Doctor> doctorSet = new HashSet<>();
+		for (Suffering s: conditions) 
+			for (Doctor d: doctorDAO.findAll()) {
+				Iterator<SufferingByDoctor> it = d.getSufferingsList().iterator();
+				while(it.hasNext()) 
+					if( ((SufferingByDoctor)it.next()).getSuffering().getId()==s.getId())
+						doctorSet.add(d);
+			}
+		
+		List<Doctor> doctorList = new ArrayList<Doctor>();
+		Iterator<Doctor> it = doctorSet.iterator();
+		while(it.hasNext()) {
+			doctorList.add(it.next());
+		}
+		return doctorList;
 	}
 
 }

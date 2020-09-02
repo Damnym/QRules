@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.Suffering;
 
 public interface IDoctorService {
 	/**
@@ -13,6 +14,7 @@ public interface IDoctorService {
 	public Doctor findOne(Long id);
 	public List<Doctor> findAll();
 	public List<Doctor> findAllbyCondition(Long idC);
+	public List<Doctor> findAllbyConditions(List<Suffering> conditions);
 	public List<Doctor> findAllbyProcedure(Long idP);
 	public List<Doctor> findAllByConditionByProcedure(Long idC, Long idP1); // Para Combo
 	public void save(Doctor nDoctor);

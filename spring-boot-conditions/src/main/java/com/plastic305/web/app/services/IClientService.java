@@ -13,8 +13,8 @@ public interface IClientService {
 	
 	public void delete(Long id);
 	
-	public List<String> getConditionsWithValue(int value); 
-	public String getConditionsListCSV(); 
-	public boolean haveRemark();
+	public List<String> getConditionsWithValue(Client client, int value); 
+	public String getConditionsListCSV(Client client); 
+	public boolean haveRemark(Client client);
 
 }

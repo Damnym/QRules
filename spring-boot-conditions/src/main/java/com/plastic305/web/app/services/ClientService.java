@@ -43,26 +43,27 @@ public class ClientService implements IClientService {
 	}
 
 	@Override
-	public List<String> getConditionsWithValue(int value) {
+	public List<String> getConditionsWithValue(Client client, int value) {
 		List<String> conditions = new ArrayList<String>();
-		for (Suffering c: this.findOne((long) 1).getConditionsList()) 
+		for (Suffering c: client.getConditionsList()) 
 			if (c.getAccepted() == value) 
 				conditions.add(c.getName());// TODO Auto-generated method stub
 		return conditions;
 	}
 
 	@Override
-	public String getConditionsListCSV() {
+	public String getConditionsListCSV(Client client) {
 		String conditions = " ";
-		for (Suffering c: this.findOne((long) 1).getConditionsList()) 
+		for (Suffering c: client.getConditionsList()) 
 			conditions += (c.getName() + ", ");
 		return conditions.substring(0, conditions.lastIndexOf(", "));
 	}
 
 	@Override
-	public boolean haveRemark() {
-		List<String> conditions = this.getConditionsWithValue(3);
+	public boolean haveRemark(Client client) {
+		List<String> conditions = this.getConditionsWithValue(client, 3);
 		return conditions!=null;
 	}
+
 
 }
