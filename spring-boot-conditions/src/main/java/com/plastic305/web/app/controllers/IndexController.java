@@ -301,13 +301,13 @@ public class IndexController {
 // *******EN USO******
 	@GetMapping({"result"})
 	public String result(Client cliente, Model model, SessionStatus st) {
-		model.addAttribute("choice_h", "Answers to the questionnaire");
 		List <String> choices = new ArrayList<>() ;
 		String observation = "Has not Remarks" ;
-		if (cliente.getSuffering()!=null) {
-			choices.add("Condition: " + sService.findOne(cliente.getSuffering()).getName());
-			observation = sService.findOne(cliente.getSuffering()).getWarning();
-		}
+		
+		model.addAttribute("choice_h", "Answers to the questionnaire");
+		choices.add("Condition: " + cService.getConditionsListCSV(cliente));
+		observation = cService.getRemarksListCSV(cliente);
+		
 		if (cliente.getDoctor()!=null) {
 			choices.add("Doctor: " + dService.findOne(cliente.getDoctor()).getName());
 			if (cliente.getP1()!=null) {
@@ -316,10 +316,8 @@ public class IndexController {
 				if (cliente.getP2()!=null)
 					choices.add("Combo with: " + pService.findOne(cliente.getP2()).getName());
 			}
-			else {
+			else  
 				choices.add("¡¡¡Do not decide to have surgery with any doctor available!!!");
-				}
-			
 		}
 		else {
 			if (cliente.getP1()!=null) 

@@ -15,6 +15,7 @@ public interface IClientService {
 	
 	public List<String> getConditionsWithValue(Client client, int value); 
 	public String getConditionsListCSV(Client client); 
+	public String getRemarksListCSV(Client client); 
 	public boolean haveRemark(Client client);
 
 }

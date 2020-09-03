@@ -1,6 +1,7 @@
 package com.plastic305.web.app.services;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,17 @@ public class ClientService implements IClientService {
 	public boolean haveRemark(Client client) {
 		List<String> conditions = this.getConditionsWithValue(client, 3);
 		return conditions!=null;
+	}
+
+	@Override
+	public String getRemarksListCSV(Client client) {
+		HashSet<String> remarks = new HashSet<>();
+		for (Suffering c: client.getConditionsList()) 
+			remarks.add(c.getWarning());
+		if (remarks.isEmpty())
+			return "No remarks";
+		else
+			return remarks.toString();
 	}
 
 
