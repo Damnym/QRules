@@ -24,7 +24,6 @@ import com.plastic305.web.app.models.entities.SufferingByDoctor;
 @Service
 public class DoctorService implements IDoctorService{
 	@Autowired private IDoctorDAO doctorDAO;
-//	@Autowired private ISufferingDAOPagNSortRepository sDAO ;
 	
 	@Override
 	@Transactional
@@ -148,12 +147,33 @@ public class DoctorService implements IDoctorService{
 						doctorSet.add(d);
 			}
 		
-		List<Doctor> doctorList = new ArrayList<Doctor>();
-		Iterator<Doctor> it = doctorSet.iterator();
-		while(it.hasNext()) {
-			doctorList.add(it.next());
-		}
+		List<Doctor> doctorList = new ArrayList<Doctor>(doctorSet);
 		return doctorList;
+	}
+
+	@Override
+	public List<Doctor> findAllByConditionsByProcedure(List<Suffering> conditions, Long idP1) {
+		HashSet<Doctor> doctorSet = new HashSet<>();
+		for (Suffering s: conditions) 
+			for (Doctor d: findAllbyProcedure(idP1)) {
+				Iterator<SufferingByDoctor> it = d.getSufferingsList().iterator();
+				while(it.hasNext()) 
+					if( ((SufferingByDoctor)it.next()).getSuffering().getId()==s.getId())
+						doctorSet.add(d);
+			}
+		
+		List<Doctor> doctorList = new ArrayList<Doctor>(doctorSet);
+		return doctorList;
+	}
+
+	@Override
+	public List<Procedure> findAllProcedureOfAllDoctorsByConditions(List<Suffering> conditions) {
+		HashSet<Procedure> proceduresSet = new HashSet<>();
+		for (Suffering s: conditions) //  Por cada condición
+			for (Doctor doctor: this.findAllbyCondition(s.getId()))    // Por cada doctor que trata esa condición
+				proceduresSet.addAll(this.findAllProcedurebyDoctorId(doctor.getId())) ; 
+		List<Procedure> procedureList = new ArrayList<>(proceduresSet) ;
+		return procedureList;
 	}
 
 }

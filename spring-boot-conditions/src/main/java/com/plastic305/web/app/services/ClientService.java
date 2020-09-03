@@ -53,10 +53,13 @@ public class ClientService implements IClientService {
 
 	@Override
 	public String getConditionsListCSV(Client client) {
-		String conditions = " ";
+		String conditions = "";
 		for (Suffering c: client.getConditionsList()) 
 			conditions += (c.getName() + ", ");
-		return conditions.substring(0, conditions.lastIndexOf(", "));
+		if (conditions.equals(""))
+			return "No health condition";
+		else
+			return conditions.substring(0, conditions.lastIndexOf(", "));
 	}
 
 	@Override

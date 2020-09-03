@@ -17,13 +17,14 @@ public interface IDoctorService {
 	public List<Doctor> findAllbyConditions(List<Suffering> conditions);
 	public List<Doctor> findAllbyProcedure(Long idP);
 	public List<Doctor> findAllByConditionByProcedure(Long idC, Long idP1); // Para Combo
+	public List<Doctor> findAllByConditionsByProcedure(List<Suffering> conditions, Long idP1);
+	
 	public void save(Doctor nDoctor);
 	public void delete(Long id);
 	
 	public List<Procedure> findAllProcedurebyDoctorId(Long idD) ;
 	public List<Procedure> findAllProcedureOfAllDoctorsByCondition(Long idC) ;
+	public List<Procedure> findAllProcedureOfAllDoctorsByConditions(List<Suffering> conditions) ;
 	public List<Procedure> findAllProcedurebyDoctorIdbyFirstProcedure(Long idD, Long idP) ;// Para Combo
-	
-	//public List<String> getSufferingListbyDoctor(Long id);
 
 }

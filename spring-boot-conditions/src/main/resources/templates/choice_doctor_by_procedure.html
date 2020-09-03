@@ -21,7 +21,7 @@
 									<div class="card text-info bg-white border-info" >
 										<div th:text="${procedurelisth}" class="card-header border-info font-weight-bold" align="center"></div>
 										<div class="card-body" align="right">
-											<div class="container newspaper1">
+											<div class="container newspaper2">
 												<a th:each="p: ${procedurelist}" class="btn btn-block btn-outline-info"
 											  		th:href="@{/choice_doctor_by_procedure/} + ${p.getId()}"
 				   				  			   th:text="${p.getName()}"></a>	
