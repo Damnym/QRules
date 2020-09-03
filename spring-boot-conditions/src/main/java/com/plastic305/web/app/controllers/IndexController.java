@@ -17,8 +17,6 @@ import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.Procedure;
 import com.plastic305.web.app.models.entities.Suffering;
-import com.plastic305.web.app.rulesrepo.RulesEngine;
-import com.plastic305.web.app.services.IAttributeService;
 import com.plastic305.web.app.services.IClientService;
 import com.plastic305.web.app.services.IDoctorService;
 import com.plastic305.web.app.services.IProcedureService;
@@ -27,15 +25,10 @@ import com.plastic305.web.app.services.ISufferingService;
 @Controller
 @SessionAttributes("client")
 public class IndexController {
-	@Autowired IAttributeService attService;
 	@Autowired ISufferingService sService;
 	@Autowired IClientService cService;
 	@Autowired IDoctorService dService;
 	@Autowired IProcedureService pService;
-	
-	
-	@Autowired RulesEngine re;
-//	private String respuestaR = null ;
 	
 // *******************
 // *******EN USO******
