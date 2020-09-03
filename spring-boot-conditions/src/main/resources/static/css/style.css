@@ -7,9 +7,9 @@ h2.color-azul {
 }
 
 .newspaper1 {
-  columns: 200px 3;
+  columns: auto 3;
 }
 
 .newspaper2 {
-  columns: 100px 3;
+  columns: auto 3;
 }
