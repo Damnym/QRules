@@ -19,6 +19,8 @@ public interface IDoctorService {
 	public List<Doctor> findAllByConditionByProcedure(Long idC, Long idP1); // Para Combo
 	public List<Doctor> findAllByConditionsByProcedure(List<Suffering> conditions, Long idP1);
 	
+	public List<Doctor> fetchDoctorsBySufferingId(Long id);
+	
 	public void save(Doctor nDoctor);
 	public void delete(Long id);
 	

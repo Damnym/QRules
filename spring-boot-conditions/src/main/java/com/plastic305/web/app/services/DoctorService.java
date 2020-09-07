@@ -1,6 +1,8 @@
 package com.plastic305.web.app.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -12,13 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.plastic305.web.app.models.dao.IDoctorDAO;
 import com.plastic305.web.app.models.entities.Combo;
 import com.plastic305.web.app.models.entities.ComboByDoctor;
-//import com.plastic305.web.app.models.dao.ISufferingDAOPagNSortRepository;
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.ProcByCombo;
-import com.plastic305.web.app.models.entities.ProcByDoct;
 import com.plastic305.web.app.models.entities.Procedure;
 import com.plastic305.web.app.models.entities.Suffering;
-//import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.models.entities.SufferingByDoctor;
 
 @Service
@@ -34,7 +33,7 @@ public class DoctorService implements IDoctorService{
 	@Override
 	@Transactional(readOnly = true)
 	public List<Doctor> findAll() {
-		return (List<Doctor>) doctorDAO.findAll() ;
+		return (List<Doctor>) doctorDAO.findAllByOrderByName() ;
 	}
 
 	@Override
@@ -48,29 +47,71 @@ public class DoctorService implements IDoctorService{
 	public void delete(Long id) {
 		doctorDAO.deleteById(id);		
 	}
+	
+//	private ArrayList<Doctor> compareDoctors(ArrayList<Doctor> list){
+//		Collections.sort(list, new Comparator<Doctor>() {
+//		    @Override
+//			public int compare(Doctor d1, Doctor d2) {
+//				return d1.getName().compareTo(d2.getName());
+//			}
+//		});
+//		return list;
+//	}
 
+	
+	private ArrayList<Procedure> compareProcedures(ArrayList<Procedure> list){
+		Collections.sort(list, new Comparator<Procedure>() {
+		    @Override
+			public int compare(Procedure p1, Procedure p2) {
+				return p1.getName().compareTo(p2.getName());
+			}
+		});
+		return list;
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
-	public List<Doctor> findAllbyCondition(Long idC) {
-		ArrayList<Doctor> doctorList = new ArrayList<Doctor>();
-		for (Doctor d: doctorDAO.findAll()) {
-			Iterator<SufferingByDoctor> it = d.getSufferingsList().iterator();
-			while(it.hasNext()) {
-				if( ((SufferingByDoctor)it.next()).getSuffering().getId()==idC)
-					doctorList.add(d);
-			}
-		}
-		return doctorList;
+	public List<Doctor> findAllbyConditions(List<Suffering> conditions) {
+		HashSet<Doctor> doctorSet = new HashSet<>();
+		for (Suffering s: conditions)
+			doctorSet.addAll(doctorDAO.fetchDoctorsBySufferingId(s.getId()));
+		
+		return new ArrayList<Doctor>(doctorSet);
 	}
-
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Doctor> findAllbyProcedure(Long idP) {
+		return doctorDAO.fetchDoctorsByProcedureId(idP);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Doctor> findAllByConditionsByProcedure(List<Suffering> conditions, Long idP1) {
+		HashSet<Doctor> doctorSet = new HashSet<>();
+		for (Suffering s: conditions) 
+			doctorSet.addAll(doctorDAO.fetchDoctorsBySufferingIdByProcedureId(s.getId(), idP1));
+		return new ArrayList<Doctor>(doctorSet);
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public List<Procedure> findAllProcedurebyDoctorId(Long idD) {
-		ArrayList<Procedure> procedureList = new ArrayList<Procedure>();
-		for (ProcByDoct pByd: findOne(idD).getProcList()) 
-			procedureList.add(pByd.getProcedure());
-		return procedureList;
+		return doctorDAO.fetchProceduresByDoctorId(idD);
 	}
+	
+	@Override  
+	@Transactional(readOnly = true)  // como es conjunto el orden me mata...hay q arreglar esto
+	public List<Procedure> findAllProcedureOfAllDoctorsByConditions(List<Suffering> conditions) {
+		HashSet<Procedure> proceduresSet = new HashSet<>();
+		for (Suffering s: conditions) //  Por cada condición
+			proceduresSet.addAll(doctorDAO.fetchProceduresByAllDoctorBySufferingId(s.getId()));
+		
+		return compareProcedures(new ArrayList<>(proceduresSet)) ;
+	}
+
+	
+	////       AQUI
 
 	@Override
 	@Transactional(readOnly = true) //Tratar hacerlo con JPA
@@ -79,7 +120,7 @@ public class DoctorService implements IDoctorService{
 		
 		//Lista de combos de este doctor
 		List<ComboByDoctor> ComboList = findOne(idD).getComboList();
-		List<Combo> comboListWithParamProcedure = new ArrayList<Combo>();;
+		List<Combo> comboListWithParamProcedure = new ArrayList<Combo>();
 		for (ComboByDoctor oneComboByDoct: ComboList) {
 			//Tener lista de combos con el procedimiento Parametro
 			for (ProcByCombo oneProcedureByCombo: oneComboByDoct.getCombo().getProcedureList()) {
@@ -96,20 +137,28 @@ public class DoctorService implements IDoctorService{
 		return procedureList;
 	}
 
+	////////////////////    OLD OR DEPRECATED ///////////////////
+
 	@Override
 	@Transactional(readOnly = true)
-	public List<Doctor> findAllbyProcedure(Long idP) {
+	public List<Doctor> fetchDoctorsBySufferingId(Long id) {
+		return doctorDAO.fetchDoctorsBySufferingId(id);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Doctor> findAllbyCondition(Long idC) {
 		ArrayList<Doctor> doctorList = new ArrayList<Doctor>();
 		for (Doctor d: doctorDAO.findAll()) {
-			Iterator<ProcByDoct> it = d.getProcList().iterator();
+			Iterator<SufferingByDoctor> it = d.getSufferingsList().iterator();
 			while(it.hasNext()) {
-				if( ((ProcByDoct)it.next()).getProcedure().getId()==idP)
+				if( ((SufferingByDoctor)it.next()).getSuffering().getId()==idC)
 					doctorList.add(d);
 			}
 		}
 		return doctorList;
 	}
-
+	
 	@Override
 	@Transactional(readOnly = true)
 	public List<Procedure> findAllProcedureOfAllDoctorsByCondition(Long idC) {
@@ -134,46 +183,5 @@ public class DoctorService implements IDoctorService{
 					docList.add(doctor);
 		return docList;
 	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<Doctor> findAllbyConditions(List<Suffering> conditions) {
-		HashSet<Doctor> doctorSet = new HashSet<>();
-		for (Suffering s: conditions) 
-			for (Doctor d: doctorDAO.findAll()) {
-				Iterator<SufferingByDoctor> it = d.getSufferingsList().iterator();
-				while(it.hasNext()) 
-					if( ((SufferingByDoctor)it.next()).getSuffering().getId()==s.getId())
-						doctorSet.add(d);
-			}
-		
-		List<Doctor> doctorList = new ArrayList<Doctor>(doctorSet);
-		return doctorList;
-	}
-
-	@Override
-	public List<Doctor> findAllByConditionsByProcedure(List<Suffering> conditions, Long idP1) {
-		HashSet<Doctor> doctorSet = new HashSet<>();
-		for (Suffering s: conditions) 
-			for (Doctor d: findAllbyProcedure(idP1)) {
-				Iterator<SufferingByDoctor> it = d.getSufferingsList().iterator();
-				while(it.hasNext()) 
-					if( ((SufferingByDoctor)it.next()).getSuffering().getId()==s.getId())
-						doctorSet.add(d);
-			}
-		
-		List<Doctor> doctorList = new ArrayList<Doctor>(doctorSet);
-		return doctorList;
-	}
-
-	@Override
-	public List<Procedure> findAllProcedureOfAllDoctorsByConditions(List<Suffering> conditions) {
-		HashSet<Procedure> proceduresSet = new HashSet<>();
-		for (Suffering s: conditions) //  Por cada condición
-			for (Doctor doctor: this.findAllbyCondition(s.getId()))    // Por cada doctor que trata esa condición
-				proceduresSet.addAll(this.findAllProcedurebyDoctorId(doctor.getId())) ; 
-		List<Procedure> procedureList = new ArrayList<>(proceduresSet) ;
-		return procedureList;
-	}
-
+	
 }

@@ -20,17 +20,17 @@
 									<div class="card text-info bg-white border-info" >
 										<div th:text="${procedurelisth}" class="card-header border-info font-weight-bold" align="center"></div>
 										<div class="card-body" align="right">
-											<div class="container newspaper1">
-												<div th:if="${procedurelist}" th:each="p: ${procedurelist}" class="row">
+											<div th:unless="${procedurelist}" class="container row">
+												<h4 th:text="${procedurelistempty}" align="center"></h4>
+											</div>
+											<div th:if="${procedurelist}" class="container newspaper1">
+												<div  th:each="p: ${procedurelist}" class="row">
 													<div class="mx-3 my-2"> 
 														<input type="radio" th:field="*{p2}" th:value="${p.getId()}">
 													</div>
 													<div class="mx-2 my-2">
 														<label th:for="${#ids.prev('p2')}" th:text="${p.getName()}"></label>
 													</div>
-												</div>
-												<div th:unless="${procedurelist}" class="row">
-													<h4 th:text="${procedurelistempty}" align="center"></h4>
 												</div>
 											</div>
 										</div>

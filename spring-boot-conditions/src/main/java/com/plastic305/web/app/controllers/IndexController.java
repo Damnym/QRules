@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,9 @@ import com.plastic305.web.app.services.ISufferingService;
 @Controller
 @SessionAttributes("client")
 public class IndexController {
+	
+	protected final Log logger = LogFactory.getLog(this.getClass());
+	
 	@Autowired IAttributeService attService;
 	@Autowired ISufferingService sService;
 	@Autowired IClientService cService;
@@ -93,7 +98,6 @@ public class IndexController {
 			model.addAttribute("msg", "Accepted with Remarks");
 		model.addAttribute("choice", "Condition: " + cService.getConditionsListCSV(cliente));
 		model.addAttribute("explanationb", "You have been accepted, select the procedure or doctor you want");
-		
 		return "doctor_or_procedure";
 	}
 	
@@ -330,171 +334,4 @@ public class IndexController {
 		return "result";
 	}
 	
-	
-	
-// ***************************************************************************************** 
-// *******ANTIGUO******
-/*	
-	@GetMapping("combo_by_doct_first_proc")
-	public String comboListByDoctorFirstProc(Client cliente, Model model, SessionStatus st) {
-		model.addAttribute("choice_h", "Choices");
-		List <String> choices =
-			Arrays.asList("Condition: " + sService.findOne(cliente.getSuffering()).getName(), 
-					      "Doctor: " + dService.findOne(cliente.getDoctor()).getName(),
-					      "First procedure: " + pService.findOne(cliente.getP1()).getName());
-		model.addAttribute("choices", choices);
-		model.addAttribute("cardHeader", "Select some Procedure from list");
-		model.addAttribute("listHeader", "Procedures list");
-		model.addAttribute("explanationb", "Do you want to choose some of these procedures"
-					  	 + " for make a Combo? or you only make the first choice procedure?"); 
-		model.addAttribute("procedures", 
-					dService.findAllProcedurebyDoctorIdbyFirstProcedure(cliente.getDoctor(),
-					cliente.getP1()));
-					
-		return "combo_by_doct_first_proc"; 
-	}	
-	
-// ********************
-// *******ANTIGUO******	
-	@GetMapping("combobydoctfirstdoctor")
-	public String comboListByDoctorFirstDoctor(Client cliente, Model model, SessionStatus st) {
-		model.addAttribute("choice_h", "Choices");
-			List <String> choices =
-					Arrays.asList("Condition: " + sService.findOne(cliente.getSuffering()).getName(), 
-							      "Doctor: " + dService.findOne(cliente.getDoctor()).getName(),
-							      "First procedure: " + pService.findOne(cliente.getP1()).getName());
-			model.addAttribute("choices", choices);
-			model.addAttribute("cardHeader", "Select some Procedure from list");
-			model.addAttribute("listHeader", "Procedures list");
-			model.addAttribute("explanationb", "Do you want to choose some of these procedures for make a Combo? "
-											 + "or you only make the first choice procedure?"); 
-			model.addAttribute("procedures", 
-						        dService.findAllProcedurebyDoctorIdbyFirstProcedure(cliente.getDoctor(),
-						                                                            cliente.getP1()));
-				
-			return "combobydoctfirstdoctor";
-		}	
-	
-// ********************
-// *******ANTIGUO******	
-	@GetMapping("pbydoct/{id}")
-	public String p1ListByDoctor(@PathVariable(value = "id") Long id, Client cliente, Model model,
-								SessionStatus st) {
-		//Cliente elige este doctor
-		cliente.setDoctor(id);
-		cliente.setP1(null);
-		// necesito lista de procedimientos de este doctor
-		model.addAttribute("choice_h", "Choices");
-		List <String> choices = Arrays.asList("Condition: " + sService.findOne(cliente.getSuffering()).getName(), 
-									          "Doctor: " + dService.findOne(cliente.getDoctor()).getName());
-		model.addAttribute("choices", choices);
-		model.addAttribute("cardHeader", "Select some Procedure from list");
-		model.addAttribute("listHeader", "Procedures list");
-		model.addAttribute("explanationb", "Do you want to choose some of these procedures? "
-										 + "In this case, do you want some combo? Or do you "
-										 + "want to view other possible procedures of other doctor?"); 
-		model.addAttribute("procedures", dService.findAllProcedurebyDoctorId(id));
-		
-		return "pbydoct";
-	}
-	
-// *******************
-// *******EN USO******
-	@PostMapping("combobydoct")
-	public String comboListByDoctor(Client cliente, Model model, SessionStatus st) {
-		// necesito lista de procedimientos de este doctor que hacen combo con el elegido
-		// findAllProcedurebyDoctorIdbyFirstProcedure
-		model.addAttribute("choice_h", "Choices");
-		List <String> choices = Arrays.asList("Condition: " + sService.findOne(cliente.getSuffering()).getName(), 
-									          "Doctor: " + dService.findOne(cliente.getDoctor()).getName(),
-									          "First procedure: " + pService.findOne(cliente.getP1()).getName());
-		model.addAttribute("choices", choices);
-		model.addAttribute("cardHeader", "Select some Procedure from list");
-		model.addAttribute("listHeader", "Procedures list");
-		model.addAttribute("explanationb", "Do you want to choose some of these procedures for make a Combo? "
-										 + "or you only make the first choice procedure?"); 
-		model.addAttribute("procedures", 
-				           dService.findAllProcedurebyDoctorIdbyFirstProcedure(cliente.getDoctor(),
-				        		                                               cliente.getP1()));
-		
-		return "combobydoct";
-	}
-	
-	
-	@GetMapping({"respuesta"})
-	public String respuesta(Model model,SessionStatus st) {
- 		st.setComplete();
- 		List <String> elecciones = attService.getRespuestas();
-		model.addAttribute("elecciones", elecciones);
-		model.addAttribute("respuesta_r", respuestaR);
-		model.addAttribute("msg", "Decisión");
-		model.addAttribute("respuestas_e", "Respuestas al cuestionario");
-		switch (respuestaR.charAt(0)) {
-			case 'N':
-				model.addAttribute("isapto", "N");
-				break;
-			case 'A':
-				model.addAttribute("isapto", "A");
-				break;
-			default:
-				model.addAttribute("isapto", "T");
-				break;
-		} 
- 		attService.resetAttributes();
-		return "respuesta";
-	}
-	
-// ********************
-// *******ANTIGUO******		
-	@PostMapping("respuesta")
-	public String respuestap(Model model,SessionStatus st) {
-		return "redirect:/r1";
-	}
-
-// ********************
-// *******ANTIGUO******	
-	@PostMapping("programacion")
-	public String programacion(Model model,SessionStatus st) {
-		return "programacion";
-	}
-	//DESARROLLO	
-		@GetMapping({"choice-doctor-by-procedure-by-condition"})   
-		public String choiceDoctorByProcedureByCondition(Client cliente, Model model, 
-														 SessionStatus st) {
-			cliente.setP1(null);
-			model.addAttribute("choice_h", "Answers to the questionnaire");
-			model.addAttribute("choices", "Condition: " + 
-								           sService.findOne(cliente.getSuffering()).getName());
-			model.addAttribute("cardHeader", "Choose the procedure, then the doctor");
-			model.addAttribute("doctorlisth", "Doctors list"); 
-			model.addAttribute("doctorlistempty", "Choose the procedure to see the doctors who practice them"); 
-			model.addAttribute("procedurelisth", "Procedures list"); 
-			model.addAttribute("procedurelist", 
-					 dService.findAllProcedureOfAllDoctorsByCondition(cliente.getSuffering())) ;
-				
-			return "choice-doctor-by-procedure-by-condition";
-		}
-		
-		@GetMapping({"choice-doctor-by-procedure-by-condition/{id}"})   
-		public String choiceDoctorByProcedureByConditionSelectP1(@PathVariable(value = "id") Long id, 
-																 Client cliente, Model model, 
-														         SessionStatus st) {
-			cliente.setDoctor(null);
-			cliente.setP1(id);
-			model.addAttribute("choice_h", "Answers to the questionnaire");
-			List <String> choices = Arrays.asList("Condition: " + 
-			           						 sService.findOne(cliente.getSuffering()).getName(), 
-			                                      "Procedure: " + pService.findOne(id).getName());
-			model.addAttribute("choices", choices);
-			model.addAttribute("cardHeader", "Choose the procedure, then the doctor");
-			model.addAttribute("doctorlisth", "Doctors list"); 
-			model.addAttribute("doctorlist", 
-						     dService.findAllByConditionByProcedure(cliente.getSuffering(), id)); 
-			model.addAttribute("procedurelisth", "Procedures list"); 
-			model.addAttribute("procedurelist", 
-					 dService.findAllProcedureOfAllDoctorsByCondition(cliente.getSuffering())) ;
-				
-			return "choice-doctor-by-procedure-by-condition";
-		}
-	*/
 }
