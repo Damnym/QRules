@@ -1,6 +1,5 @@
 package com.plastic305.web.app.models.dao;
 
-import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 

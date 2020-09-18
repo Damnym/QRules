@@ -17,11 +17,13 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.ProdSubTotal;
+import com.plastic305.web.app.models.entities.Product;
 import com.plastic305.web.app.models.entities.Suffering;
-import com.plastic305.web.app.services.IAttributeService;
 import com.plastic305.web.app.services.IClientService;
 import com.plastic305.web.app.services.IDoctorService;
 import com.plastic305.web.app.services.IProcedureService;
+import com.plastic305.web.app.services.IProductService;
 import com.plastic305.web.app.services.ISufferingService;
 
 @Controller
@@ -30,52 +32,132 @@ public class IndexController {
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
-	@Autowired IAttributeService attService;
+	private static final String tittleR1 = "Questionnaire" ;
+	private static final String tittleProduct = "Post-surgical items" ;
+	private static final String conditionHeader = "Diseases that you have or presented" ;
+	private static final String productHeader = "See prices below and choose" ;
+	private static final String conditionQuestion = "Please state if do you had or have any of these conditions" ;
+	private static final String productText = "Post-surgical items exist to accomplish goals!\r\n" + 
+											  "These items listed below are necessary in order to protect and enhance the outcome of your procedure, prevent the formation of scar tissue, and aide the recovery process.\r\n" + 
+											  "Prepare in advance for a successful recovery by purchasing the necessary post-surgical items in office at the time of pre-op: (See prices below and choose)" ;
+	private static final String bmiHeader = "Data for BMI calculation" ;
+	private static final String bmiMetric = "Metric system" ;
+	private static final String bmiEnglish = "English system" ;
+	private static final String choiceH = "Answers to the questionnaire" ;
+	private static final String decisionH = "Decision" ;
+	private static final String noAcceptedByConditionH = "You suffer or suffered: " ;
+	private static final String noAcceptedByConditionExp = ". Condition(s) that makes it impossible for you to apply the desired treatment" ;
+	private static final String noAcceptedByBMIH = "Your BMI is: " ;
+	private static final String noAcceptedByBMIUpperExp = ". Indicating your weight is greater than what is allowed" ;
+	private static final String noAcceptedByBMILowerExp = ". Indicating your weight is lower than what is allowed" ;
+	
+	private static final Double bmiLowerLimit = Double.valueOf(18.5) ;
+	private static final Double bmiUpperLimit = Double.valueOf(30) ;
+	
+	
 	@Autowired ISufferingService sService;
 	@Autowired IClientService cService;
 	@Autowired IDoctorService dService;
 	@Autowired IProcedureService pService;
+	@Autowired IProductService prodService;  // NEW
+	
 
 	
-// *******************
-// *******EN USO******
+// *******************      
+// *******EN USO******    PRIMERA (ENGLISH FEET-INCHES-POUNDS)
 	@GetMapping({"/r1", "/", "/index"})   
 	public String form(Model model) {
 		Client c =  new Client() ;
-		 
 		List <Suffering> sList = sService.findAll(); 
- 		model.addAttribute("tittle", "Questionnaire");
- 		model.addAttribute("msg", "Diseases that you have or presented");
- 		model.addAttribute("text2client", "Please state if do you had or have any of these conditions") ;
+
+		model.addAttribute("tittle", tittleR1);
+ 		model.addAttribute("conditionHeader", conditionHeader);
+ 		model.addAttribute("conditionQuestion", conditionQuestion) ;
+ 		model.addAttribute("bmiHeader", bmiHeader) ;   // NEW
+ 		model.addAttribute("bmiEnglish", bmiEnglish) ;   // NEW
+ 		model.addAttribute("bmiLink", bmiMetric) ;   // NEW
+ 		
  	    model.addAttribute("sList", sList);
  	    model.addAttribute("client", c);
-		return "r1";
+		
+ 	    return "r1";
 	}
 		
-// *******************
+// *******************				
+// *******EN USO******     (METRIC Centimeters-Kilograms)
+	@GetMapping({"/r1/{system}", "/", "/index/{system}"})  
+	public String formMetric(@PathVariable(value = "system") String system, Model model) {
+		Client c =  new Client() ;
+		List <Suffering> sList = sService.findAll(); 
+
+		model.addAttribute("tittle", tittleR1);
+	 	model.addAttribute("conditionHeader", conditionHeader);
+	 	model.addAttribute("conditionQuestion", conditionQuestion) ;
+	 	model.addAttribute("bmiHeader", bmiHeader) ;   // NEW
+ 		model.addAttribute("bmiMetric", bmiMetric) ;   // NEW	
+ 		model.addAttribute("bmiLink", bmiEnglish) ;   // NEW
+	 	
+	 	model.addAttribute("sList", sList);
+	 	model.addAttribute("client", c);
+			
+	 	return "r1";
+	}
+
+	
+// *******************      NUEVO PARA AGREGAR EL BMI
 // *******EN USO******	
 	@PostMapping({"/r1", "/", "/index"})    
 	public String formProcess(Client cliente, Model model) {
 		String url = "redirect:/doctor_or_procedure" ;
 		for (Suffering c: cliente.getConditionsList()) {
-			if (c.getAccepted() == 0) 
+			if (c.getAccepted() == 0) { 
+				cliente.setAccepted(Long.valueOf(0));   
 				return "redirect:/no_accepted";
+			}
 			else if (c.getAccepted() == 2) 
 					url = "redirect:/somedoctors";
+		}
+		// CALCULANDO EL BMI
+		if (cService.getBMI(cliente) < bmiLowerLimit  || cService.getBMI(cliente) > bmiUpperLimit) {  
+			
+			return "redirect:/no_accepted";
 		}
 		return url;
 	}
 		
 // *******************
-// *******EN USO******	
-	@GetMapping({"no_accepted"})     
+// *******EN USO******	NUEVO PARA AGREGAR EL BMI
+	@GetMapping({"no_accepted"})       
 	public String noAccepted(Client cliente, Model model, SessionStatus st) {
-		model.addAttribute("respuestas_e", "Answers to the questionnaire");
-		model.addAttribute("eleccion", "Condition: " + cService.getConditionsListCSV(cliente));
-		model.addAttribute("msg", "Decision");
-		model.addAttribute("respuesta_h", "You suffer or suffered:");
-		model.addAttribute("respuesta_b", cService.getConditionsWithValue(cliente, 0));
-		model.addAttribute("respuesta_f", "Condition(s) that makes it impossible for you to apply the desired treatment");
+		// Locales necesarias
+		List <String> decision = new ArrayList<>();
+		List<String> choices;
+		
+		// LLenando los datos
+		if (cliente.getHeightInches()!=null)  // americano
+			choices = Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
+					                "Weigth: " + cliente.getWeight() + " Pounds", 
+					                "Height: " + cliente.getHeightFeetOrCentimeters() + "'  " + cliente.getHeightInches() + "\"");
+		else 
+			choices = Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
+									"Weigth: " + cliente.getWeight() + " Kilograms", 
+									"Height: " + cliente.getHeightFeetOrCentimeters() + " Centimeters");
+		
+		if (cliente.getAccepted() != null && cliente.getAccepted()== 0)
+			decision.add(noAcceptedByConditionH + cService.getConditionsWithValue(cliente, 0) + noAcceptedByConditionExp);
+		double bmi = cService.getBMI(cliente) ; 
+		logger.info("<<<<<<    BMI: " + String.format("%.2f", bmi) + "    >>>>>>");
+		if (bmi < bmiLowerLimit)
+			decision.add(noAcceptedByBMIH + String.format("%.2f", bmi) + noAcceptedByBMILowerExp);
+		else if (bmi > bmiUpperLimit)
+			decision.add(noAcceptedByBMIH + String.format("%.2f", bmi) + noAcceptedByBMIUpperExp);
+		
+		// Pasando al modelo
+		model.addAttribute("choice_h", choiceH);
+		model.addAttribute("msg", decisionH);
+		model.addAttribute("choices", choices);
+		model.addAttribute("decision", decision);
+		
 		st.setComplete();
 		return "no_accepted";
 	}
@@ -88,7 +170,7 @@ public class IndexController {
 	}
 	
 // *******************
-// *******EN USO******            CAMBIANDO
+// *******EN USO******           
 	@GetMapping({"doctor_or_procedure"})   // Si llega aquí es pq es candidato 
 	public String doctorOrProcedure(Client cliente, Model model, SessionStatus s) {
 		model.addAttribute("choice_h", "Answers to the questionnaire");
@@ -154,7 +236,6 @@ public class IndexController {
 	public String choiceComboByDoctorByP1(Client cliente, Model model, SessionStatus st) {
 		//Hasta aquí hay: Conditions, Doctor y P1
 		cliente.setP2(null); 
-		cliente.setCombo(null);
 		
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("choices", Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
@@ -186,7 +267,6 @@ public class IndexController {
 	public String choiceComboByDoctorByP1SelectDoct(@PathVariable(value = "id") Long id, Client cliente, Model model, SessionStatus st) {
 		cliente.setDoctor(id);
 		cliente.setP2(null); 
-		cliente.setCombo(null);
 		
 		return this.choiceComboByDoctorByP1(cliente, model, st);
 	}			
@@ -245,7 +325,6 @@ public class IndexController {
 	@GetMapping({"choice-combo-by-p1-by-doctor"}) 
 	public String choiceComboByP1ByDoctor(Client cliente, Model model, SessionStatus st) {
 		cliente.setP2(null); 
-		cliente.setCombo(null);
 
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("choices", Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
@@ -330,8 +409,40 @@ public class IndexController {
 				
 		}
 		model.addAttribute("choices", choices);
-		st.setComplete();
+	//	st.setComplete();
 		return "result";
 	}
+	
+// *******************      
+// *******DESARROLLANDO******    
+		@GetMapping({"/post-surgical"})   
+		public String postSurgical(Client cliente, Model model, SessionStatus st) {
+			List <ProdSubTotal> pSubTotalList = new ArrayList<>();
+			List <Product> pList = prodService.findAll();
+			
+			for (Product product: pList)
+				pSubTotalList.add(new ProdSubTotal(product.getId(),product, 6, 10.0));
+			cliente.setListProd(pSubTotalList);
+
+			model.addAttribute("tittle", tittleProduct);
+	 		model.addAttribute("productText", productText) ;
+	 		
+	 //	    model.addAttribute("products_list", pList);
+//	 	    model.addAttribute("sub_total_list", pSubTotalList);
+//	 	    model.addAttribute("client", c);
+			
+	 	    return "post-surgical";
+		}	
+	
+// *******************      
+// *******DESARROLLANDO******    
+	@GetMapping({"/recalculate"})   // id del producto
+	public String calculateTotal(Client cliente, Model model, SessionStatus st) {
+		for (ProdSubTotal product: cliente.getListProd()) {
+			logger.info(product.getAmount());
+		}
+					
+		return "redirect:/r1";
+	}		
 	
 }

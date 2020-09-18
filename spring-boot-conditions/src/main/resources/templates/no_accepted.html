@@ -6,9 +6,9 @@
 	<div class="container py-4" >
 		<div class="row">
  	 		<div class="col-4">
-				<ul th:if="${eleccion}" class="list-group" >
-					<li th:text="${respuestas_e}" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
-					<li th:text="${eleccion}" class="list-group-item text-left"></li>
+				<ul th:if="${choices}" class="list-group" >
+					<li th:text="${choice_h}" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
+					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left"></li>
 				</ul>
 		 	</div> 
    			<div class="col-8">
@@ -20,9 +20,9 @@
 								<div class="row">
 									<div class="col-sm">
 										<ul class="list-group my-2 list-group-flush">  
-											<li th:text="${respuesta_h}" class="list-group-item border-danger"></li>
-											<li th:each="r: ${respuesta_b}"  th:text="${r}" class="mx-4 list-group-item list-group-item-flush"></li> 
-											<li th:text="${respuesta_f}" class="list-group-item text-white bg-danger"></li>
+											<li th:each="d: ${decision}" th:text="${d}" class="list-group-item list-group-item-flush border-danger"></li>
+					<!-- 					<li th:each="r: ${respuesta_b}"  th:text="${r}" class="mx-4 list-group-item list-group-item-flush"></li> 
+											<li th:text="${respuesta_f}" class="list-group-item text-white bg-danger"></li>  -->
 										</ul>
 										<hr />
 										<hr />

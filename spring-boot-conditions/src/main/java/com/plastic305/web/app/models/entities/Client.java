@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
@@ -28,12 +30,63 @@ public class Client implements Serializable {
 	
 	@NotEmpty
 	private String surname;
+											
+	private Long p1, p2, doctor, accepted;
+	                          // 0: No aceptada por enfermedad
+	@NotEmpty
+	private Double weight; 
 	
-	private Long suffering, combo, p1, p2, doctor, accepted;
+	@NotEmpty
+	private Double heightFeetOrCentimeters;
+	private Double heightInches ;
+	
+	@Column(name = "make_cell_saver")
+	private boolean makeCellSaver;  
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "client_id")
+	private List<Product> productsList;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "client_id")
 	private List<Suffering> conditionsList;
+	
+	@Transient
+	private List<ProdSubTotal> listProd ;
+	
+	
+	public List<Product> getProductsList() {
+		return productsList;
+	}
+
+	public void setProductsList(List<Product> productsList) {
+		this.productsList = productsList;
+	}
+
+
+	public Double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Double weight) {
+		this.weight = weight;
+	}
+
+	public Double getHeightFeetOrCentimeters() {
+		return heightFeetOrCentimeters;
+	}
+
+	public void setHeightFeetOrCentimeters(Double heightFeetOrCentimeters) {
+		this.heightFeetOrCentimeters = heightFeetOrCentimeters;
+	}
+
+	public Double getHeightInches() {
+		return heightInches;
+	}
+
+	public void setHeightInches(Double heightInches) {
+		this.heightInches = heightInches;
+	}
 	
 	/**
 	 * @return the accepted
@@ -86,30 +139,7 @@ public class Client implements Serializable {
 	public void setSurname(String surname) {
 		this.surname = surname;
 	}
-	/**
-	 * @return the suffering
-	 */
-	public Long getSuffering() {
-		return suffering;
-	}
-	/**
-	 * @param suffering the suffering to set
-	 */
-	public void setSuffering(Long suffering) {
-		this.suffering = suffering;
-	}
-	/**
-	 * @return the combo
-	 */
-	public Long getCombo() {
-		return combo;
-	}
-	/**
-	 * @param combo the combo to set
-	 */
-	public void setCombo(Long combo) {
-		this.combo = combo;
-	}
+
 	/**
 	 * @return the doctor
 	 */
@@ -177,6 +207,14 @@ public class Client implements Serializable {
 		conditionsList = new ArrayList<Suffering>(); 
 	}
 
+	public boolean isMakeCellSaver() {
+		return makeCellSaver;
+	}
+
+	public void setMakeCellSaver(boolean makeCellSaver) {
+		this.makeCellSaver = makeCellSaver;
+	}
+
 
 
 
@@ -184,5 +222,14 @@ public class Client implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 6439305829659849320L;
+
+
+	public List<ProdSubTotal> getListProd() {
+		return listProd;
+	}
+
+	public void setListProd(List<ProdSubTotal> listProd) {
+		this.listProd = listProd;
+	}
 
 }

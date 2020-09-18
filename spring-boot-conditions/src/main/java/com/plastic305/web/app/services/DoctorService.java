@@ -48,17 +48,6 @@ public class DoctorService implements IDoctorService{
 		doctorDAO.deleteById(id);		
 	}
 	
-//	private ArrayList<Doctor> compareDoctors(ArrayList<Doctor> list){
-//		Collections.sort(list, new Comparator<Doctor>() {
-//		    @Override
-//			public int compare(Doctor d1, Doctor d2) {
-//				return d1.getName().compareTo(d2.getName());
-//			}
-//		});
-//		return list;
-//	}
-
-	
 	private ArrayList<Procedure> compareProcedures(ArrayList<Procedure> list){
 		Collections.sort(list, new Comparator<Procedure>() {
 		    @Override

@@ -3,68 +3,99 @@
 <head th:replace="layout/layout :: head"></head>
 <body>
 	<header th:replace="layout/layout :: header"></header>
-	<div class="container py-4" >
-	  <div class="row">
-	      <div class="col">
-			<ul th:if="${eleccionestemp}" class="list-group">
-				<li th:unless="${eleccionestemp.isEmpty()}" th:text="'Respuesta al cuestionario'" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
-				<li th:each="r: ${eleccionestemp}" th:text="${r}" class="list-group-item text-left"></li>
-			</ul>
-<!-- 		<div th:unless="${eleccionestemp}">
-				<img th:src="@{/imgs/305 copi a.png}" alt="logo" class="rounded mx-auto d-block float-righ">
-			</div>
-			<div th:if="${eleccionestemp}">
-				<div th:if="${eleccionestemp.isEmpty()}">
-					<img th:src="@{/imgs/305 cop ia.png}" alt="logo" class="rounded mx-auto d-block float-righ">
-				</div>
-			</div>  -->
-	      </div> 
-	  	  <div class="col-11">
-			<div class="card bg-light" >
-				<div th:text="${msg}" class="card-header font-weight-bold" align="center"></div>
-				<div class="card-body" align="left">
-					<form th:action="@{/r1}" method="post" class="form-inline" th:object="${client}">
-						<div class="container my-2">
+	<div class="mr-3 ml-3 py-4" >
+		<form th:action="@{/r1}" method="post" class="form-inline" th:object="${client}">
+	 		<div class="row">  <!-- Fila Principal  -->
+	      		<div class="col-3">    <!-- Columna Iz.  -->
+					<div class="card bg-white" >
+						<div th:text="${bmiHeader}" class="card-header font-weight-bold bg-dark text-white" align="center"></div>
+						<div class="card-body">
+						<div th:if="${bmiEnglish}" class="row px-2"> <!-- Método English -->
+						
+							(English system&nbsp;|&nbsp; <a th:text="${bmiLink}" th:href="@{/r1/} + 'metric'"></a>)
+							
+							<div class="row py-3">
+								<div class="row px-4">
+									<b>Height</b>
+								</div>
+								<div class="form-group col-9">
+									<label for="heightFeetOrCentimeters" class="col-form-label col-7">Feet</label>
+									<input type="text" id="heightFeetOrCentimeters" th:field="*{heightFeetOrCentimeters}" class="form-control col-5" /> 
+									<label for="heightInches" class="col-form-label col-7 py-4">Inches</label>
+									<input type="text" id="heightInches" th:field="*{heightInches}" class="form-control col-5" /> 
+								</div>
+							</div>
 							<div class="row">
-								<div class="col-sm">
-									<ul class="list-group my-1">
-										<li th:text="${text2client}" class="list-group-item active bg-info text-center font-weight-bold"></li>
-										<li class="list-group-item">
-											<div class="container newspaper1">
-												<div th:each="s: ${sList}" class="row">
-													<div class="mx-2 my-2"> 
-														<input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}"
-															    th:checked="${#lists.contains(client.conditionsList, s)}"> 
-													</div>
-													<div class="mx-2 my-2"> 
-														<label th:for="${#ids.prev('conditionsList')}" th:text="${s.name}"></label>
-													</div>
-												</div>	
-										<!--		<div th:each="s: ${sList}" class="row">
-													<div class="mx-3 my-2"> 
-														<input type="radio" th:field="*{suffering}" th:value="${s.getId()}">
-													</div>
-													<div class="mx-2 my-2">
-														<label th:for="${#ids.prev('suffering')}" th:text="${s.getName()}"></label>
-													</div>
-												</div>-->
-											</div>
-										</li><!--
-										<li th:text="'Explicación: '+ ${attribute.getBecause()}" class="list-group-item list-group-item-info font-italic">
-											<input type="hidden" th:text=${namev}>
-										</li>-->
-										<li class="list-group-item">
-											<input type="submit" value="Continue..." class="btn btn-lg btn-block btn-outline-success"> 
-										</li>
-									</ul>
+								<div class="row px-4">
+									<b>Weight</b>
+								</div>
+								<div class="form-group col-9">  
+									<label for="weight" class="col-form-label col-7">Pounds</label>
+									<input type="text" id="weight" th:field="*{weight}" class="form-control col-5" /> 
 								</div>
 							</div>
 						</div>
-					</form>
-				</div>
-			</div>
-	  	  </div>
-	  </div>
+						<div th:if="${bmiMetric}" class="row px-2"> <!-- Método Metric -->
+							(<a th:text="${bmiLink}" th:href="@{/r1/}"></a> &nbsp;|&nbsp;Metric system)
+							<div class="row py-3">
+								<div class="row px-4">
+									<b>Height</b>
+								</div>
+								<div class="form-group col-9">
+									<label for="heightFeetOrCentimeters" class="col-form-label col-7">Centimeters</label>
+									<input type="text" id="heightFeetOrCentimeters" th:field="*{heightFeetOrCentimeters}" class="form-control col-5" /> 
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group px-2">
+									<b>Weight</b>
+								</div>
+								<div class="form-group col-9">  <!-- class="col-form-label col-sm-3" -->
+									<label for="weight" class="col-form-label col-7">Kilograms</label>
+									<input type="text" id="weight" th:field="*{weight}" class="form-control col-5" /> 
+								</div>
+							</div>
+						</div>
+			 <!-- Columna Iz. 			<input type="submit" value="Continue..." class="btn btn-lg btn-block btn-outline-success">   -->	
+						</div>
+					</div>
+	     		</div> 
+	  	  		<div class="col-9"> <!-- Columna Der. Condiciones  -->
+					<div class="card bg-light" >
+						<div th:text="${conditionHeader}" class="card-header font-weight-bold" align="center"></div>
+						<div class="card-body" align="left">
+<!-- aqui empezaba el form  -->
+							<div class="container my-2">
+								<div class="row">
+									<div class="col-sm">
+										<ul class="list-group my-1">
+											<li th:text="${conditionQuestion}" class="list-group-item active bg-info text-center font-weight-bold"></li>
+											<li class="list-group-item">
+												<div class="container newspaper1">
+													<div th:each="s: ${sList}" class="row">
+														<div class="mx-2 my-2"> 
+															<input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}"
+															 	   th:checked="${#lists.contains(client.conditionsList, s)}"> 
+														</div>
+														<div class="mx-2 my-2"> 
+															<label th:for="${#ids.prev('conditionsList')}" th:text="${s.name}"></label>
+														</div>
+													</div>	
+												</div>
+											</li>
+											<li class="list-group-item">
+												<input type="submit" value="Continue..." class="btn btn-lg btn-block btn-outline-success"> 
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+<!-- aqui terminaba el form  -->
+				        </div>
+				 	</div>
+	  	  	    </div>
+	  		</div>
+	  	</form>
 	</div>
 	<footer th:replace="layout/layout :: footer"></footer>
 </body>

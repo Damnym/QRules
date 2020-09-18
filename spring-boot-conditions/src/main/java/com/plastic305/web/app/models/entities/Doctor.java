@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -27,6 +28,9 @@ public class Doctor implements Serializable {
 	
 	@NotEmpty
 	private String surname;
+	
+	@Column(name = "required_cell_saver")
+	private boolean requiredCellSaver;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "doctor_id")
@@ -125,6 +129,15 @@ public class Doctor implements Serializable {
 	 */
 	public void setProcList(List<ProcByDoct> procList) {
 		this.procList = procList;
+	}
+
+
+
+	public boolean isRequiredCellSaver() {
+		return requiredCellSaver;
+	}
+	public void setRequiredCellSaver(boolean requiredCellSaver) {
+		this.requiredCellSaver = requiredCellSaver;
 	}
 
 

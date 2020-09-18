@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+
+	<div class="container py-4" align="center">
+		<div class="col"> <!-- GroupBox de las elecciones -->
+			<ul th:if="${choices}" class="list-group" >
+				<li th:text="${choice_h}" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
+				<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left"></li>
+			</ul>
+		 </div> 
+		<div class="card bg-white" style="width: 100%;">  <!-- Tabla con los productos -->
+			<div th:text="${productText}" class="card-header list-group-item-success text-center font-weight-bold" align="center"></div> <!-- AQUI EL TEXTO MUELERO -->
+			<div class="card-body" align="left">
+				<ul class="list-group">
+					<li class="list-group-item text-left">
+						<form id="f1"  th:object="${client}" method="get" enctype="multipart/form-data">
+							<table id="loadProductItems" class="table table-sm table-striped table-hover">
+								<thead>
+									<tr align="center">
+										<th width="30%">Name</th>
+										<th width="37%">Remarks</th>
+										<th width="9%">Price</th>
+										<th width="8%">Amount</th>
+										<th width="8%"></th>
+										<th width="8%">Subtotal</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="p: ${client.listProd}">
+										<td th:text="${p.product.getName()}" align="left" class="align-middle"></td>
+										<td th:text="${p.product.getTips()}"></td>
+										<td th:text="'$ ' + ${p.product.getPrice()}" align="right" class="align-middle"></td> 
+										<td class="align-middle">
+											<input type="number" th:value="${p.amount}"  th:field="${p.amount}"th:id="${p.id}" class="form-control" min="0"/>
+								   		</td>
+								   		<td align="center" class="align-middle"> 
+								   			<input type="button" value=">>" class="btn btn-block btn-info"
+								          		   onClick="actionForm(this.form.id, '/recalculate'); return false;"/>
+										</td>
+										<td align="right" class="align-middle">
+											$ <span th:text="${p.subTotal}"></span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<hr>
+							<h5 align="right">Total: <span class="badge badge-warning" id="total">0</span></h5>
+							<hr>
+							<div align="right"> <!-- class="form-group row" -->
+								<div class="col-sm-6">
+									<input type="submit" value="Accept" class="btn btn-secondary" />
+								</div>
+							</div>
+						</form>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+	<script
+	     th:replace="js/twoForm :: javascript2Form">
+	</script>
+</body>
+</html>

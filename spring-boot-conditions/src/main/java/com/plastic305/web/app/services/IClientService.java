@@ -17,5 +17,7 @@ public interface IClientService {
 	public String getConditionsListCSV(Client client); 
 	public String getRemarksListCSV(Client client); 
 	public boolean haveRemark(Client client);
+	
+	public Double getBMI(Client client);
 
 }

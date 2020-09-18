@@ -80,5 +80,12 @@ public class ClientService implements IClientService {
 			return remarks.toString();
 	}
 
+	@Override
+	public Double getBMI(Client client) {
+		Double bmi = (client.getHeightInches()!=null)?client.getWeight()/Math.pow(client.getHeightFeetOrCentimeters()*12+client.getHeightInches(), 2)*703:
+													  client.getWeight()/Math.pow(client.getHeightFeetOrCentimeters()/100, 2);
+		return bmi;
+	}
+
 
 }
