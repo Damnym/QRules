@@ -12,12 +12,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.plastic305.web.app.models.entities.Client;
+import com.plastic305.web.app.models.entities.Order;
 import com.plastic305.web.app.models.entities.Procedure;
-import com.plastic305.web.app.models.entities.ProdSubTotal;
+import com.plastic305.web.app.models.entities.OrderItem;
 import com.plastic305.web.app.models.entities.Product;
 import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.services.IClientService;
@@ -417,19 +420,19 @@ public class IndexController {
 // *******DESARROLLANDO******    
 		@GetMapping({"/post-surgical"})   
 		public String postSurgical(Client cliente, Model model, SessionStatus st) {
-			List <ProdSubTotal> pSubTotalList = new ArrayList<>();
-			List <Product> pList = prodService.findAll();
-			
-			for (Product product: pList)
-				pSubTotalList.add(new ProdSubTotal(product.getId(),product, 6, 10.0));
-			cliente.setListProd(pSubTotalList);
-
-			model.addAttribute("tittle", tittleProduct);
-	 		model.addAttribute("productText", productText) ;
-	 		
-	 //	    model.addAttribute("products_list", pList);
+//			List <OrderItem> pSubTotalList = new ArrayList<>();
+//			List <Product> pList = prodService.findAll();
+//			
+////			for (Product product: pList)
+////				pSubTotalList.add(new OrderItem(product.getId(),product, 6, 10.0));
+////			cliente.setListProd(pSubTotalList);
+//
+//			model.addAttribute("tittle", tittleProduct);
+//	 		model.addAttribute("productText", productText) ;
+//	 		
+//	 //	    model.addAttribute("products_list", pList);
 //	 	    model.addAttribute("sub_total_list", pSubTotalList);
-//	 	    model.addAttribute("client", c);
+////	 	    model.addAttribute("client", c);
 			
 	 	    return "post-surgical";
 		}	
@@ -438,11 +441,51 @@ public class IndexController {
 // *******DESARROLLANDO******    
 	@GetMapping({"/recalculate"})   // id del producto
 	public String calculateTotal(Client cliente, Model model, SessionStatus st) {
-		for (ProdSubTotal product: cliente.getListProd()) {
-			logger.info(product.getAmount());
-		}
+//		for (OrderItem product: cliente.getListProd()) {
+//			logger.info(product.getAmount());
+//		} 
 					
 		return "redirect:/r1";
 	}		
+	//*********************************************************************************************
+// *******************      
+// *******DESARROLLANDO******    
+	@GetMapping("/orders/order-form")  // en algún momento pasar el id del cliente
+	public String create(Client cliente, Model model, RedirectAttributes flash, SessionStatus st) {
+		Client clientObj = new Client();
+		clientObj.setName("Lolo");
+		clientObj.setId(Long.valueOf(1));
+		//Todo esto de arriba se va cuando le pase el cliente real
+/*	Esto se descomenta cuando se le pase el cliente de arriba o se va	
+		if (clientObj == null) {
+			flash.addFlashAttribute("error", "Cliente no existe con ese Id");
+			return "redirect:/listar";
+		}
+*/		
+		List <Product> pList = prodService.findAll();
+		Order orderObj = new Order();
+		orderObj.setClient(clientObj);
+		model.addAttribute("tittle", tittleProduct);  //("tittle", tittle);
+		model.addAttribute("productText", productText);   //("msg", msg);
+		model.addAttribute("pList", pList);   //("msg", msg);
+		model.addAttribute("order", orderObj);
+
+		return "/orders/order-form";
+	}
+	
+	@GetMapping(value = "/orders/load-products/{term}", produces = {"application/json"})
+	public @ResponseBody List<Product> loadProducts(@PathVariable String term) {
+		/*
+		 * La anotación ResponseBody suprime cargar la vista y lo que hace es retornar,
+		 * en este caso convertido a Json, y poblar dentro del Body de la respuesta
+		 */
+		return cService.findByName(term);
+	}
+	
+	
+	
+	
+	
+	
 	
 }

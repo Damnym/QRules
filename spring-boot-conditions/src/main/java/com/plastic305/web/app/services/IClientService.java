@@ -3,16 +3,34 @@ package com.plastic305.web.app.services;
 import java.util.List;
 
 import com.plastic305.web.app.models.entities.Client;
+import com.plastic305.web.app.models.entities.Order;
+import com.plastic305.web.app.models.entities.Product;
 
 public interface IClientService {
 	
-	public void save(Client nClient);
-	
+//GENERAL
+//*******
 	public List<Client> findAll();
 	public Client findOne(Long id);
-	
+
+	public void save(Client nClient);
 	public void delete(Long id);
+
+//COMERCIAL
+//*********
+	public void saveOrder(Order order);
+	public void deleteOrder(Long id);
 	
+	public Client fetchClientByIdWithOrder(Long id);
+
+	public List<Product> findByName(String term);
+	public Product findProductById(Long id);
+
+	public Order findOrderById(Long id);
+	public Order fetchOrderByIdWithClientWithOrderItemWithProduct(Long id);
+
+//ASISTENCIAL
+//***********
 	public List<String> getConditionsWithValue(Client client, int value); 
 	public String getConditionsListCSV(Client client); 
 	public String getRemarksListCSV(Client client); 

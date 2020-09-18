@@ -4,6 +4,7 @@
 package com.plastic305.web.app.models.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -41,55 +42,67 @@ public class Product implements Serializable {
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "id_product")
-	private List<OfertByMount> ofertList;
+	private List<OfertByAmount> ofertList;
 
-	// IMPLEMENTATION
-	//***************
+//  <<<<< IMPLEMENTATION >>>>>
 	
+	public Product() {
+		ofertList  = new ArrayList<OfertByAmount>(); 
+	}
+
 	public Long getId() {
 		return id;
 	}
 
-
-	public List<OfertByMount> getOfertList() {
+	public List<OfertByAmount> getOfertList() {
 		return ofertList;
 	}
-
-
-	public void setOfertList(List<OfertByMount> ofertList) {
-		this.ofertList = ofertList;
+	
+	public String getHasOffer() {
+		if (ofertList.isEmpty())
+			return "No";
+		else return "Yes";
 	}
 
+	public void setOfertList(List<OfertByAmount> ofertList) {
+		//ordenar la lista
+		this.ofertList = ofertList;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-
 	public String getName() {
 		return name;
 	}
 
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-
+	
 	public double getPrice() {
-		return price;
+		return this.price ;
 	}
 
+	public double getPriceCalc(int amount) {  /////////////////////////
+		double price = this.price ;
+		
+		for (OfertByAmount offer : ofertList) 
+			if (amount >= offer.getMount())
+				price = offer.getTotal_price()/offer.getMount();
+			else return price;
+		
+		return price;
+	}
 
 	public void setPrice(double price) {
 		this.price = price;
 	}
 
-
 	public boolean isIs_opcional() {
 		return is_opcional;
 	}
-
 
 	public void setIs_opcional(boolean is_opcional) {
 		this.is_opcional = is_opcional;
@@ -99,7 +112,6 @@ public class Product implements Serializable {
 	public String getTips() {
 		return tips;
 	}
-
 
 	public void setTips(String tips) {
 		this.tips = tips;

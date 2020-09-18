@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+
+		<div th:text="${productText}" class="row px-5 list-group-item-success text-center font-weight-bold" align="center"></div>
+		<div class="row px-4 py-4">
+		
+		<div class="col-6"> <!-- GroupBox de las productos en venta -->
+			<ul class="list-group" >
+				<li th:text="'Item List'" class="list-group-item list-group-item-dark text-center font-weight-bold"></li>
+				<li class="list-group-item text-left">
+					<table class="table table-sm table-striped table-hover">
+						<thead>
+							<tr>
+								<th th:text="'Description'" ></th>
+								<th th:text="'Remark'"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="p: ${pList}">
+								<td th:text="${p.name}"></th>
+								<td th:text="${p.tips}"></td>
+							</tr>
+						</tbody>
+					</table>	
+				</li>
+			</ul>
+		</div> 
+		<div class=" col-6 bg-white" >  <!-- Tablas para los items elegidos -->
+			<div class="card bg-white">
+				<div th:text="'Order'" class="card-header font-weight-bold" align="center"></div>
+				<div class="card-body" align="justify">
+					<div th:object="${order}" th:remove="tag">
+						<ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+							<li th:each="e:${#fields.errors('*')}" th:text="${e}"></li>
+						</ul>
+					</div>
+					<form th:action="@{/orders/order-form}" th:object="${order}" method="post" enctype="multipart/form-data">
+						<div class="form-group row">
+							<label for="observation" class="col-form-label col-sm-3 font-weight-bold"  
+						      	   th:text="'Observations: '"></label>
+							<div class="col-sm-6">
+								<textarea id="observation" th:field="*{observation}" class="form-control"
+								   		  th:errorclass="'form-control alert-danger'"></textarea>
+								<small th:if="${#fields.hasErrors('observation')}"
+									   th:errors="*{observation}" class="form-text text-danger"></small>
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="find_product" class="col-form-label col-sm-3 font-weight-bold"
+							  	   th:text="'Find product: '"></label>
+							<div class="col-sm-6">
+								<input type="text" name="find_product" id="find_product" class="form-control" />
+							</div>
+						</div>
+					
+						<table th:replace="orders/items-layout :: orderItems"></table>  
+						<table id="loadProductItems" class="table table-sm table-striped table-hover">
+							<thead>
+								<tr>
+									<th th:text="'Description'"></th>
+									<th th:text="'Price'"></th>
+									<th th:text="'Has oferr'"></th>
+									<th th:text="'Amount'"></th>
+									<th th:text="'Subtotal'"></th>
+									<th th:text="'Delete'"></th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+
+						<hr>
+						<h5 th:text="'Total: '" align="right"> 
+							<span th:text="'0'" class="badge badge-warning" id="total"></span>
+						</h5>
+						<hr>
+					
+						<div align="right">  
+							<div class="col-sm-6">
+								<input type="submit" th:value="'Accept'" class="btn btn-secondary" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<footer th:replace="layout/layout :: footer"></footer>
+	<script
+		th:replace="orders/js/products-autocomplete :: javascriptAutoComplete">
+	</script>
+</body>
+</html>

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "mount_oferts")
-public class OfertByMount implements Serializable {
+public class OfertByAmount implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

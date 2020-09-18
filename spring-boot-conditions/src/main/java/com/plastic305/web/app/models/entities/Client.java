@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
@@ -31,7 +30,7 @@ public class Client implements Serializable {
 	@NotEmpty
 	private String surname;
 											
-	private Long p1, p2, doctor, accepted;
+	private Long p1, p2, doctor, accepted;  // esto valorar no ponerlo en la BD agregarlo como Order
 	                          // 0: No aceptada por enfermedad
 	@NotEmpty
 	private Double weight; 
@@ -40,29 +39,18 @@ public class Client implements Serializable {
 	private Double heightFeetOrCentimeters;
 	private Double heightInches ;
 	
-	@Column(name = "make_cell_saver")
+	@Column(name = "make_cell_saver")   // Esto valorar dejarlo como producto y quitarlo como atributo aparte
 	private boolean makeCellSaver;  
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "client_id")
-	private List<Product> productsList;
-	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "client_id")
 	private List<Suffering> conditionsList;
-	
-	@Transient
-	private List<ProdSubTotal> listProd ;
-	
-	
-	public List<Product> getProductsList() {
-		return productsList;
-	}
 
-	public void setProductsList(List<Product> productsList) {
-		this.productsList = productsList;
-	}
-
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Order> orderList;
+	
+	//  <<<<< IMPLEMENTATION >>>>>
+	
 
 	public Double getWeight() {
 		return weight;
@@ -115,24 +103,29 @@ public class Client implements Serializable {
 	public void setP1(Long p1) {
 		this.p1 = p1;
 	}
+
 	/**
-	 * @return the p2
+	
+ * @return the p2
 	 */
 	public Long getP2() {
 		return p2;
 	}
+
 	/**
 	 * @param p2 the p2 to set
 	 */
 	public void setP2(Long p2) {
 		this.p2 = p2;
 	}
+
 	/**
 	 * @return the surname
 	 */
 	public String getSurname() {
 		return surname;
 	}
+	
 	/**
 	 * @param surname the surname to set
 	 */
@@ -146,42 +139,49 @@ public class Client implements Serializable {
 	public Long getDoctor() {
 		return doctor;
 	}
+
 	/**
 	 * @param doctor the doctor to set
 	 */
 	public void setDoctor(Long doctor) {
 		this.doctor = doctor;
 	}
+	
 	/**
 	 * @return the id
 	 */
 	public Long getId() {
 		return id;
 	}
+	
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	/**
 	 * @return the name
 	 */
 	public String getName() {
 		return name;
 	}
+
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	/**
 	 * @return the surName
 	 */
 	public String getSurName() {
 		return surname;
 	}
+
 	/**
 	 * @param surName the surName to set
 	 */
@@ -205,6 +205,7 @@ public class Client implements Serializable {
 
 	public Client() {
 		conditionsList = new ArrayList<Suffering>(); 
+		orderList  = new ArrayList<Order>(); 
 	}
 
 	public boolean isMakeCellSaver() {
@@ -216,20 +217,17 @@ public class Client implements Serializable {
 	}
 
 
-
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6439305829659849320L;
 
-
-	public List<ProdSubTotal> getListProd() {
-		return listProd;
+	public List<Order> getOrderList() {
+		return orderList;
 	}
 
-	public void setListProd(List<ProdSubTotal> listProd) {
-		this.listProd = listProd;
+	public void setOrderList(List<Order> orderList) {
+		this.orderList = orderList;
 	}
 
 }

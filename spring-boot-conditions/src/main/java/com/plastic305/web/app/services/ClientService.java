@@ -9,40 +9,85 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.plastic305.web.app.models.dao.IClientDAO;
+import com.plastic305.web.app.models.dao.IOrderDAO;
+import com.plastic305.web.app.models.dao.IProductsDAO;
 import com.plastic305.web.app.models.entities.Client;
+import com.plastic305.web.app.models.entities.Order;
+import com.plastic305.web.app.models.entities.Product;
 import com.plastic305.web.app.models.entities.Suffering;
 
 @Service
 public class ClientService implements IClientService {
-	@Autowired
-	IClientDAO iCDAO;
+	@Autowired IClientDAO iCDAO;
+	@Autowired IOrderDAO iODAO;
+	@Autowired IProductsDAO iPDAO;
+	
+  /*<<<<< IMPLEMENTATION >>>>>*/
+	
+	
+//GENERAL
+//*******
+	@Override @Transactional(readOnly = true)
+	public List<Client> findAll() { 
+		return (List<Client>) iCDAO.findAll(); 
+	}
+	
+	@Override @Transactional(readOnly = true) 
+	public Client findOne(Long id) { 
+		return iCDAO.findById(id).orElse(null); 
+	}
+	
+	@Override @Transactional 
+	public void save(Client nClient) { 
+		iCDAO.save(nClient); 
+	}
+	
+	@Override @Transactional
+	public void delete(Long id) { 
+		iCDAO.deleteById(id); 
+	}
 
-	@Override
-	@Transactional
-	public void save(Client nClient) {
-		iCDAO.save(nClient);
+	
+//COMERCIAL
+//*********
+	@Override @Transactional
+	public void saveOrder(Order order) { 
+		iODAO.save(order); 
+	}
 
+	@Override @Transactional
+	public void deleteOrder(Long id) { 
+		iODAO.deleteById(id); 
+	}
+
+	@Override @Transactional(readOnly = true)
+	public Client fetchClientByIdWithOrder(Long id) { 
+		return iCDAO.fetchClientByIdWithOrder(id); 
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public List<Client> findAll() {
-		return (List<Client>) iCDAO.findAll();
+	public List<Product> findByName(String term) { 
+		return iPDAO.findByName(term);
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public Client findOne(Long id) {
-		return iCDAO.findById(id).orElse(null);
+	public Product findProductById(Long id) {
+		return iPDAO.findById(id).orElse(null);
 	}
 
 	@Override
-	@Transactional
-	public void delete(Long id) {
-		iCDAO.deleteById(id);
-
+	public Order findOrderById(Long id) {
+		return iODAO.findById(id).orElse(null);
 	}
 
+	@Override
+	public Order fetchOrderByIdWithClientWithOrderItemWithProduct(Long id) {
+		return iODAO.fetchOrderByIdWithClientWithOrderItemWithProduct(id);
+	}
+	
+
+//ASISTENCIAL
+//***********	
 	@Override
 	public List<String> getConditionsWithValue(Client client, int value) {
 		List<String> conditions = new ArrayList<String>();
@@ -86,6 +131,8 @@ public class ClientService implements IClientService {
 													  client.getWeight()/Math.pow(client.getHeightFeetOrCentimeters()/100, 2);
 		return bmi;
 	}
+
+	
 
 
 }

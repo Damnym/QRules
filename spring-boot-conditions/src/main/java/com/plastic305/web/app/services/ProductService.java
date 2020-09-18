@@ -22,7 +22,7 @@ public class ProductService implements IProductService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Product> findAll() {
-		return (List<Product>)productDAO.findAllByOrderByName();
+		return (List<Product>)productDAO.findAll();
 	}
 
 	@Override
