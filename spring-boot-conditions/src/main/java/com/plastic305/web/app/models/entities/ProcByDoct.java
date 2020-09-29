@@ -1,7 +1,10 @@
 package com.plastic305.web.app.models.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -19,10 +23,53 @@ public class ProcByDoct implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	private Double priceCash ;
+	
+	private Double priceFinanced ;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "procedure_id")
 	private Procedure procedure;
 	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "proc_by_doct_id")
+	private List<ProductByDoctAndProc> productList;
+	
+	//  <<<<< IMPLEMENTATION >>>>>	
+		
+	public ProcByDoct() {
+		productList = new ArrayList<>();
+	}
+
+
+	public List<ProductByDoctAndProc> getProductList() {
+		return productList;
+	}
+
+
+	public void setProductList(List<ProductByDoctAndProc> productList) {
+		this.productList = productList;
+	}
+
+
+	public Double getPriceCash() {
+		return priceCash;
+	}
+
+
+	public void setPriceCash(Double priceCash) {
+		this.priceCash = priceCash;
+	}
+
+
+	public Double getPriceFinanced() {
+		return priceFinanced;
+	}
+
+
+	public void setPriceFinanced(Double priceFinanced) {
+		this.priceFinanced = priceFinanced;
+	}
 
 	/**
 	 * @return the id

@@ -1,6 +1,9 @@
 package com.plastic305.web.app.models.entities;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,7 +16,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "doctors")
@@ -32,6 +39,10 @@ public class Doctor implements Serializable {
 	@Column(name = "required_cell_saver")
 	private boolean requiredCellSaver;
 	
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date date;
+	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "doctor_id")
 	private List<SufferingByDoctor> sufferingsList;
@@ -44,7 +55,34 @@ public class Doctor implements Serializable {
 	@JoinColumn(name = "doctor_id")
 	private List<ProcByDoct> procList;
 	
+	//  <<<<< IMPLEMENTATION >>>>>
 	
+/*	
+	public Doctor() {
+		sufferingsList = new ArrayList<SufferingByDoctor>(); 
+		comboList = new ArrayList<ComboByDoctor>(); 
+		procList = new ArrayList<ProcByDoct>(); 
+	}
+	*/
+	
+	
+	public String getShortDate() {
+		Calendar c = new GregorianCalendar(); 
+		c.setTime(date);
+
+		String month = Integer.toString(c.get(Calendar.MONTH)+1);
+		String year = Integer.toString(c.get(Calendar.YEAR)); ;
+		
+		return " (" + year + "/" + month + ")";
+	}
+
+	public Date getDate() {
+		return date;
+	}
+	
+	public void setDate(Date date) {
+		this.date = date;
+	}
 	/**
 	 * @return the id
 	 */

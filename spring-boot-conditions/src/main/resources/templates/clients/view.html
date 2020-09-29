@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+	<div class="container py-4">
+		<div class="card bg-white">
+			<div th:text="${msg}" class="card-header text-white font-weight-bold"  style="background-color:#0F3678" align="center"></div>
+			<div class="card-body">
+			
+				<div th:if="${#lists.isEmpty(customer.orderList)}" class="alert alert-info alert-dismissible fade show" role="alert">
+  					<span th:text="'The client &quot' + ${customer.name} + ' ' + ${customer.surname} + '&quot has no requests registered in his name'"></span>
+  					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  						<span aria-hidden="true">&times;</span>
+ 					</button>
+				</div>
+
+				<h4 align="right" class="card-tittle">
+					<a class="btn btn-outline-primary btn-xs" th:href="@{/r1/} + ${customer.id}" th:text="'Begin process'"></a>
+				</h4>
+				
+				<div class="col-4">
+					<ul class="list-group">
+						<li class="list-group-item list-group-item-dark">
+							<span th:text="'DNI: '" class="font-weight-bold"></span>
+							<span th:text="${customer.dni}"></span> 
+						</li>
+						<li class="list-group-item"> 
+							<span th:text="'Name: '" class="font-weight-bold" ></span>
+							<span th:text="${customer.name}"></span> 
+						</li>
+						<li class="list-group-item">
+							<span th:text="'Surname: '" class="font-weight-bold" ></span>
+							<span th:text="${customer.surname}"></span> 
+						</li>
+						<li class="list-group-item">
+							<span th:text="'Mobile phone number: '" class="font-weight-bold" ></span>
+							<span th:text="${customer.mobile}"></span> 
+						</li>
+						<li class="list-group-item">
+						<span th:text="'Email: '" class="font-weight-bold" ></span>
+						<span th:text="${customer.email}"></span> 
+						</li>
+						<li class="list-group-item">
+							<span th:text="'Subscription date: '" class="font-weight-bold" ></span>
+							<span th:text="${customer.createAt}"></span>  
+						</li>
+					</ul>
+				</div>
+
+				<table th:if="${not #lists.isEmpty(customer.orderList)}"
+					class="table table-striped table-bordered my-4">
+					<thead align="center" class="thead-dark">
+						<tr>
+							<th scope="col">No. Factura</th>
+							<th scope="col">Descripción</th>
+							<th scope="col">Fecha</th>
+							<th scope="col">Total</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')" scope="col">Detalles</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')" scope="col">Eliminar</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="i: ${customer.orderList}">
+							<td th:text="${i.id}" align="center" class="font-weight-bold"></td>
+							<td th:text="${i.description}"></td>
+							<td th:text="${i.date}" align="center"></td>
+							<td th:text="${i.totalInvoice}" align="center"></td>
+							
+							<!-- Detalles factura -->
+							<td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
+								<a th:href="@{/invoice/view/} + ${i.id}"> 
+									<svg xmlns="http://www.w3.org/2000/svg" 
+										 viewBox="0 0 16 16" 
+										 width="16" 
+										 height="16">
+										 <path fill-rule="evenodd" 
+										 	   d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0013 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 000-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z">
+										 </path>
+									</svg>
+							    </a>
+							</td>
+
+							<!-- Eliminar factura -->
+							<td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
+								<a th:href="@{/invoice/delete/} + ${i.id}"
+								   onclick="return confirm('Desea eliminar la factura??');">
+							    	<svg
+										xmlns="http://www.w3.org/2000/svg" 
+										viewBox="0 0 12 16"
+										width="12" 
+										height="16">
+										<path fill-rule="evenodd"
+											  d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z">
+									    </path>
+									</svg>
+							    </a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

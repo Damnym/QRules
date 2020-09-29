@@ -3,6 +3,14 @@
 <body>
 	<script type="text/javascript" th:fragment="javascriptAutoComplete">
 	
+	   $(function(){
+		   itemsHelper.getTotalM();
+		   $( "#accordion" ).accordion();
+	   });
+	   function calcular1(){
+			   alert(2); 
+	   }
+	
 		$(document).ready(function() {
 
 			$("#find_product").autocomplete({
@@ -11,9 +19,7 @@
 					$.ajax({
 						url : "/orders/load-products/" + request.term,
 						dataType : "json",
-						data : {
-							term : request.term
-						},
+						data : { term : request.term },
 						success : function(data) {
 							response($.map(data, function(item) {
 								return {
@@ -28,8 +34,8 @@
 				},
 				select : function(event, ui) {
 					//$("#find_product").val(ui.item.label);
-					if (itemsHelper.hasProduct(ui.item.value)){
-						itemsHelper.incAmount(ui.item.value, ui.item.price);
+					if (itemsHelper.hasProduct(ui.item.value)){  // hasProduct funcion mas abajo
+						itemsHelper.incAmount(ui.item.value, ui.item.price);          // incAmount funcion mas abajo
 						return false;
 					}
 					
@@ -56,8 +62,15 @@
 				getSubtotal: function(id, price, amount){
 		//subtotal se encuentra en items-layout, el método html inyecta html en la plantilla
 					$("#subtotal_" + id).html(parseInt(price) * parseInt(amount));
-					this.getTotal();
+					this.getTotalC();
 				},
+
+				getSubtotalM: function(id, price, amount){
+					//subtotal se encuentra en items-layout, el método html inyecta html en la plantilla
+					$("#subtotalm_" + id).html(parseInt(price) * parseInt(amount));
+					this.getTotalM();
+				},
+				
 				
 				hasProduct: function(id){
 					var result = false;
@@ -80,14 +93,33 @@
 					this.getTotal();
 				},
 				
-				getTotal: function(){
+				getTotalC: function(){
 					var total = 0 ;
 					$('span[id^="subtotal_"]').each(function(){
 						total += parseInt($(this).html());
 					});
+					$('#totalc').html(total);
+					this.getTotal();
+				},
+				
+				getTotalM: function(){
+					var total = 0 ;
+					$('span[id^="subtotalm_"]').each(function(){
+						total += parseInt($(this).html());
+					});
+					$('#totalm').html(total);
+					this.getTotal();
+				},
+				
+				getTotal: function(){
+					var total = 0 ;
+					total = parseInt($(totalm).html()) + parseInt($(totalc).html());
+					
 					$('#total').html(total);
 				}
-		}
+			}
+		
+		
 		
 	</script>
 </body>

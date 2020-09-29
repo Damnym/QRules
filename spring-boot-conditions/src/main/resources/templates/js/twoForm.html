@@ -6,6 +6,13 @@
 	{
 	    document.getElementById(formid).action=act;
 	    document.getElementById(formid).submit();
+	};
+	
+	function actionMethodForm(formid, act, p_g)
+	{
+	    document.getElementById(formid).action=act;
+	    document.getElementById(formid).method=p_g;
+	    document.getElementById(formid).submit();
 	}
 	</script>
 </body>

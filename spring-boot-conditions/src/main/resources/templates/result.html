@@ -3,25 +3,35 @@
 <head th:replace="layout/layout :: head"></head>
 <body>
 	<header th:replace="layout/layout :: header"></header>
-		<div class="row px-4 py-4" align="right">
-			<div class="col-3" align="right"></div>
-	  	   <div class="col-6" align="right">
-				<ul th:if="${choices}" class="list-group" >
+	<div class="container" >
+	<form th:action="@{/result}" th:object="${client}" method="post" enctype="multipart/form-data">
+		<div class="row px-4 py-4" >
+			<div class="col-5" align="right">
+				<ul  class="list-group">      <!-- CALENDARIO -->
+					<li th:text="'Choose the tentative date for your surgery, take into account the availability of the surgeon'" 
+						class="list-group-item list-group-item-info text-center font-weight-bold">
+					<li class="list-group-item text-left">
+						<input type="date" id="date-a" class="form-control" th:field="*{date}" th:min="${minDate}"/>
+						
+					</li>
+				</ul>
+			</div>
+			<div class="col-6" align="right">
+				<ul th:if="${choices}" class="list-group">
 					<li th:text="${choice_h}" class="list-group-item list-group-item-primary text-center font-weight-bold"></li>
 					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left"></li>
 					<li th:if="${observation}" th:text="'Remarks: ' + ${observation}" class="list-group-item text-left"></li>
 				</ul>
-	  	   </div>
-	   </div>
-	   <div class="row px-4 py-4" align="right">
-	   	<div class="col-3" align="right"></div>
-	   	<div class="col-sm-3">
-	<!--     		<a th:href="@{/r1}" th:text="'Hola'" class="btn btn-lg btn-block btn-outline-info"></a>	 -->
-	    	</div>
-	    	<div class="col-sm-3">
-	    	<a th:href="@{/post-surgical}" th:text="'Show Post-surgical items'" class="btn btn-lg btn-block btn-primary"></a>	
-	    	</div>
-	   </div>
+			</div>
+		</div>
+		<div class="row px-4 py-4 float-right ">
+
+			<div class="col py-2">
+				<input type="submit" value="Show Post-surgical items" class="btn btn-lg btn-block btn-primary"/>
+			</div>
+		</div>
+	</form>
+	</div>
 	<footer th:replace="layout/layout :: footer"></footer>
 </body>
 </html>

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -36,7 +37,8 @@ public class Product implements Serializable {
 	@NotEmpty
 	private double price;
 	
-	private boolean is_opcional;
+	@Column(name="has_amount")
+	private boolean hasAmount;
 	
 	private String tips;  //Remark
 	
@@ -100,12 +102,12 @@ public class Product implements Serializable {
 		this.price = price;
 	}
 
-	public boolean isIs_opcional() {
-		return is_opcional;
+	public boolean isHasAmount() {
+		return hasAmount;
 	}
 
-	public void setIs_opcional(boolean is_opcional) {
-		this.is_opcional = is_opcional;
+	public void setHasAmount(boolean hasAmount) {
+		this.hasAmount = hasAmount;
 	}
 
 

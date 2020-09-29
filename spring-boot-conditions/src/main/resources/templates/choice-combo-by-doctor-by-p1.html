@@ -22,7 +22,7 @@
 										<div class="card-body" align="left">
 											<a th:each="d: ${doctorlist}" class="btn btn-lg btn-block btn-outline-info"
 											   th:href="@{/choice-combo-by-doctor-by-p1/} + ${d.getId()}"
-				   				  			th:text="${d.getName()}"></a>	
+				   				  			th:text="${d.getName()} + ${d.getShortDate()}"></a>	
 										</div>
 									</div>
 								</div>

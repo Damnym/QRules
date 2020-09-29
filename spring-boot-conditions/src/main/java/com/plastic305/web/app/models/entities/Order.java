@@ -62,6 +62,10 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 		}
 		return totalOrder;
 	}
+	
+	public void addItem(OrderItem item) {
+		itemList.add(item);
+	}
 
 	public Long getId() {
 		return id;

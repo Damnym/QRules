@@ -2,6 +2,9 @@ package com.plastic305.web.app.models.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -14,43 +17,159 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "clients")
 public class Client implements Serializable {
 	
+// DB
+//****
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "client_id")
+	private List<Suffering> conditionsList;
 	
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Order> orderList;
+	
+
+// GENERAL
+//********
 	@NotEmpty
 	private String name;
 	
 	@NotEmpty
-	private String surname;
-											
-	private Long p1, p2, doctor, accepted;  // esto valorar no ponerlo en la BD agregarlo como Order
-	                          // 0: No aceptada por enfermedad
-	@NotEmpty
-	private Double weight; 
+	private String dni;
 	
 	@NotEmpty
+	private String surname;
+	
+	@NotEmpty
+	@Email
+	private String email;
+	
+	@NotEmpty
+	private String mobile;
+	
+	@NotNull 
+	@Min(5)
+	@Max(120)
+	private Integer age;
+	
+	@NotEmpty
+	private String gender;
+	
+	@Temporal(TemporalType.DATE)       // Esta fecha es la de suscripción
+	@Column(name = "create_at")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date createAt;
+	
+	
+// SYSTEM LOGIC
+//*************	
+	private Long p1, p2, doctor, accepted;  // esto valorar no ponerlo en la BD agregarlo como Order
+	                                       // 0: No aceptada por enfermedad
+	private Double weight; 
+	
+	private Double hbg;
+	
 	private Double heightFeetOrCentimeters;
 	private Double heightInches ;
 	
 	@Column(name = "make_cell_saver")   // Esto valorar dejarlo como producto y quitarlo como atributo aparte
 	private boolean makeCellSaver;  
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "client_id")
-	private List<Suffering> conditionsList;
-
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Order> orderList;
+	@Temporal(TemporalType.DATE)       // Esta fecha es la que elige como tentativa para la operacion
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date date;
 	
 	//  <<<<< IMPLEMENTATION >>>>>
 	
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public Double getHbg() {
+		return hbg;
+	}
+
+	public void setHbg(Double hbg) {
+		this.hbg = hbg;
+	}
+
+	public String getDni() {
+		return dni;
+	}
+
+	public void setDni(String dni) {
+		this.dni = dni;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Date getCreateAt() {
+		return createAt;
+	}
+
+	public void setCreateAt(Date createAt) {
+		this.createAt = createAt;
+	}
+
+	public String getShortDate() {
+		Calendar c = new GregorianCalendar(); 
+		c.setTime(date);
+
+		String month = Integer.toString(c.get(Calendar.MONTH));
+		String year = Integer.toString(c.get(Calendar.YEAR)); ;
+		
+		return " (" + year + "/" + month + ")";
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
 	public Double getWeight() {
 		return weight;

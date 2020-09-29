@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+	<div class="container py-4" align="center">
+		<div class="card bg-white" style="width: 70%;">
+			<div class="card-header  font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#0F3678"></div>
+			<div class="card-body" align="left">
+				<form id="newclient"  th:object="${client}" enctype="multipart/form-data">
+					<!-- DNI -->
+					<div class="form-group row">
+						<label for="dni" class="col-form-label col-sm-3">DNI:</label>
+						<div class="col-sm-8">
+							<input type="text" id="dni" th:field="*{dni}" class="form-control" th:errorclass="'form-control alert-danger'" />  
+							<small th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}" class="form-text text-danger"></small>  
+						</div>
+					</div>
+					
+				   <!-- NOMBRE -->
+					<div class="form-group row">
+						<label for="name" class="col-form-label col-sm-3">Name:</label>
+						<div class="col-sm-8">
+							<input type="text" id="name" th:field="*{name}" class="form-control" th:errorclass="'form-control alert-danger'" />  
+							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>  
+						</div>
+					</div>
+					
+					<!-- APELLIDOS -->
+					<div class="form-group row">
+						<label for="surname" class="col-form-label col-sm-3">Surname:</label>
+						<div class="col-sm-8">
+							<input type="text" id="surname" th:field="*{surname}" class="form-control" th:errorclass="'form-control alert-danger'" />  
+							<small th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}" class="form-text text-danger"></small>  
+						</div>
+					</div>
+					
+					<!-- Gender -->
+					<div class="form-group row">
+						<label class="col-form-label col-sm-3">Gender:</label>
+						<div th:each="g: ${genderList}" class="row col-sm-3">
+							<input type="radio" th:field="*{gender}" th:value="${g}" class="form-control col-sm-3" th:errorclass="'form-control alert-danger'" />
+							<label th:for="${#ids.prev('gender')}" th:text="${g}" class="col-form-label col-sm-7"></label>
+						</div>
+						<small th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="form-text text-danger"></small>
+					</div>
+					
+					<!-- Age -->
+					<div class="form-group row">
+						<label for="age" class="col-form-label col-sm-3">Age:</label>
+						<div class="col-sm-8">
+							<input type="number" id="age" th:field="*{age}" class="form-control" th:errorclass="'form-control alert-danger'" />
+							<small th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="form-text text-danger"></small>
+						</div>
+					</div>
+					
+					<!-- CORREO -->
+					<div class="form-group row">
+						<label for="email" class="col-form-label col-sm-3">Email:</label>
+						<div class="col-sm-8">
+							<input type="email" id="email" th:field="*{email}" class="form-control" th:errorclass="'form-control alert-danger'"
+							placeholder="someone@example.com"/>  
+							<small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-text text-danger"></small> 
+						</div>
+					</div>
+					
+					<!-- CEL NUMBER-->
+					<div class="form-group row">
+						<label for="mobile" class="col-form-label col-sm-3">Mobile number:</label>
+						<div class="col-sm-8">
+							<input type="tel" id="mobile" th:field="*{mobile}" class="form-control" th:errorclass="'form-control alert-danger'" />  
+							<small th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}" class="form-text text-danger"></small> 
+						</div>
+					</div>
+
+					<!-- FECHA DE SUSCRIPCIÓN -->
+					<div class="form-group row">
+						<label for="createAt" class="col-form-label col-sm-3">Subscription date:</label>
+						<div class="col-sm-8">
+							<input type="date" id="createAt" th:field="*{createAt}" class="form-control" th:errorclass="'form-control alert-danger'"/>  
+							<small th:if="${#fields.hasErrors('createAt')}" th:errors="*{createAt}" class="form-text text-danger"></small>
+						</div>
+					</div>
+
+					<!--  SUBMIT   -->
+					<div class="row">
+						<div class="col-6">    <!--  NUEVO CLIENTE -->
+							<input type="button" th:value="${buttonClient}" class="btn btn-block btn-secondary"
+					               onClick="actionMethodForm(this.form.id, '/clients/form', 'post'); return false;"/>
+	  					</div>
+	  					<div class="col-6">     <!--  NUEVO CLIENTE Y "SEGUIR" EL PROCESO   -->
+	  						<input type="button" th:value="${buttonClientContinue}" class="btn  btn-block btn-outline-primary"
+						           onClick="actionMethodForm(this.form.id, '/clients/formcontinue', 'post'); return false;" />
+	  					</div>
+	  				</div> 
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+	<script
+		th:replace="js/twoForm :: javascript2Form">
+	</script>
+</body>
+</html>

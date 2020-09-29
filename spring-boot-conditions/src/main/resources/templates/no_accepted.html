@@ -15,14 +15,12 @@
 				<div class="card bg-light border-primary" >
 					<div th:text="${msg}" class="card-header bg-primary  font-weight-bold text-white" align="center"></div>
 					<div class="card-body bg-white" align="left">
-						<form th:action="@{/r1}" th:object="${client}" method="get" class="form-inline">
+						<form th:action="@{/clients/client-list}" th:object="${client}" method="get" class="form-inline">
 							<div class="container my-2">
 								<div class="row">
 									<div class="col-sm">
 										<ul class="list-group my-2 list-group-flush">  
 											<li th:each="d: ${decision}" th:text="${d}" class="list-group-item list-group-item-flush border-danger"></li>
-					<!-- 					<li th:each="r: ${respuesta_b}"  th:text="${r}" class="mx-4 list-group-item list-group-item-flush"></li> 
-											<li th:text="${respuesta_f}" class="list-group-item text-white bg-danger"></li>  -->
 										</ul>
 										<hr />
 										<hr />
@@ -35,14 +33,7 @@
 								</div>
 							</div>
 						</form>
-<!-- 					<form th:action="@{/programacion}" method="post" class="form-inline">
-							<ul class="list-group my-1">
-								<li class="list-group-item">
-									<input type="submit" value="Programaci�n" class="btn btn-lg btn-block btn-outline-success"> 
-								</li>
-							</ul>
-						</form>
- -->  			</div>
+  					</div>
 				</div>
 	  		</div>
 	  	</div>

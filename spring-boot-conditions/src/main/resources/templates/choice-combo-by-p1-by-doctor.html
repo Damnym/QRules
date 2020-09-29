@@ -43,7 +43,7 @@
 											<div class="row">
 												<a th:each="d: ${doctorlist}" class="btn btn-block btn-outline-info"
 											  		th:href="@{/choice-combo-by-p1-by-doctor/} + ${d.getId()}"
-				   				  			   th:text="${d.getName()}"></a>	
+				   				  			   th:text="${d.getName()} + ${d.getShortDate()}"></a>	
 											</div>
 										</div>
 									</div>

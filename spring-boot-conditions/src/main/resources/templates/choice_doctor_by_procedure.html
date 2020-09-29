@@ -12,7 +12,6 @@
 		 	</div> 
 		 	<div class="col-9"> <!-- GroupBox para las listas de medicos y procedimientos -->
 				<div class="card bg-light" >
-	<!-- 		 		<form th:action="@{/choice-combo-by-p1-by-doctor}" th:object="${client}" method="get">   -->
 					<form id="f1"  th:object="${client}" method="get">
 						<div th:text="${cardHeader}" class="card-header font-weight-bold" align="center"></div>
 						<div class="card-body" align="justify">
@@ -41,7 +40,7 @@
 													<input type="radio" th:field="*{doctor}" th:value="${d.getId()}">
 												</div>
 												<div class="mx-2 my-2">
-													<label th:for="${#ids.prev('doctor')}" th:text="${d.getName()}"></label>
+													<label th:for="${#ids.prev('doctor')}" th:text="${d.getName()} + ${d.getShortDate()}"></label>
 												</div>
 											</div>
 										</div>
@@ -54,12 +53,10 @@
 								<div class="col-6">   
 									<input type="button" value="Choice procedure for combo" class="btn btn-block btn-info"
 								          onClick="actionForm(this.form.id, '/choice-combo-by-p1-by-doctor'); return false;"/>
-				<!-- 			<input type="submit" value="Choice procedure for combo" class="btn btn-block btn-info">  -->
 	  							</div>
 	  							<div class="col-6">
 	  								<input type="button" value="Finish" class="btn  btn-block btn-outline-danger"
 								          onClick="actionForm(this.form.id, '/result'); return false;" />
-				<!-- 					<a th:href="@{/result}" th:text="${'Finish'}" class="btn  btn-block btn-outline-danger"></a>	 -->
 	  							</div>
 	  						</div>
 						</div>

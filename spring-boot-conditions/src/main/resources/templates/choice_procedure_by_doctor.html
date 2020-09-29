@@ -17,13 +17,13 @@
 						<div th:text="${cardHeader}" class="card-header font-weight-bold" align="center"></div>
 						<div class="card-body" align="justify">
 							<div class="row">
-								<div class="col-4"> <!-- GroupBox para las listas de medicos -->
+								<div class="col-4"> <!-- GroupBox para las botones con los medicos -->
 									<div class="card text-info bg-white border-info" >
 										<div th:text="${doctorlisth}" class="card-header border-info font-weight-bold" align="center"></div>
 										<div class="card-body" align="left">
 											<a th:each="d: ${doctorlist}" class="btn btn-lg btn-block btn-outline-info"
 											   th:href="@{/choice_procedure_by_doctor/} + ${d.getId()}"
-				   				  			th:text="${d.getName()}"></a>	
+				   				  			   th:text="${d.getName()} + ${d.getShortDate()}"></a>	
 										</div>
 									</div>
 								</div>

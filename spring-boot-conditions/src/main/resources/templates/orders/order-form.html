@@ -3,92 +3,187 @@
 <head th:replace="layout/layout :: head"></head>
 <body>
 	<header th:replace="layout/layout :: header"></header>
-
-		<div th:text="${productText}" class="row px-5 list-group-item-success text-center font-weight-bold" align="center"></div>
+	
+		<div th:text="${productText}" class="card-tittle px-5 list-group-item-success text-center font-weight-bold" align="center"></div>
+		<h6 th:text="${summaryheader}" class="card-tittle text-center font-weight-bold border border-danger" ></h6>
+		<h4 align="right" class="col px-md-5 padding-right" >
+			<a class="btn btn-success btn-xs"
+				th:href="@{/orders/order-form/1}"
+				th:text="'Have had weight loss surgery'"></a>
+		</h4>
 		<div class="row px-4 py-4">
-		
-		<div class="col-6"> <!-- GroupBox de las productos en venta -->
-			<ul class="list-group" >
-				<li th:text="'Item List'" class="list-group-item list-group-item-dark text-center font-weight-bold"></li>
-				<li class="list-group-item text-left">
-					<table class="table table-sm table-striped table-hover">
-						<thead>
-							<tr>
-								<th th:text="'Description'" ></th>
-								<th th:text="'Remark'"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="p: ${pList}">
-								<td th:text="${p.name}"></th>
-								<td th:text="${p.tips}"></td>
-							</tr>
-						</tbody>
-					</table>	
-				</li>
-			</ul>
-		</div> 
-		<div class=" col-6 bg-white" >  <!-- Tablas para los items elegidos -->
-			<div class="card bg-white">
-				<div th:text="'Order'" class="card-header font-weight-bold" align="center"></div>
-				<div class="card-body" align="justify">
-					<div th:object="${order}" th:remove="tag">
-						<ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-							<li th:each="e:${#fields.errors('*')}" th:text="${e}"></li>
-						</ul>
-					</div>
-					<form th:action="@{/orders/order-form}" th:object="${order}" method="post" enctype="multipart/form-data">
-						<div class="form-group row">
-							<label for="observation" class="col-form-label col-sm-3 font-weight-bold"  
-						      	   th:text="'Observations: '"></label>
-							<div class="col-sm-6">
-								<textarea id="observation" th:field="*{observation}" class="form-control"
-								   		  th:errorclass="'form-control alert-danger'"></textarea>
-								<small th:if="${#fields.hasErrors('observation')}"
-									   th:errors="*{observation}" class="form-text text-danger"></small>
-							</div>
-						</div>
-
-						<div class="form-group row">
-							<label for="find_product" class="col-form-label col-sm-3 font-weight-bold"
-							  	   th:text="'Find product: '"></label>
-							<div class="col-sm-6">
-								<input type="text" name="find_product" id="find_product" class="form-control" />
-							</div>
-						</div>
-					
-						<table th:replace="orders/items-layout :: orderItems"></table>  
-						<table id="loadProductItems" class="table table-sm table-striped table-hover">
-							<thead>
-								<tr>
-									<th th:text="'Description'"></th>
-									<th th:text="'Price'"></th>
-									<th th:text="'Has oferr'"></th>
-									<th th:text="'Amount'"></th>
-									<th th:text="'Subtotal'"></th>
-									<th th:text="'Delete'"></th>
-								</tr>
-							</thead>
-							<tbody></tbody>
-						</table>
-
-						<hr>
-						<h5 th:text="'Total: '" align="right"> 
-							<span th:text="'0'" class="badge badge-warning" id="total"></span>
-						</h5>
-						<hr>
-					
-						<div align="right">  
-							<div class="col-sm-6">
-								<input type="submit" th:value="'Accept'" class="btn btn-secondary" />
-							</div>
-						</div>
-					</form>
+			<div class="col-6"> <!-- GroupBox de las productos en venta -->
+				<div class="row"> <!-- GroupBox de las productos sugeridos en dependencia del Procedimiento -->
+					<ul class="list-group col" >
+						<li th:text="${recommendedItemStrHeader}" class="list-group-item list-group-item-info text-center font-weight-bold"></li>
+						<li class="list-group-item text-left">
+							<table class="table table-sm table-striped table-hover">
+								<thead>
+									<tr align="center">
+										<th width="70%" th:text="'Description'" ></th>
+										<th width="30%" th:text="'Amount recommended'"></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="p: ${recommendedItemList}">
+										<td th:text="${p.product.getName()}" class="align-middle"></td>
+										<td th:text="${p.amountRecommended}" class="align-middle" align="center"></td>
+									</tr>
+								</tbody>
+							</table>	
+						</li>
+					</ul>
 				</div>
+				<div class="row py-4"> <!-- GroupBox del resto de los productos -->
+					<ul class="list-group col">
+						<li th:text="'Other items'" class="list-group-item list-group-item-info text-center font-weight-bold"></li>
+						<li class="list-group-item text-left">
+							<table class="table table-sm table-striped table-hover">
+								<thead>
+									<tr align="center">
+										<th width="30%" th:text="'Description'" ></th>
+										<th width="70%" th:text="'Remark'"></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="p: ${restItemList}">
+										<td th:text="${p.name}" class="align-middle"></td>
+										<td th:text="${p.tips}" class="align-middle" align="center"></td>
+									</tr>
+								</tbody>
+							</table>	
+						</li>
+					</ul>	
+				</div>
+			</div> 
+			<div class="col-6 bg-white"  >  <!-- seccion para los items elegidos y obligatorios-->
+				<form th:action="@{/orders/order-form}" th:object="${order}" method="post" enctype="multipart/form-data">
+					<div class="row" style="border-color: fuchsia;">
+						<div class="col-12" style="fbackground-color:#FFFFFF; border-color: #0F3678; color: #0F3678;">
+						
+						<!-- INICIO DEL ACORDEON -->
+							<div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
+											  <!-- Accordion card 1-->
+  								<div class="card">      <!-- seccion para los obligatorios-->
+										      <!-- Card header -->
+    								<div class="card-header" style="background-color:#0F3678;" role="tab" id="headingOne1">
+								    	<a data-toggle="collapse" data-parent="#accordionEx" href="#collapseOne1" aria-expanded="true"
+        								   aria-controls="collapseOne1">
+        								   <i class="fa fa-angle-down rotate-icon" style="color:#FFFFFF;" aria-hidden="true">
+        								   		<h5 th:text="${mandatoryItemHeader}" class="text-white mb-0"> </h5> 
+        								   	</i> 
+      									</a>
+   		 							</div>
+    										  <!-- Card body -->
+   					 				<div id="collapseOne1" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionEx">
+      									<div class="card-body">
+											<div class="border-secondary">
+												<table class="table table-sm table-striped table-hover">
+													<thead>
+														<tr align="center">
+															<th width="50%" th:text="'Description'" ></th>
+															<th width="30%" th:text="'Price'"></th>
+															<th width="10%" th:text="'Amount'"></th>
+															<th width="10%" th:text="'Subtotal'"></th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr th:each="mi: ${mandatoryItemList}">
+															<td class="d-none">
+																<input type="hidden" th:value="${mi.id}" name="item_id_m[]" />     <!-- ID para guardar -->
+															</td>
+															<td th:text="${mi.name}" class="align-middle"></td> <!-- Nombre -->
+															<td th:text="${mi.price}" th:id="'p_' + ${mi.id}" class="align-middle" align="center"></td>  <!-- Precio -->
+															<td class="align-middle">   <!-- Cantidad -->                   
+																<input th:if="${mi.isHasAmount()}" value="1" type="number" class="form-control" min="0"  
+												   					   th:id="'amountm_'+${mi.id}"  name="amount_m[]"
+												   					   th:onchange="'itemsHelper.getSubtotalM(' + ${mi.id} +', parseInt($(p_' + ${mi.id} + ').text()), this.value);'" />
+																<input th:unless="${mi.isHasAmount()}" value="1" type="text" class="form-control" readonly="readonly"
+												   					   th:id="'amountm_'+${mi.id}"  name="amount_m[]"
+									   								   th:onchange="'itemsHelper.getSubtotalM(' + ${mi.id} +', parseInt($(p_' + ${mi.id} + ').text()), this.value);'" />
+															</td>
+															<td align="center" class="align-middle">
+																<span th:id="'subtotalm_'+${mi.id}" th:text='${mi.price}'></span>
+															</td>
+														</tr>								
+														<tr th:each="mi: ${mandatoryAndIncludedItemList}">
+															<td class="d-none">
+																<input type="hidden" th:value="${mi.id}" name="item_id_mi[]" />     <!-- ID para guardar -->
+															</td>
+															<td th:text="${mi.name}" class="align-middle"></td>    <!-- Nombre -->
+															<td th:text="${mi.tips}" class="align-middle" align="center"></td> <!-- Remark -->
+															<td align="center" class="align-middle">
+																<input value="1" type="text" class="form-control" readonly="readonly" />
+															</td> <!-- Cantidad -->
+															<td th:text="'0'" class="align-middle" align="center"></td>      <!-- Precio -->
+														</tr>
+													</tbody>
+												</table>
+												<hr style="background-color:#0F3678"/>
+												<h5 align="right">Total mandatory: <span class="badge badge-warning" id="totalm">0</span></h5>
+ 											</div>
+						      			</div>
+    								</div>
+								</div><!-- Accordion card 1-->
+							   			  <!-- Accordion card 2-->
+ 								<div class="card">   <!-- seccion para los items elegidos -->
+									    	  <!-- Card header -->
+    							  	<div class="card-header" style="background-color:#0F3678" role="tab" id="headingTwo2">
+      									<a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2"
+        								   aria-expanded="false" aria-controls="collapseTwo2">
+        								   	<i class="fa fa-angle-down rotate-icon"  style="color:#FFFFFF;">
+        										<h5 th:text="'Choose items'" class="text-white mb-0"></h5>
+        									</i>
+      									</a>
+    								</div>
+    										  <!-- Card body -->
+    								<div id="collapseTwo2" class="collapse" role="tabpanel" aria-labelledby="headingTwo2" data-parent="#accordionEx">
+      									<div class="card-body border-secondary">
+											<div class="form-group row">
+												<label th:text="'Find product: '" for="find_product" class="col-form-label col-sm-3 font-weight-bold"></label>
+												<div class="col"> <input type="text" name="find_product" id="find_product" class="form-control" /></div>
+											</div>
+											<table th:replace="orders/items-layout :: orderItems"></table>  
+											<table id="loadProductItems" class="table table-sm table-striped table-hover">
+												<thead>
+													<tr>
+														<th width="50%" th:text="'Description'"></th>
+														<th width="9%" th:text="'Price'"></th>
+														<th width="15%"th:text="'Has oferr'"></th>
+														<th width="8%" th:text="'Amount'"></th>
+														<th width="8%" th:text="'Subtotal'"></th>
+														<th width="10%" th:text="'Delete'"></th>
+													</tr>
+												</thead>
+												<tbody></tbody>
+											</table>
+											<h5 align="right">Total choosed: <span id="totalc" class="badge badge-warning">0</span></h5>
+											<hr>	
+											<div class="form-group row">
+												<label th:text="'Observations: '" for="observation" class="col-form-label col-sm-3 font-weight-bold"></label>
+												<div class="col">
+													<textarea id="observation" th:field="*{observation}" class="form-control"
+												  	 		  th:errorclass="'form-control alert-danger'"></textarea>
+													<small th:if="${#fields.hasErrors('observation')}" th:errors="*{observation}" class="form-text text-danger"></small>
+												</div>
+											</div>
+     									</div>
+	   								</div>
+  								</div>  <!-- Accordion card 2-->
+							</div><!-- Accordion wrapper -->
+  							<!-- FIN DEL ACORDEON -->
+  							<hr>
+  							<p></p><p></p>
+							<h5 align="right">Total item order: <span class="badge badge-success" id="total">0</span></h5>
+							<div class="col-12 py-4">
+								<input type="submit" th:value="'Accept'" class="btn btn-lg btn-block "     
+									   style="fbackground-color:#FFFFFF; border-color: #0F3678; color: #0F3678;"/>
+							</div>
+						</div>
+					</div>
+				</form>
 			</div>
 		</div>
-	</div>
-
 	<footer th:replace="layout/layout :: footer"></footer>
 	<script
 		th:replace="orders/js/products-autocomplete :: javascriptAutoComplete">

@@ -12,16 +12,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.plastic305.web.app.models.entities.Client;
-import com.plastic305.web.app.models.entities.Order;
 import com.plastic305.web.app.models.entities.Procedure;
-import com.plastic305.web.app.models.entities.OrderItem;
-import com.plastic305.web.app.models.entities.Product;
 import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.services.IClientService;
 import com.plastic305.web.app.services.IDoctorService;
@@ -36,13 +31,12 @@ public class IndexController {
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
 	private static final String tittleR1 = "Questionnaire" ;
-	private static final String tittleProduct = "Post-surgical items" ;
+	
 	private static final String conditionHeader = "Diseases that you have or presented" ;
-	private static final String productHeader = "See prices below and choose" ;
+	private static final String questionnaireAnswerHeader = "Answers to the questionnaire" ;
+	private static final String decideNO = "¡¡¡You decided not to have an surgery with any doctor available!!!" ;
+	private static final String p1 = "First procedure: " ;
 	private static final String conditionQuestion = "Please state if do you had or have any of these conditions" ;
-	private static final String productText = "Post-surgical items exist to accomplish goals!\r\n" + 
-											  "These items listed below are necessary in order to protect and enhance the outcome of your procedure, prevent the formation of scar tissue, and aide the recovery process.\r\n" + 
-											  "Prepare in advance for a successful recovery by purchasing the necessary post-surgical items in office at the time of pre-op: (See prices below and choose)" ;
 	private static final String bmiHeader = "Data for BMI calculation" ;
 	private static final String bmiMetric = "Metric system" ;
 	private static final String bmiEnglish = "English system" ;
@@ -51,65 +45,96 @@ public class IndexController {
 	private static final String noAcceptedByConditionH = "You suffer or suffered: " ;
 	private static final String noAcceptedByConditionExp = ". Condition(s) that makes it impossible for you to apply the desired treatment" ;
 	private static final String noAcceptedByBMIH = "Your BMI is: " ;
-	private static final String noAcceptedByBMIUpperExp = ". Indicating your weight is greater than what is allowed" ;
-	private static final String noAcceptedByBMILowerExp = ". Indicating your weight is lower than what is allowed" ;
+	private static final String noAcceptedByWeightH = "Yours weight is: " ;  
+	private static final String noAcceptedByWeighExp = ", therefore is greater than what is allowed" ;
+	private static final String noAcceptedByBMIUpperExp = ", Indicating your weight is greater than what is allowed" ;
+	private static final String acceptedMsg = "You have been accepted, select the procedure or doctor you want" ;
+	private static final String acceptedWithRemarkHeader = "Accepted with Remarks" ;
+	private static final String acceptedHeader = "Accepted" ;
+	private static final String hbgOutsideLimits = "Your hemoglobin level is outside the desired range" ;
+//	private static final String noAcceptedByBMILowerExp = ", Indicating your weight is lower than what is allowed" ;
 	
-	private static final Double bmiLowerLimit = Double.valueOf(18.5) ;
-	private static final Double bmiUpperLimit = Double.valueOf(30) ;
-	
+//	private static final Double bmiLowerLimit = Double.valueOf(18.5) ;
+	private static final Double bmiUpperLimit = Double.valueOf(35) ;
+	private static final Double poundstUpperLimit = Double.valueOf(190) ;
+	private static final Double hbgFUpperLimit = Double.valueOf(16) ;
+	private static final Double hbgFLowerLimit = Double.valueOf(12) ;
+	private static final Double hbgMUpperLimit = Double.valueOf(18) ;
+	private static final Double hbgMLowerLimit = Double.valueOf(14) ;
 	
 	@Autowired ISufferingService sService;
 	@Autowired IClientService cService;
 	@Autowired IDoctorService dService;
 	@Autowired IProcedureService pService;
-	@Autowired IProductService prodService;  // NEW
+	@Autowired IProductService prodService; 
 	
-
 	
 // *******************      
 // *******EN USO******    PRIMERA (ENGLISH FEET-INCHES-POUNDS)
-	@GetMapping({"/r1", "/", "/index"})   
-	public String form(Model model) {
-		Client c =  new Client() ;
+	@GetMapping({"/r1/{clientId}"})   
+	public String form(@PathVariable(value = "clientId") Long clientId, Model model) {
+		Client cliente =  cService.findOne(clientId) ;
+		logger.info(">>> Al principio del procese ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
+				"con Id: " + cService.findOne(cliente.getId()).getId());
+		
 		List <Suffering> sList = sService.findAll(); 
 
 		model.addAttribute("tittle", tittleR1);
  		model.addAttribute("conditionHeader", conditionHeader);
  		model.addAttribute("conditionQuestion", conditionQuestion) ;
- 		model.addAttribute("bmiHeader", bmiHeader) ;   // NEW
- 		model.addAttribute("bmiEnglish", bmiEnglish) ;   // NEW
- 		model.addAttribute("bmiLink", bmiMetric) ;   // NEW
+ 		model.addAttribute("bmiHeader", bmiHeader) ;    
+ 		model.addAttribute("bmiEnglish", bmiEnglish) ;    
+ 		model.addAttribute("bmiLink", bmiMetric) ;    
  		
  	    model.addAttribute("sList", sList);
- 	    model.addAttribute("client", c);
+ 	    model.addAttribute("client", cliente);
 		
  	    return "r1";
 	}
 		
 // *******************				
 // *******EN USO******     (METRIC Centimeters-Kilograms)
-	@GetMapping({"/r1/{system}", "/", "/index/{system}"})  
-	public String formMetric(@PathVariable(value = "system") String system, Model model) {
-		Client c =  new Client() ;
+	@GetMapping({"/r1-metric"})  
+	public String formMetric(Client cliente, Model model) {
 		List <Suffering> sList = sService.findAll(); 
+		logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Y a Metric llegó el cliente: " + cService.findOne(cliente.getId()).getName());
 
 		model.addAttribute("tittle", tittleR1);
 	 	model.addAttribute("conditionHeader", conditionHeader);
 	 	model.addAttribute("conditionQuestion", conditionQuestion) ;
-	 	model.addAttribute("bmiHeader", bmiHeader) ;   // NEW
- 		model.addAttribute("bmiMetric", bmiMetric) ;   // NEW	
- 		model.addAttribute("bmiLink", bmiEnglish) ;   // NEW
+	 	model.addAttribute("bmiHeader", bmiHeader) ;    
+ 		model.addAttribute("bmiMetric", bmiMetric) ;    
+ 		model.addAttribute("bmiLink", bmiEnglish) ;    
 	 	
 	 	model.addAttribute("sList", sList);
-	 	model.addAttribute("client", c);
+	 	model.addAttribute("client", cliente);
 			
 	 	return "r1";
 	}
 
+// *******************				
+// *******EN USO******     (ENGLISH FEET-INCHES-POUNDS)
+	@GetMapping({"/r1-english"})  
+	public String formEnglish(Client cliente, Model model) {
+		List <Suffering> sList = sService.findAll(); 
+		logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Y a English se mantiene el cliente: " + cService.findOne(cliente.getId()).getName());
+
+		model.addAttribute("tittle", tittleR1);
+ 		model.addAttribute("conditionHeader", conditionHeader);
+ 		model.addAttribute("conditionQuestion", conditionQuestion) ;
+ 		model.addAttribute("bmiHeader", bmiHeader) ;    
+ 		model.addAttribute("bmiEnglish", bmiEnglish) ;    
+ 		model.addAttribute("bmiLink", bmiMetric) ;    
+	 	
+	 	model.addAttribute("sList", sList);
+	 	model.addAttribute("client", cliente);
+	 	
+	 	return "r1";
+	}	
 	
 // *******************      NUEVO PARA AGREGAR EL BMI
 // *******EN USO******	
-	@PostMapping({"/r1", "/", "/index"})    
+	@PostMapping({"/r1"})    
 	public String formProcess(Client cliente, Model model) {
 		String url = "redirect:/doctor_or_procedure" ;
 		for (Suffering c: cliente.getConditionsList()) {
@@ -120,9 +145,12 @@ public class IndexController {
 			else if (c.getAccepted() == 2) 
 					url = "redirect:/somedoctors";
 		}
-		// CALCULANDO EL BMI
-		if (cService.getBMI(cliente) < bmiLowerLimit  || cService.getBMI(cliente) > bmiUpperLimit) {  
-			
+		// CALCULANDO EL BMI y el Peso   AGREGAR lo de la hemoglobina
+		Double weight = cliente.getWeight() ;  
+		if (cliente.getHeightInches() == null) weight = weight * 1000 / 460 ; // Era en KG
+		
+		if (weight > poundstUpperLimit  ||   // Peso por encima de lo permitido
+			cService.getBMI(cliente) > bmiUpperLimit) {     // BMI por encima de lo permitido
 			return "redirect:/no_accepted";
 		}
 		return url;
@@ -148,11 +176,15 @@ public class IndexController {
 		
 		if (cliente.getAccepted() != null && cliente.getAccepted()== 0)
 			decision.add(noAcceptedByConditionH + cService.getConditionsWithValue(cliente, 0) + noAcceptedByConditionExp);
+		
+		Double weight = cliente.getWeight() ;  
+		if (cliente.getHeightInches() == null) weight = weight * 1000 / 460 ; // Era en KG
+		if (weight > poundstUpperLimit)
+			decision.add(noAcceptedByWeightH + String.format("%.2f", cliente.getWeight()) + noAcceptedByWeighExp);
+
 		double bmi = cService.getBMI(cliente) ; 
 		logger.info("<<<<<<    BMI: " + String.format("%.2f", bmi) + "    >>>>>>");
-		if (bmi < bmiLowerLimit)
-			decision.add(noAcceptedByBMIH + String.format("%.2f", bmi) + noAcceptedByBMILowerExp);
-		else if (bmi > bmiUpperLimit)
+		if (bmi > bmiUpperLimit)
 			decision.add(noAcceptedByBMIH + String.format("%.2f", bmi) + noAcceptedByBMIUpperExp);
 		
 		// Pasando al modelo
@@ -160,8 +192,13 @@ public class IndexController {
 		model.addAttribute("msg", decisionH);
 		model.addAttribute("choices", choices);
 		model.addAttribute("decision", decision);
-		
+
+		cliente.setHeightFeetOrCentimeters(null);
+		cliente.setHeightInches(null);
+		cliente.setWeight(null);
+		cService.save(cliente);  // Salvado el cliente como quedó......
 		st.setComplete();
+		
 		return "no_accepted";
 	}
 	
@@ -176,13 +213,21 @@ public class IndexController {
 // *******EN USO******           
 	@GetMapping({"doctor_or_procedure"})   // Si llega aquí es pq es candidato 
 	public String doctorOrProcedure(Client cliente, Model model, SessionStatus s) {
-		model.addAttribute("choice_h", "Answers to the questionnaire");
+		logger.info(">>> Al principio de <doctor_or_procedure> ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
+				" con Id: " + cService.findOne(cliente.getId()).getId());
+
+		model.addAttribute("choice_h", questionnaireAnswerHeader);
 		if (!cService.haveRemark(cliente))  
-			model.addAttribute("msg", "Accepted");
+			model.addAttribute("msg", acceptedHeader);
 		else 
-			model.addAttribute("msg", "Accepted with Remarks");
+			model.addAttribute("msg", acceptedWithRemarkHeader);
 		model.addAttribute("choice", "Condition: " + cService.getConditionsListCSV(cliente));
-		model.addAttribute("explanationb", "You have been accepted, select the procedure or doctor you want");
+		model.addAttribute("explanationb", acceptedMsg);
+		
+		if ((cliente.getGender().equals("Woman") && (cliente.getHbg()>hbgFUpperLimit || cliente.getHbg()<hbgFLowerLimit)) ||  // Mujer con hemoglobina fuera del rango		
+		    (cliente.getGender().equals("Man")   && (cliente.getHbg()>hbgMUpperLimit || cliente.getHbg()<hbgMLowerLimit)))    // Hombre con la hemoglobina fuera del rango
+			model.addAttribute("hbgOutsideRange", hbgOutsideLimits);
+		
 		return "doctor_or_procedure";
 	}
 	
@@ -190,6 +235,9 @@ public class IndexController {
 // *******EN USO******            
 	@GetMapping({"choice_procedure_by_doctor"})   
 	public String choiceProcedureByDoctor(Client cliente, Model model, SessionStatus s) {
+		logger.info(">>> Al principio de <choice_procedure_by_doctor> ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
+				"con Id: " + cService.findOne(cliente.getId()).getId());
+		
 		// Pasar, la condición, la lista de doctores
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("choices", "Condition: " + cService.getConditionsListCSV(cliente));
@@ -209,14 +257,17 @@ public class IndexController {
 	
 // *******************
 // *******EN USO******
-	@GetMapping({"choice_procedure_by_doctor/{id}"})   
-	public String choiceProcedureByDoctorSelect(@PathVariable(value = "id") Long id, Client cliente, Model model, SessionStatus st) {
-		cliente.setDoctor(id);
+	@GetMapping({"choice_procedure_by_doctor/{iddoct}"})   
+	public String choiceProcedureByDoctorSelect(@PathVariable(value = "iddoct") Long iddoct, Client cliente, Model model, SessionStatus s) {
+		logger.info(">>> Al principio de ERROR ha llegado clienteID: " +  cliente.getId());   ///?????
+		logger.info(">>> Al principio de ERROR ha llegado clienteID: " +  cliente.getName());   ///?????
+
+		cliente.setDoctor(iddoct);
 		cliente.setP1(null);
 		
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		List <String> choices = Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
-								              "Doctor: " + dService.findOne(id).getName());
+								              "Doctor: " + dService.findOne(iddoct).getName());
 		model.addAttribute("choices", choices);
 		
 		model.addAttribute("cardHeader", "Choose the doctor, then the procedure");
@@ -227,8 +278,8 @@ public class IndexController {
 		else 
 			model.addAttribute("doctorlist", dService.findAllbyConditions(cliente.getConditionsList())) ;
 		
-		model.addAttribute("procedurelisth", "Procedures list of doctor " + dService.findOne(id).getName()); 
-		model.addAttribute("procedurelist", dService.findAllProcedurebyDoctorId(id)); 
+		model.addAttribute("procedurelisth", "Procedures list of doctor " + dService.findOne(iddoct).getName()); 
+		model.addAttribute("procedurelist", dService.findAllProcedurebyDoctorId(iddoct)); 
 				
 		return "choice_procedure_by_doctor";
 	}		
@@ -266,9 +317,9 @@ public class IndexController {
 	
 // *******************
 // *******EN USO******    
-	@GetMapping({"choice-combo-by-doctor-by-p1/{id}"})   
-	public String choiceComboByDoctorByP1SelectDoct(@PathVariable(value = "id") Long id, Client cliente, Model model, SessionStatus st) {
-		cliente.setDoctor(id);
+	@GetMapping({"choice-combo-by-doctor-by-p1/{iddoct}"})   
+	public String choiceComboByDoctorByP1SelectDoct(@PathVariable(value = "iddoct") Long iddoct, Client cliente, Model model, SessionStatus st) {
+		cliente.setDoctor(iddoct);
 		cliente.setP2(null); 
 		
 		return this.choiceComboByDoctorByP1(cliente, model, st);
@@ -297,10 +348,10 @@ public class IndexController {
 		
 // *******************
 // *******EN USO******   
-	@GetMapping({"choice_doctor_by_procedure/{id}"})   
-	public String choiceDoctorByProcedureSelectProc(@PathVariable(value = "id") Long id, Client cliente, Model model, SessionStatus st) {
+	@GetMapping({"choice_doctor_by_procedure/{idproc}"})   
+	public String choiceDoctorByProcedureSelectProc(@PathVariable(value = "idproc") Long idproc, Client cliente, Model model, SessionStatus st) {
 		cliente.setDoctor(null);
-		cliente.setP1(id);
+		cliente.setP1(idproc);
 		
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("choices", Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
@@ -309,15 +360,15 @@ public class IndexController {
 		model.addAttribute("cardHeader", "Choose the procedure, then the doctor");
 		
 		model.addAttribute("procedurelisth", "Procedures list"); 
-		model.addAttribute("doctorlisth", "List of doctors who practice the " + pService.findOne(id).getName() + " procedure"); 
+		model.addAttribute("doctorlisth", "List of doctors who practice the " + pService.findOne(idproc).getName() + " procedure"); 
 
 		if (cService.getConditionsWithValue(cliente, 2).isEmpty()) {
 			model.addAttribute("procedurelist", pService.findAllOrder()); 
-			model.addAttribute("doctorlist", dService.findAllbyProcedure(id)); 
+			model.addAttribute("doctorlist", dService.findAllbyProcedure(idproc)); 
 		}
 		else {
 			model.addAttribute("procedurelist", dService.findAllProcedureOfAllDoctorsByConditions(cliente.getConditionsList()));   
-			model.addAttribute("doctorlist", dService.findAllByConditionsByProcedure(cliente.getConditionsList(), id)); 
+			model.addAttribute("doctorlist", dService.findAllByConditionsByProcedure(cliente.getConditionsList(), idproc)); 
 		}
 		
 		return "choice_doctor_by_procedure";
@@ -358,10 +409,10 @@ public class IndexController {
 	
 // *******************
 // *******EN USO******	
-	@GetMapping({"choice-combo-by-p1-by-doctor/{id}"}) 
-	public String choiceComboByP1ByDoctorchange(@PathVariable(value = "id") Long id, Client cliente, Model model, SessionStatus st) {
+	@GetMapping({"choice-combo-by-p1-by-doctor/{iddoct}"}) 
+	public String choiceComboByP1ByDoctorchange(@PathVariable(value = "iddoct") Long iddoct, Client cliente, Model model, SessionStatus st) {
 		// Hay que cambiar el Doctor
-		cliente.setDoctor(id);
+		cliente.setDoctor(iddoct);
 		
 		return this.choiceComboByP1ByDoctor(cliente, model, st);
 	}	
@@ -387,105 +438,54 @@ public class IndexController {
 // *******EN USO******
 	@GetMapping({"result"})
 	public String result(Client cliente, Model model, SessionStatus st) {
+		logger.info(">>> Al principio de <result> ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
+				"con Id: " + cService.findOne(cliente.getId()).getId());
+		
 		List <String> choices = new ArrayList<>() ;
 		String observation = "Has not Remarks" ;
 		
-		model.addAttribute("choice_h", "Answers to the questionnaire");
+		model.addAttribute("choice_h", questionnaireAnswerHeader);
 		choices.add("Condition: " + cService.getConditionsListCSV(cliente));
 		observation = cService.getRemarksListCSV(cliente);
 		
 		if (cliente.getDoctor()!=null) {
 			choices.add("Doctor: " + dService.findOne(cliente.getDoctor()).getName());
+			choices.add("Availability date: " + dService.findOne(cliente.getDoctor()).getDate());
 			if (cliente.getP1()!=null) {
-				choices.add("First procedure: " + pService.findOne(cliente.getP1()).getName()); 
+				choices.add(p1 + pService.findOne(cliente.getP1()).getName()); 
 				model.addAttribute("observation", observation);
 				if (cliente.getP2()!=null)
 					choices.add("Combo with: " + pService.findOne(cliente.getP2()).getName());
 			}
 			else  
-				choices.add("¡¡¡Do not decide to have surgery with any doctor available!!!");
+				choices.add(decideNO);
 		}
 		else {
 			if (cliente.getP1()!=null) 
-				 choices.add("First procedure: " + pService.findOne(cliente.getP1()).getName()); 
-			choices.add("¡¡¡Do not decide to have surgery with any doctor available!!!");
-				
+				 choices.add(p1 + pService.findOne(cliente.getP1()).getName()); 
+			choices.add(decideNO);
 		}
 		model.addAttribute("choices", choices);
+		cliente.setDate(dService.findOne(cliente.getDoctor()).getDate());
+		model.addAttribute("minDate", dService.findOne(cliente.getDoctor()).getDate());
+		
 	//	st.setComplete();
 		return "result";
 	}
 	
-// *******************      
-// *******DESARROLLANDO******    
-		@GetMapping({"/post-surgical"})   
-		public String postSurgical(Client cliente, Model model, SessionStatus st) {
-//			List <OrderItem> pSubTotalList = new ArrayList<>();
-//			List <Product> pList = prodService.findAll();
-//			
-////			for (Product product: pList)
-////				pSubTotalList.add(new OrderItem(product.getId(),product, 6, 10.0));
-////			cliente.setListProd(pSubTotalList);
-//
-//			model.addAttribute("tittle", tittleProduct);
-//	 		model.addAttribute("productText", productText) ;
-//	 		
-//	 //	    model.addAttribute("products_list", pList);
-//	 	    model.addAttribute("sub_total_list", pSubTotalList);
-////	 	    model.addAttribute("client", c);
+//****************
+// *******desarrollo******	
+	@PostMapping("result")
+	public String noAcceptedP(Client cliente, Model model, SessionStatus st) {
+		logger.info(">>>>>>>>>>> Desde POST RESULT ..... Fecha Tentativa: " + cliente.getDate() + "<<<<<<<<<<<<");
+		logger.info(">>> Desde <POST RESULT> ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
+					"con Id: " + cService.findOne(cliente.getId()).getId());
+		cService.save(cliente);
+		return "redirect:/orders/order-form/0/" + cliente.getId();
+	}
 			
-	 	    return "post-surgical";
-		}	
-	
-// *******************      
-// *******DESARROLLANDO******    
-	@GetMapping({"/recalculate"})   // id del producto
-	public String calculateTotal(Client cliente, Model model, SessionStatus st) {
-//		for (OrderItem product: cliente.getListProd()) {
-//			logger.info(product.getAmount());
-//		} 
-					
-		return "redirect:/r1";
-	}		
 	//*********************************************************************************************
-// *******************      
-// *******DESARROLLANDO******    
-	@GetMapping("/orders/order-form")  // en algún momento pasar el id del cliente
-	public String create(Client cliente, Model model, RedirectAttributes flash, SessionStatus st) {
-		Client clientObj = new Client();
-		clientObj.setName("Lolo");
-		clientObj.setId(Long.valueOf(1));
-		//Todo esto de arriba se va cuando le pase el cliente real
-/*	Esto se descomenta cuando se le pase el cliente de arriba o se va	
-		if (clientObj == null) {
-			flash.addFlashAttribute("error", "Cliente no existe con ese Id");
-			return "redirect:/listar";
-		}
-*/		
-		List <Product> pList = prodService.findAll();
-		Order orderObj = new Order();
-		orderObj.setClient(clientObj);
-		model.addAttribute("tittle", tittleProduct);  //("tittle", tittle);
-		model.addAttribute("productText", productText);   //("msg", msg);
-		model.addAttribute("pList", pList);   //("msg", msg);
-		model.addAttribute("order", orderObj);
+	
 
-		return "/orders/order-form";
-	}
-	
-	@GetMapping(value = "/orders/load-products/{term}", produces = {"application/json"})
-	public @ResponseBody List<Product> loadProducts(@PathVariable String term) {
-		/*
-		 * La anotación ResponseBody suprime cargar la vista y lo que hace es retornar,
-		 * en este caso convertido a Json, y poblar dentro del Body de la respuesta
-		 */
-		return cService.findByName(term);
-	}
-	
-	
-	
-	
-	
-	
 	
 }

@@ -13,3 +13,12 @@ h2.color-azul {
 .newspaper2 {
   columns: auto 3;
 }
+
+i.l {
+    /* flip vertically */
+    transform: rotateX(180deg);
+}
+
+btn.btn-outline-damny:hover {
+	background-color: #007da7; 
+}

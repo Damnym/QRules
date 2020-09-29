@@ -10,6 +10,6 @@ public class HomeController {
 	public String home() {
 	//	return "redirect:/study/index";
 	//	return "redirect:https://www.google.com";
-    	return "forward:/index";
+    	return "forward:/clients/client-list";
 	}
 }

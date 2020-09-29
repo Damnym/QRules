@@ -31,6 +31,7 @@ public class Suffering implements Serializable {
 	private String warning;
 	
 	
+	//  <<<<< IMPLEMENTATION >>>>>	
 	
 	
 	/**

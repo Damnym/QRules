@@ -13,5 +13,11 @@ public interface IOrderDAO extends CrudRepository<Order, Long> {
 			+ "join fetch il.product "
 			+ "WHERE o.id=?1")
 	public Order fetchOrderByIdWithClientWithOrderItemWithProduct(Long id);
+	
+	@Query("SELECT o FROM Client c "
+			+ "join c.orderList o "
+			+ "WHERE c.id=?1")
+	public Order findOrderByClientId(Long id);
+	
 
 }
