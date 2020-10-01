@@ -21,6 +21,8 @@ public interface IClientService {
 
 	public void save(Client nClient);
 	public void delete(Long id);
+	
+	public void clean(Client client);
 
 //COMERCIAL
 //*********
@@ -32,10 +34,10 @@ public interface IClientService {
 	public List<Product> findByName(String term);
 	public List<Product> findNotMandatoryByName(String term, Long idD, Long idP);
 	
-	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, Long idP, int loss);
-	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP);
-	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP, Long idD);
-	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP, Long idD); 
+	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, Long idP1, Long idP2, int loss);  //
+	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP1, Long idP2);  //
+	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP1, Long idP2, Long idD);  //
+	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP1, Long idP2, Long idD); //
 	public Product findProductById(Long id);
 
 	public Order findOrderById(Long id);

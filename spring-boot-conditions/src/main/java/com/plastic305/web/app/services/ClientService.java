@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ public class ClientService implements IClientService {
 	@Autowired IOrderDAO iODAO;
 	@Autowired IProductsDAO iPDAO;
 	
+	protected final Log logger = LogFactory.getLog(this.getClass());
 	
   /*<<<<< IMPLEMENTATION >>>>>*/
 	
@@ -106,24 +109,45 @@ public class ClientService implements IClientService {
 	}
 	
 	@Override @Transactional(readOnly = true)
-	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, Long idP, int loss) {
-		/// PROBANDO
-		HashSet<Product> productSet = new HashSet<>();
-		List<Product> lll = iPDAO.findProductsMandatoryByDoctorByProcedure(idD, idP); 
-		productSet.addAll(lll);
+	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, Long idP1, Long idP2, int loss) {
+		List<Product> mandatoryItemsList = new ArrayList<Product>();
+		if (idP2!=null)
+			mandatoryItemsList = iPDAO.findProductsMandatoryByDoctorByCombo(idD, idP1, idP2);
+		else
+			mandatoryItemsList = iPDAO.findProductsMandatoryByDoctorByProcedure(idD, idP1);
+		
+		for (int i=0; i<mandatoryItemsList.size(); i++)
+			for (int j=i+1; j<mandatoryItemsList.size(); j++) 
+				if (mandatoryItemsList.get(i).getId().equals(mandatoryItemsList.get(j).getId())) {
+					mandatoryItemsList.remove(j);
+					break;
+				}
+		
 		if (loss==1) {
 			Product p = iPDAO.findOneByName("cell");
-			productSet.add(p);
+			mandatoryItemsList.add(p);
 		}
-		List<Product> ttt= new ArrayList<>() ;
-		ttt.addAll(productSet);
-		return ttt ;
+		
+		return mandatoryItemsList;
 	}
 
 	@Override @Transactional(readOnly = true)
-	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP) {
-		return iPDAO.findProductsMandatoryAndIncludedByDoctorByProcedure(idD, idP);
+	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP1, Long idP2) {
+		List<Product> mandatoryAndIncludedItemsList = new ArrayList<Product>();
+		if (idP2!=null)
+			mandatoryAndIncludedItemsList = iPDAO.findProductsMandatoryAndIncludedByDoctorByCombo(idD, idP1, idP2);
+		else
+			mandatoryAndIncludedItemsList = iPDAO.findProductsMandatoryAndIncludedByDoctorByProcedure(idD, idP1);
+		
+		for (int i=0; i<mandatoryAndIncludedItemsList.size(); i++)
+			for (int j=i+1; j<mandatoryAndIncludedItemsList.size(); j++) 
+				if (mandatoryAndIncludedItemsList.get(i).getId().equals(mandatoryAndIncludedItemsList.get(j).getId())) {
+					mandatoryAndIncludedItemsList.remove(j);
+					break;
+				}
+		return mandatoryAndIncludedItemsList;
 	}
+	
 	
 	@Override @Transactional(readOnly = true)
 	public List<Product> findOldProductsRecommendedByProcedure(Long idP) {
@@ -143,13 +167,31 @@ public class ClientService implements IClientService {
 	}
 	
 	@Override @Transactional(readOnly = true)
-	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP, Long idD) {
-		return  iPDAO.findProductsRecommendedByProcedure(idP, idD) ;
+	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP1, Long idP2, Long idD) {
+		List<ProductRecommendedByProcedure> recommendedItemsList = new ArrayList<ProductRecommendedByProcedure>();
+		if (idP2!=null)
+			recommendedItemsList = iPDAO.findProductsRecommendedByCombo(idP1, idD, idP2);
+		else
+			recommendedItemsList = iPDAO.findProductsRecommendedByProcedure(idP1, idD);
+		
+		for (int i=0; i<recommendedItemsList.size(); i++)
+			for (int j=i+1; j<recommendedItemsList.size(); j++) 
+				if (recommendedItemsList.get(i).getProduct().getId().equals(recommendedItemsList.get(j).getProduct().getId())) {
+					recommendedItemsList.remove(j);
+					break;
+				}
+		return recommendedItemsList;
 	}
+	
 
 	@Override @Transactional(readOnly = true)
-	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP, Long idD) {
-		return iPDAO.findProductsNotMandatoryAndNotRecommended(idP, idD);
+	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP1, Long idP2, Long idD) {
+		if (idP2!=null)
+			return iPDAO.findProductsNotMandatoryAndNotRecommended(idP1, idD, idP2);
+		else
+			return iPDAO.findProductsNotMandatoryAndNotRecommended(idP1, idD);
+		
+		
 	}
 	
 
@@ -160,7 +202,7 @@ public class ClientService implements IClientService {
 		List<String> conditions = new ArrayList<String>();
 		for (Suffering c: client.getConditionsList()) 
 			if (c.getAccepted() == value) 
-				conditions.add(c.getName());// TODO Auto-generated method stub
+				conditions.add(c.getName());
 		return conditions;
 	}
 
@@ -197,6 +239,20 @@ public class ClientService implements IClientService {
 		Double bmi = (client.getHeightInches()!=null)?client.getWeight()/Math.pow(client.getHeightFeetOrCentimeters()*12+client.getHeightInches(), 2)*703:
 													  client.getWeight()/Math.pow(client.getHeightFeetOrCentimeters()/100, 2);
 		return bmi;
+	}
+
+	@Override
+	public void clean(Client cliente) {
+		cliente.setAccepted(null);
+		cliente.setDate(null);
+		cliente.setDoctor(null);
+		cliente.setHbg(null);
+		cliente.setHeightFeetOrCentimeters(null);
+		cliente.setHeightInches(null);
+		cliente.setP1(null);
+		cliente.setP2(null);
+		cliente.setWeight(null);
+		cliente.setConditionsList(new ArrayList<Suffering>());
 	}
 
 

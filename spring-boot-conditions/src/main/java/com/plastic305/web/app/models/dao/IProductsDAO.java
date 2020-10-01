@@ -34,6 +34,7 @@ public interface IProductsDAO extends PagingAndSortingRepository<Product, Long> 
 	
 	public List<Product> findByNameLikeIgnoreCase(String term);
 	
+	
 	@Query("SELECT prod "
 		 + "FROM Doctor d "
 		 + 		"join d.procList procl "
@@ -43,46 +44,97 @@ public interface IProductsDAO extends PagingAndSortingRepository<Product, Long> 
 		 + "WHERE (d.id=?1) AND (proc.id=?2) AND (prodl.isIncluded=0)")
 	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, Long idP); 
 	
-	@Query("SELECT prod "
+	@Query("SELECT DISTINCT prod "
 		 + "FROM Doctor d "
 		 + 		"join d.procList procl "
 		 + 		"join procl.procedure proc "
 		 + 		"join procl.productList prodl "
 		 + 		"join prodl.product prod "
-		 + "WHERE d.id=?1 AND proc.id=?2 AND prodl.isIncluded=1")
-	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP);   
-	
-	@Query("SELECT prodrlist "
-		 + "FROM Procedure p "
-	     +		"join p.productRecommendedList prodrlist "
-	     + 	 	"join prodrlist.product prod "
-		 + "WHERE (p.id=?1) AND prod NOT IN("
-		 + 									"SELECT prodm "
-		 + 									"FROM Doctor d "
-		 + 										"join d.procList procl "
-		 + 										"join procl.procedure proc "
-		 + 										"join procl.productList prodl "
-		 + 										"join prodl.product prodm "
-		 + 									"WHERE d.id=?2 AND proc.id=?1)")
-	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP, Long idD); 
+		 + "WHERE (d.id=?1) AND ((proc.id=?2) OR (proc.id=?3)) AND (prodl.isIncluded=0)")
+	public List<Product> findProductsMandatoryByDoctorByCombo(Long idD, Long idP1, Long idP2); 
 	
 	@Query("SELECT prod "
- 		 + "FROM Product prod "
-	  	 + "WHERE (prod NOT IN ("
-		 +                      "SELECT prodm "
-		 + 						"FROM Doctor d "                           /* No es mandatory */
-		 + 							"join d.procList procl "
-		 + 							"join procl.procedure proc "
-		 + 							"join procl.productList prodl "
-		 + 							"join prodl.product prodm "
-		 + 						"WHERE (d.id=?2) AND (proc.id=?1))) "
-	     +   "AND (prod NOT IN (" 											/* No es Recommended */
-		 + 						"SELECT prod " 
-		 + 						"FROM Procedure p "
-		 +    						"join p.productRecommendedList prodl "
-		 +    						"join prodl.product prod "
-		 + 						"WHERE (p.id=?1)))")
+			+ "FROM Doctor d "
+			+ 		"join d.procList procl "
+			+ 		"join procl.procedure proc "
+			+ 		"join procl.productList prodl "
+			+ 		"join prodl.product prod "
+			+ "WHERE d.id=?1 AND proc.id=?2 AND prodl.isIncluded=1")
+	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP);   
+	
+	@Query("SELECT prod "
+			+ "FROM Doctor d "
+			+ 		"join d.procList procl "
+			+ 		"join procl.procedure proc "
+			+ 		"join procl.productList prodl "
+			+ 		"join prodl.product prod "
+			+ "WHERE d.id=?1 AND ((proc.id=?2) OR (proc.id=?3)) AND prodl.isIncluded=1")
+	public List<Product> findProductsMandatoryAndIncludedByDoctorByCombo(Long idD, Long idP1, Long idP2);   
+	
+	@Query("SELECT prodrlist "
+			+ "FROM Procedure p "
+			+		"join p.productRecommendedList prodrlist "
+			+ 	 	"join prodrlist.product prod "
+			+ "WHERE (p.id=?1) AND prod NOT IN("
+			+ 								   "SELECT prodm "
+			+ 								   "FROM Doctor d "
+			+ 										"join d.procList procl "
+			+ 										"join procl.procedure proc "
+			+ 										"join procl.productList prodl "
+			+ 										"join prodl.product prodm "
+			+ 								   "WHERE d.id=?2 AND proc.id=?1)")
+	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP, Long idD); 
+	
+	@Query("SELECT DISTINCT prodrlist "
+			+ "FROM Procedure p "
+			+		"join p.productRecommendedList prodrlist "
+			+ 	 	"join prodrlist.product prod "
+			+ "WHERE (((p.id=?1) OR (p.id=?3)) AND prod NOT IN("
+			+ 									 	      "SELECT prodm "
+			+ 									          "FROM Doctor d "
+			+ 										          "join d.procList procl "
+			+ 									 	          "join procl.procedure proc "
+			+ 										          "join procl.productList prodl "
+			+ 										          "join prodl.product prodm "
+			+ 									          "WHERE d.id=?2 AND (proc.id=?1 OR proc.id=?3)))")
+	public List<ProductRecommendedByProcedure> findProductsRecommendedByCombo(Long idP1, Long idD, Long idP2); 
+	
+	@Query("SELECT prod "
+			+ "FROM Product prod "
+			+ "WHERE (prod NOT IN ("
+			+                      "SELECT prodm "
+			+ 						"FROM Doctor d "                           /* No es mandatory */
+			+ 							"join d.procList procl "
+			+ 							"join procl.procedure proc "
+			+ 							"join procl.productList prodl "
+			+ 							"join prodl.product prodm "
+			+ 						"WHERE (d.id=?2) AND (proc.id=?1))) "
+			+   "AND (prod NOT IN (" 											/* No es Recommended */
+			+ 						"SELECT prod " 
+			+ 						"FROM Procedure p "
+			+    						"join p.productRecommendedList prodl "
+			+    						"join prodl.product prod "
+			+ 						"WHERE (p.id=?1)))")
 	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP, Long idD);
+	
+	@Query("SELECT prod "
+			+ "FROM Product prod "
+			+ "WHERE (prod NOT IN ("
+			+                      "SELECT prodm "
+			+ 						"FROM Doctor d "                           /* No es mandatory */
+			+ 							"join d.procList procl "
+			+ 							"join procl.procedure proc "
+			+ 							"join procl.productList prodl "
+			+ 							"join prodl.product prodm "
+			+ 						"WHERE (d.id=?2) AND (proc.id=?1 OR proc.id=?3))) "
+			+   "AND (prod NOT IN (" 											/* No es Recommended */
+			+ 						"SELECT prod " 
+			+ 						"FROM Procedure p "
+			+    						"join p.productRecommendedList prodl "
+			+    						"join prodl.product prod "
+			+ 						"WHERE ( (p.id=?1) OR (p.id=?3) )))")
+	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP1, Long idD, Long IdP2);
+	
 
 	
 	//  <<<<<<<<<<<<<<< NOOOOOOOOOOOOO se usan	 >>>>>>>>>>>>>>>

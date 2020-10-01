@@ -6,9 +6,10 @@
 	
 		<div th:text="${productText}" class="card-tittle px-5 list-group-item-success text-center font-weight-bold" align="center"></div>
 		<h6 th:text="${summaryheader}" class="card-tittle text-center font-weight-bold border border-danger" ></h6>
+		<form th:action="@{/orders/order-form}" th:object="${order}" method="post" enctype="multipart/form-data">
 		<h4 align="right" class="col px-md-5 padding-right" >
 			<a class="btn btn-success btn-xs"
-				th:href="@{/orders/order-form/1}"
+				th:href="@{'/orders/order-form/1/' + ${order.client.getId()}}"
 				th:text="'Have had weight loss surgery'"></a>
 		</h4>
 		<div class="row px-4 py-4">
@@ -57,7 +58,7 @@
 				</div>
 			</div> 
 			<div class="col-6 bg-white"  >  <!-- seccion para los items elegidos y obligatorios-->
-				<form th:action="@{/orders/order-form}" th:object="${order}" method="post" enctype="multipart/form-data">
+				
 					<div class="row" style="border-color: fuchsia;">
 						<div class="col-12" style="fbackground-color:#FFFFFF; border-color: #0F3678; color: #0F3678;">
 						
@@ -181,9 +182,9 @@
 							</div>
 						</div>
 					</div>
-				</form>
 			</div>
 		</div>
+		</form>
 	<footer th:replace="layout/layout :: footer"></footer>
 	<script
 		th:replace="orders/js/products-autocomplete :: javascriptAutoComplete">

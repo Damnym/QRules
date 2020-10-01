@@ -52,9 +52,7 @@ public class IndexController {
 	private static final String acceptedWithRemarkHeader = "Accepted with Remarks" ;
 	private static final String acceptedHeader = "Accepted" ;
 	private static final String hbgOutsideLimits = "Your hemoglobin level is outside the desired range" ;
-//	private static final String noAcceptedByBMILowerExp = ", Indicating your weight is lower than what is allowed" ;
 	
-//	private static final Double bmiLowerLimit = Double.valueOf(18.5) ;
 	private static final Double bmiUpperLimit = Double.valueOf(35) ;
 	private static final Double poundstUpperLimit = Double.valueOf(190) ;
 	private static final Double hbgFUpperLimit = Double.valueOf(16) ;
@@ -74,8 +72,7 @@ public class IndexController {
 	@GetMapping({"/r1/{clientId}"})   
 	public String form(@PathVariable(value = "clientId") Long clientId, Model model) {
 		Client cliente =  cService.findOne(clientId) ;
-		logger.info(">>> Al principio del procese ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
-				"con Id: " + cService.findOne(cliente.getId()).getId());
+		cService.clean(cliente);
 		
 		List <Suffering> sList = sService.findAll(); 
 
@@ -97,7 +94,6 @@ public class IndexController {
 	@GetMapping({"/r1-metric"})  
 	public String formMetric(Client cliente, Model model) {
 		List <Suffering> sList = sService.findAll(); 
-		logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Y a Metric llegó el cliente: " + cService.findOne(cliente.getId()).getName());
 
 		model.addAttribute("tittle", tittleR1);
 	 	model.addAttribute("conditionHeader", conditionHeader);
@@ -117,7 +113,6 @@ public class IndexController {
 	@GetMapping({"/r1-english"})  
 	public String formEnglish(Client cliente, Model model) {
 		List <Suffering> sList = sService.findAll(); 
-		logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Y a English se mantiene el cliente: " + cService.findOne(cliente.getId()).getName());
 
 		model.addAttribute("tittle", tittleR1);
  		model.addAttribute("conditionHeader", conditionHeader);
@@ -183,7 +178,6 @@ public class IndexController {
 			decision.add(noAcceptedByWeightH + String.format("%.2f", cliente.getWeight()) + noAcceptedByWeighExp);
 
 		double bmi = cService.getBMI(cliente) ; 
-		logger.info("<<<<<<    BMI: " + String.format("%.2f", bmi) + "    >>>>>>");
 		if (bmi > bmiUpperLimit)
 			decision.add(noAcceptedByBMIH + String.format("%.2f", bmi) + noAcceptedByBMIUpperExp);
 		
@@ -213,9 +207,6 @@ public class IndexController {
 // *******EN USO******           
 	@GetMapping({"doctor_or_procedure"})   // Si llega aquí es pq es candidato 
 	public String doctorOrProcedure(Client cliente, Model model, SessionStatus s) {
-		logger.info(">>> Al principio de <doctor_or_procedure> ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
-				" con Id: " + cService.findOne(cliente.getId()).getId());
-
 		model.addAttribute("choice_h", questionnaireAnswerHeader);
 		if (!cService.haveRemark(cliente))  
 			model.addAttribute("msg", acceptedHeader);
@@ -235,9 +226,6 @@ public class IndexController {
 // *******EN USO******            
 	@GetMapping({"choice_procedure_by_doctor"})   
 	public String choiceProcedureByDoctor(Client cliente, Model model, SessionStatus s) {
-		logger.info(">>> Al principio de <choice_procedure_by_doctor> ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
-				"con Id: " + cService.findOne(cliente.getId()).getId());
-		
 		// Pasar, la condición, la lista de doctores
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("choices", "Condition: " + cService.getConditionsListCSV(cliente));
@@ -259,9 +247,6 @@ public class IndexController {
 // *******EN USO******
 	@GetMapping({"choice_procedure_by_doctor/{iddoct}"})   
 	public String choiceProcedureByDoctorSelect(@PathVariable(value = "iddoct") Long iddoct, Client cliente, Model model, SessionStatus s) {
-		logger.info(">>> Al principio de ERROR ha llegado clienteID: " +  cliente.getId());   ///?????
-		logger.info(">>> Al principio de ERROR ha llegado clienteID: " +  cliente.getName());   ///?????
-
 		cliente.setDoctor(iddoct);
 		cliente.setP1(null);
 		
@@ -438,9 +423,6 @@ public class IndexController {
 // *******EN USO******
 	@GetMapping({"result"})
 	public String result(Client cliente, Model model, SessionStatus st) {
-		logger.info(">>> Al principio de <result> ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
-				"con Id: " + cService.findOne(cliente.getId()).getId());
-		
 		List <String> choices = new ArrayList<>() ;
 		String observation = "Has not Remarks" ;
 		
@@ -469,7 +451,6 @@ public class IndexController {
 		cliente.setDate(dService.findOne(cliente.getDoctor()).getDate());
 		model.addAttribute("minDate", dService.findOne(cliente.getDoctor()).getDate());
 		
-	//	st.setComplete();
 		return "result";
 	}
 	
@@ -477,15 +458,10 @@ public class IndexController {
 // *******desarrollo******	
 	@PostMapping("result")
 	public String noAcceptedP(Client cliente, Model model, SessionStatus st) {
-		logger.info(">>>>>>>>>>> Desde POST RESULT ..... Fecha Tentativa: " + cliente.getDate() + "<<<<<<<<<<<<");
-		logger.info(">>> Desde <POST RESULT> ha llegado el cliente: " + cService.findOne(cliente.getId()).getName() + 
-					"con Id: " + cService.findOne(cliente.getId()).getId());
 		cService.save(cliente);
 		return "redirect:/orders/order-form/0/" + cliente.getId();
 	}
 			
 	//*********************************************************************************************
-	
-
 	
 }

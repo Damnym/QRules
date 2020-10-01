@@ -76,19 +76,12 @@ public class OrderController {
 	// *******DESARROLLANDO******    
 		@GetMapping("/order-form/{cell}/{clientid}")  // en algún momento pasar el id del cliente
 		public String create(@PathVariable(value = "cell") int cell, @PathVariable(value = "clientid") Long clientid, Model model, RedirectAttributes flash, SessionStatus st) {
-			logger.info(">>> Al principio de <order-form> ha llegado el cliente: " + cService.findOne(clientid).getName() + 
-		            	"con Id: " + cService.findOne(clientid).getId());
-			
 			String mandatoryItemHeader = "";
 			String summaryheader = "";
 			String recommendedItemStrHeader ="";
 			
 			Client cliente = cService.findOne(clientid);
-			
 			Order order = new Order();
-			
-			logger.info("##########GET de order-form ########################### Cliente: " + cliente.getName());
-			
 			order.setClient(cliente);
 			
 			if (cliente.getP2() != null) { 
@@ -97,7 +90,6 @@ public class OrderController {
 				summaryheader = sumaryForItemsHeader + dService.findOne(cliente.getDoctor()).getName() + " and " + pService.findOne(cliente.getP1()).getName() + ", " 
 			                                         + pService.findOne(cliente.getP2()).getName()  + " procedures";
 				recommendedItemStrHeader = recommendedItemsHeader + pService.findOne(cliente.getP1()).getName() + " and " + pService.findOne(cliente.getP2()).getName()  + " procedures";
-				
 			}
 			else {
 				mandatoryItemHeader = mandatoryItemsHeader + dService.findOne(cliente.getDoctor()).getName() + " and " + pService.findOne(cliente.getP1()).getName() + " procedure" ;
@@ -110,10 +102,10 @@ public class OrderController {
 			model.addAttribute("summaryheader", summaryheader);
 			model.addAttribute("recommendedItemStrHeader", recommendedItemStrHeader);
 			
-			model.addAttribute("mandatoryItemList", cService.findProductsMandatoryByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(),cell));  
-			model.addAttribute("mandatoryAndIncludedItemList", cService.findProductsMandatoryAndIncludedByDoctorByProcedure(cliente.getDoctor(), cliente.getP1()));
-			model.addAttribute("recommendedItemList", cService.findProductsRecommendedByProcedure(cliente.getP1(), cliente.getDoctor()));  
-			model.addAttribute("restItemList", cService.findProductsNotMandatoryAndNotRecommended(cliente.getP1(), cliente.getDoctor()));
+			model.addAttribute("mandatoryItemList", cService.findProductsMandatoryByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2(), cell));  
+			model.addAttribute("mandatoryAndIncludedItemList", cService.findProductsMandatoryAndIncludedByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2()));
+			model.addAttribute("recommendedItemList", cService.findProductsRecommendedByProcedure(cliente.getP1(), cliente.getP2(), cliente.getDoctor()));  //
+			model.addAttribute("restItemList", cService.findProductsNotMandatoryAndNotRecommended(cliente.getP1(), cliente.getP2(), cliente.getDoctor()));//
 			model.addAttribute("order", order);
 			
 			return "/orders/order-form";
