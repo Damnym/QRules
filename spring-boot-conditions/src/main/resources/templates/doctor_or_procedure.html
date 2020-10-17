@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/layout :: head"></head>
+<head th:replace="layout/layout-client :: head"></head>
 <body>
-	<header th:replace="layout/layout :: header"></header>
-	<div class="container py-4" >  <!-- GENERAL -->
+	<header th:replace="layout/layout-client :: header"></header>
+      <div class="container py-1" style="font-size: 15px">
 		<div class="row">    <!-- FILA PARA EL ALERTA -->
 			<div class="col">
 				<div th:if="${hbgOutsideRange}" class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -14,35 +14,29 @@
 				</div>
 			</div>
 		</div>				
-		<div class="row">    <!-- FILA PARA EL RESTO DEL CONTENIDO -->
- 	 		<div class="col-4"> <!-- COLUMNA CON LA TRAZA -->
-				<ul th:if="${choice}" class="list-group" >
-					<li th:text="${choice_h}" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
+		<div class="row py-4" style="font-size: 15px"> <!-- GENERAL -->    <!-- FILA PARA EL RESTO DEL CONTENIDO -->
+ 	 		<div class="col-3"> <!-- COLUMNA CON LA TRAZA -->
+				<ul th:if="${choice}" class="list-group border-success" >
+					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
 					<li th:text="${choice}" class="list-group-item text-left border-success"></li>
 				</ul>
 		 	</div> 
-   			<div class="col-8">   <!-- COLUMNA CON LAS OPCIONES -->
-				<div class="card bg-white border-secondary" >
+   			<div class="col-9">   <!-- COLUMNA CON LAS OPCIONES -->
+				<div class="card bg-white border-305" >
 					<div th:text="${msg}" class="card-header font-weight-bold text-white" align="center" style="background-color:#0F3678"></div>
 					<div class="card-body" align="left">
 						<div class="container my-2">
 							<div class="row">
 								<div class="col-sm">
 									<ul class="list-group my-2 border-warning">  
-										<li th:text="${explanationb}" class="list-group-item "></li>
-										<li class="list-group-item ">
-											<a th:href="@{/choice_procedure_by_doctor/}"
-				   							   th:text="'Choice the Doctor'" class="btn btn-lg btn-block"
-				   							   style="fbackground-color:#FFFFFF; border-color: #0F3678; color: #0F3678;"></a>	
+										<li th:text="${explanationb}" class="list-group-item border-white"></li>
+										<li class="list-group-item border-white">
+											<a th:href="@{/choice_procedure_by_doctor/}" th:text="'Choice the Doctor'" class="btn btn-lg btn-block btn-305"></a>	
 										</li>
-										<li class="list-group-item ">
-											<a th:href="@{/choice_doctor_by_procedure/}"
-				   							   th:text="'Choice the Procedure'" class="btn btn-lg btn-block text-white"
-				   							   style="background-color:#0F3678;"></a>	
+										<li class="list-group-item border-white">
+											<a th:href="@{/choice_doctor_by_procedure/}" th:text="'Choice the Procedure'" class="btn btn-lg btn-block btn-305"></a>	
 										</li>
 									</ul>
-									<hr />
-									<hr />
 								</div>
 							</div>
 						</div>
@@ -50,7 +44,7 @@
 				</div>
 	  		</div>
 	  	</div>
-	</div>
-	<footer th:replace="layout/layout :: footer"></footer>
+      </div>
+	<footer th:replace="layout/layout-client :: footer"></footer>
 </body>
 </html>

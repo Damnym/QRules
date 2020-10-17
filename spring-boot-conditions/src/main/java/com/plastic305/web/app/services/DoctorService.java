@@ -89,6 +89,18 @@ public class DoctorService implements IDoctorService{
 		return doctorDAO.fetchProceduresByDoctorId(idD);
 	}
 	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Procedure> findProceduresNotBelongToDoctor(Long idD) {
+		return doctorDAO.findProceduresNotBelongToDoctor(idD);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Procedure> findProceduresNotBelongToDoctorByName(Long idD, String term){
+		return doctorDAO.findProceduresNotBelongToDoctorByName(idD, term);
+	}
+
 	@Override  
 	@Transactional(readOnly = true)  // como es conjunto el orden me mata...hay q arreglar esto
 	public List<Procedure> findAllProcedureOfAllDoctorsByConditions(List<Suffering> conditions) {
@@ -121,6 +133,36 @@ public class DoctorService implements IDoctorService{
 			for (ProcByCombo oneProcedureByCombo: combo.getProcedureList()) {
 				if (oneProcedureByCombo.getProcedure().getId()!=idP)
 					procedureList.add(oneProcedureByCombo.getProcedure());
+			}
+		}
+		procedureList.sort(new Comparator<Procedure>()
+		{
+			public int compare(Procedure p1, Procedure p2) {
+ 	    		return p1.getName().compareToIgnoreCase(p2.getName());
+ 	    	}
+		});
+		return procedureList;
+	}
+	
+	@Override
+	@Transactional(readOnly = true) //Tratar hacerlo con JPA
+	public List<String> findAllProcedureNamebyDoctorIdbyFirstProcedure(Long idD, Long idP) {
+		ArrayList<String> procedureList = new ArrayList<String>();
+		
+		//Lista de combos de este doctor
+		List<ComboByDoctor> ComboList = findOne(idD).getComboList();
+		List<Combo> comboListWithParamProcedure = new ArrayList<Combo>();
+		for (ComboByDoctor oneComboByDoct: ComboList) {
+			//Tener lista de combos con el procedimiento Parametro
+			for (ProcByCombo oneProcedureByCombo: oneComboByDoct.getCombo().getProcedureList()) {
+				if (oneProcedureByCombo.getProcedure().getId()==idP)
+					comboListWithParamProcedure.add(oneComboByDoct.getCombo());
+			}
+		}
+		for (Combo combo: comboListWithParamProcedure) {
+			for (ProcByCombo oneProcedureByCombo: combo.getProcedureList()) {
+				if (oneProcedureByCombo.getProcedure().getId()!=idP)
+					procedureList.add(oneProcedureByCombo.getProcedure().getName());
 			}
 		}
 		return procedureList;
@@ -171,6 +213,15 @@ public class DoctorService implements IDoctorService{
 				if (idC.equals(sByD.getSuffering().getId())) 
 					docList.add(doctor);
 		return docList;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Double getProcedurePrice(Long idD, Long idP, boolean isFinanced) {
+		if (isFinanced)
+			return doctorDAO.getPriceFinanced(idD, idP);
+		else 
+			return doctorDAO.getPriceCash(idD, idP);
 	}
 	
 }

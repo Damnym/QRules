@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-item :: head"></head>
+<body>
+	<header th:replace="layout/layout-item :: header"></header>
+	<div class="container py-4" align="center">
+		<div class="card bg-white border-305" style="width: 70%;">
+			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#0F3678"></div>
+			<div class="card-body " align="left">
+            
+				<form th:object="${product}" th:action="@{/product/form}" method="post" enctype="multipart/form-data" >
+				<!-- NOMBRE -->
+					<div class="form-group row">
+						<label for="name" class="col-form-label col-sm-3">Product:</label>
+						<div class="col-sm-8">
+							<input type="text" id="name" th:field="*{name}" class="form-control" th:errorclass="'form-control alert-danger'" />  
+							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>  
+						</div>
+					</div>
+					
+				<!-- PRECIO -->
+					<div class="form-group row">
+						<label for="price" class="col-form-label col-sm-3">Price:</label>
+						<div class="col-sm-8">
+							<input type="number" id="price" th:field="*{price}" class="form-control" th:errorclass="'form-control alert-danger'" />  
+							<small th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="form-text text-danger"></small>  
+						</div>
+					</div>
+					
+				<!-- Por cantidades? -->
+					<div class="form-group row">
+						<input type="checkbox" th:field="*{hasAmount}" th:value="False" class="form-control col-1" th:errorclass="'form-control alert-danger'" />
+						<label th:for="${#ids.prev('hasAmount')}" th:text="'Has amount?'" class="col-form-label col-sm-2"></label>
+						<small th:if="${#fields.hasErrors('hasAmount')}" th:errors="*{hasAmount}" class="form-text text-danger"></small>
+					</div>
+					
+					<!-- tips -->
+					<div class="form-group row">
+						<label for="tips" class="col-form-label col-sm-3">Remark:</label>
+						<div class="col-sm-8">
+                           <textarea id="tips" th:field="*{tips}" class="form-control" rows="2" th:errorclass="'form-control alert-danger'"></textarea>
+							<small th:if="${#fields.hasErrors('tips')}" th:errors="*{tips}" class="form-text text-danger"></small>
+						</div>
+					</div>
+					<!--  SUBMIT   -->
+					<div class="row">
+						<div class="col-6">  
+							<input type="reset" th:value="'Clear'" class="btn btn-block btn-dark" />
+	  					</div>
+	  					<div class="col-6">  
+	  						<input type="submit" th:value="${buttonaction}" class="btn  btn-block btn-305"/>
+	  					</div>
+	  				</div> 
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-item :: footer"></footer>
+</body>
+</html>

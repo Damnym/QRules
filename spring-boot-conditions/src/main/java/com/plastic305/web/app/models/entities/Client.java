@@ -14,11 +14,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -30,16 +30,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "clients")
 public class Client implements Serializable {
-	
 // DB
 //****
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "client_id")
-	private List<Suffering> conditionsList;
+//	@NotEmpty
+	private String conditionsName;
 	
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> orderList;
@@ -79,6 +77,13 @@ public class Client implements Serializable {
 	
 // SYSTEM LOGIC
 //*************	
+	@Transient                               
+	private List<Suffering> conditionsList;
+	
+	private boolean moreOneLipo;
+	
+	private boolean hasWeightLoss;
+
 	private Long p1, p2, doctor, accepted;  // esto valorar no ponerlo en la BD agregarlo como Order
 	                                       // 0: No aceptada por enfermedad
 	private Double weight; 
@@ -91,12 +96,36 @@ public class Client implements Serializable {
 	@Column(name = "make_cell_saver")   // Esto valorar dejarlo como producto y quitarlo como atributo aparte
 	private boolean makeCellSaver;  
 	
-	@Temporal(TemporalType.DATE)       // Esta fecha es la que elige como tentativa para la operacion
+	@Temporal(TemporalType.DATE)            // Esta fecha es la que elige como tentativa para la operacion
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date date;
 	
 	//  <<<<< IMPLEMENTATION >>>>>
 	
+	public boolean isMoreOneLipo() {
+		return moreOneLipo;
+	}
+
+	public void setMoreOneLipo(boolean moreOneLipo) {
+		this.moreOneLipo = moreOneLipo;
+	}
+
+	public boolean isHasWeightLoss() {
+		return hasWeightLoss;
+	}
+
+	public void setHasWeightLoss(boolean hasWeightLoss) {
+		this.hasWeightLoss = hasWeightLoss;
+	}
+
+	public String getConditionsName() {
+		return conditionsName;
+	}
+
+	public void setConditionsName(String conditionsName) {
+		this.conditionsName = conditionsName;
+	}
+
 	public Integer getAge() {
 		return age;
 	}
@@ -297,16 +326,17 @@ public class Client implements Serializable {
 	/**
 	 * @return the surName
 	 */
-	public String getSurName() {
+/*	public String getSurName() {
 		return surname;
 	}
 
 	/**
 	 * @param surName the surName to set
 	 */
-	public void setSurName(String surName) {
+	/*	public void setSurName(String surName) {
 		this.surname = surName;
 	}
+	*/
 	
 	/**
 	 * @return the conditionsList

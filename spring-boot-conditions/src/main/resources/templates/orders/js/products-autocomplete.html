@@ -4,13 +4,12 @@
 	<script type="text/javascript" th:fragment="javascriptAutoComplete">
 	
 	   $(function(){
+		   itemsHelper.totalProcedureShow();
 		   itemsHelper.getTotalM();
-		   $( "#accordion" ).accordion();
+	//	   $("#accordionEx").accordion();
+		   $('[data-toggle="popover"]').popover();
 	   });
-	   function calcular1(){
-			   alert(2); 
-	   }
-	
+	   	   
 		$(document).ready(function() {
 
 			$("#find_product").autocomplete({
@@ -26,7 +25,6 @@
 									value : item.id,
 									label : item.name,
 									price : item.price,
-									offer : item.hasOffer,
 								};
 							}));
 						},
@@ -44,7 +42,6 @@
 					line = line.replace(/{ID}/g, ui.item.value);
 					line = line.replace(/{NAME}/g, ui.item.label);
 					line = line.replace(/{PRICE}/g, ui.item.price);
-					line = line.replace(/{INOFERR}/g, ui.item.offer);
 					
 					$("#loadProductItems tbody").append(line);
 					itemsHelper.getSubtotal(ui.item.value, ui.item.price, 1);
@@ -99,6 +96,7 @@
 						total += parseInt($(this).html());
 					});
 					$('#totalc').html(total);
+					$('#totalc_h').html(total);
 					this.getTotal();
 				},
 				
@@ -108,15 +106,82 @@
 						total += parseInt($(this).html());
 					});
 					$('#totalm').html(total);
+					$('#totalm_h').html(total);
 					this.getTotal();
 				},
 				
 				getTotal: function(){
 					var total = 0 ;
-					total = parseInt($(totalm).html()) + parseInt($(totalc).html());
+					total = parseInt($(totalm).html()) + parseInt($(totalc).html()) + parseInt($(totalp).html());
 					
 					$('#total').html(total);
-				}
+				},
+				
+				test: function(request, response){
+						$.ajax({
+							url : "/orders/load-products/cell" ,
+							dataType : "json",
+							data : { term : request.term },
+							success : function(data) {
+										response($.map(data, function(item) {
+																var line = $("#orderItemsLayout").html();
+																	line = line.replace(/{ID}/g, item.id);
+																	line = line.replace(/{NAME}/g, item.name);
+																	line = line.replace(/{PRICE}/g, item.price);
+						
+																	$("#loadProductItems tbody").append(line);
+																	itemsHelper.getSubtotal(item.id, item.price, 1);
+																	$("#seva").hide();
+																	
+																	return false;
+															 }
+													  )
+											   );
+										},
+						}); // aquí tengo el cell
+				},
+				
+				totalProcedure: function (p1c, p1f, p2c, p2f, check){
+					var total = 0 ;
+					var observationStr = $(observation).html() ;
+					var observationM = "";
+					if(check){  // es financiado
+						if (p2c!=null)
+	 						total = p1f + p2f ;
+						else 
+							total = p1f ;	
+						observationStr = "Financed pay. "  +  observationStr;
+						$('#observation').html(observationStr);
+					}
+					else{   // cash        replace(substring_a_buscar,nuevoStr)
+						if (p2c!=null)
+							total = p1c + p2c ;
+						else 
+							total = p1c ;	
+						observationM = observationStr.replace("Financed pay. ","");
+						$('#observation').html(observationM);
+					}
+						
+					$('#totalp').html(total);
+					$('#totalp_h').html(total);
+					
+					this.getTotal();
+			   	},				
+			   					
+			   	totalProcedureShow: function (){  
+			   		var total = 0.0 ;
+			   		if (parseFloat($(p2pc).html())>=0){
+		   				total =  parseFloat($(p1pc).html()) + parseFloat($(p2pc).html()) ;  
+					}
+					else {
+						total = parseFloat($(p1pc).html()) ;	
+					}
+					$('#totalp').html(total);
+					$('#totalp_h').html(total);
+				this.getTotal();
+			   	}				
+				
+			   	
 			}
 		
 		

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<script type="text/javascript" th:fragment="utils">
+	
+	$(function () {
+		  $('[data-toggle="tooltip"]').tooltip()
+		  $('[data-toggle="popover"]').popover();
+		//  alert("hola");
+		
+		});
+	
+	
+		
+	$(document).ready( function () {
+	    $('#condition-table-list').DataTable();
+	} );
+	
+	</script>
+</body>
+</html>

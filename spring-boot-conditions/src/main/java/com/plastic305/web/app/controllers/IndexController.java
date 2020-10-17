@@ -27,16 +27,11 @@ import com.plastic305.web.app.services.ISufferingService;
 @Controller
 @SessionAttributes("client")
 public class IndexController {
-	
-	protected final Log logger = LogFactory.getLog(this.getClass());
-	
 	private static final String tittleR1 = "Questionnaire" ;
-	
-	private static final String conditionHeader = "Diseases that you have or presented" ;
 	private static final String questionnaireAnswerHeader = "Answers to the questionnaire" ;
 	private static final String decideNO = "¡¡¡You decided not to have an surgery with any doctor available!!!" ;
 	private static final String p1 = "First procedure: " ;
-	private static final String conditionQuestion = "Please state if do you had or have any of these conditions" ;
+	private static final String conditionQuestion = "Do you had or have any of these health conditions" ;
 	private static final String bmiHeader = "Data for BMI calculation" ;
 	private static final String bmiMetric = "Metric system" ;
 	private static final String bmiEnglish = "English system" ;
@@ -50,8 +45,12 @@ public class IndexController {
 	private static final String noAcceptedByBMIUpperExp = ", Indicating your weight is greater than what is allowed" ;
 	private static final String acceptedMsg = "You have been accepted, select the procedure or doctor you want" ;
 	private static final String acceptedWithRemarkHeader = "Accepted with Remarks" ;
+	private static final String notRemarkHeader = "Has not Remarks" ;
 	private static final String acceptedHeader = "Accepted" ;
 	private static final String hbgOutsideLimits = "Your hemoglobin level is outside the desired range" ;
+	private static final String date4Surgery = "Choose the tentative date for your surgery, take into account the availability of the surgeon" ;
+	private static final String date4SurgeryT = "Summary - Surgery date - Need cellsaver" ;
+	private static final String needCellT = "Information needed to perform Lipo" ;
 	
 	private static final Double bmiUpperLimit = Double.valueOf(35) ;
 	private static final Double poundstUpperLimit = Double.valueOf(190) ;
@@ -59,6 +58,8 @@ public class IndexController {
 	private static final Double hbgFLowerLimit = Double.valueOf(12) ;
 	private static final Double hbgMUpperLimit = Double.valueOf(18) ;
 	private static final Double hbgMLowerLimit = Double.valueOf(14) ;
+	
+	protected final Log logger = LogFactory.getLog(this.getClass());
 	
 	@Autowired ISufferingService sService;
 	@Autowired IClientService cService;
@@ -72,12 +73,12 @@ public class IndexController {
 	@GetMapping({"/r1/{clientId}"})   
 	public String form(@PathVariable(value = "clientId") Long clientId, Model model) {
 		Client cliente =  cService.findOne(clientId) ;
-		cService.clean(cliente);
+		cService.prepare(cliente);
 		
 		List <Suffering> sList = sService.findAll(); 
 
 		model.addAttribute("tittle", tittleR1);
- 		model.addAttribute("conditionHeader", conditionHeader);
+ 		model.addAttribute("conditionHeader", conditionQuestion);
  		model.addAttribute("conditionQuestion", conditionQuestion) ;
  		model.addAttribute("bmiHeader", bmiHeader) ;    
  		model.addAttribute("bmiEnglish", bmiEnglish) ;    
@@ -96,7 +97,7 @@ public class IndexController {
 		List <Suffering> sList = sService.findAll(); 
 
 		model.addAttribute("tittle", tittleR1);
-	 	model.addAttribute("conditionHeader", conditionHeader);
+	 	model.addAttribute("conditionHeader", conditionQuestion);
 	 	model.addAttribute("conditionQuestion", conditionQuestion) ;
 	 	model.addAttribute("bmiHeader", bmiHeader) ;    
  		model.addAttribute("bmiMetric", bmiMetric) ;    
@@ -115,7 +116,7 @@ public class IndexController {
 		List <Suffering> sList = sService.findAll(); 
 
 		model.addAttribute("tittle", tittleR1);
- 		model.addAttribute("conditionHeader", conditionHeader);
+ 		model.addAttribute("conditionHeader", conditionQuestion);
  		model.addAttribute("conditionQuestion", conditionQuestion) ;
  		model.addAttribute("bmiHeader", bmiHeader) ;    
  		model.addAttribute("bmiEnglish", bmiEnglish) ;    
@@ -148,6 +149,7 @@ public class IndexController {
 			cService.getBMI(cliente) > bmiUpperLimit) {     // BMI por encima de lo permitido
 			return "redirect:/no_accepted";
 		}
+		
 		return url;
 	}
 		
@@ -186,10 +188,10 @@ public class IndexController {
 		model.addAttribute("msg", decisionH);
 		model.addAttribute("choices", choices);
 		model.addAttribute("decision", decision);
+		model.addAttribute("tittle", "Can not apply");
 
-		cliente.setHeightFeetOrCentimeters(null);
-		cliente.setHeightInches(null);
-		cliente.setWeight(null);
+		cliente.setConditionsName(cService.getConditionsListCSV4Save(cliente)); // condiciones como string
+		
 		cService.save(cliente);  // Salvado el cliente como quedó......
 		st.setComplete();
 		
@@ -219,6 +221,7 @@ public class IndexController {
 		    (cliente.getGender().equals("Man")   && (cliente.getHbg()>hbgMUpperLimit || cliente.getHbg()<hbgMLowerLimit)))    // Hombre con la hemoglobina fuera del rango
 			model.addAttribute("hbgOutsideRange", hbgOutsideLimits);
 		
+		model.addAttribute("tittle", "Doctor or procedure first?");
 		return "doctor_or_procedure";
 	}
 	
@@ -239,7 +242,8 @@ public class IndexController {
 			model.addAttribute("doctorlist", dService.findAllbyConditions(cliente.getConditionsList())) ;
 		model.addAttribute("procedurelisth", "Procedures list"); 
 		model.addAttribute("procedurelistempty", "Choose the doctor to see the procedures that his make"); 
-
+		model.addAttribute("tittle", "First doctor, then procedure");
+		
 		return "choice_procedure_by_doctor";
 	}
 	
@@ -265,7 +269,7 @@ public class IndexController {
 		
 		model.addAttribute("procedurelisth", "Procedures list of doctor " + dService.findOne(iddoct).getName()); 
 		model.addAttribute("procedurelist", dService.findAllProcedurebyDoctorId(iddoct)); 
-				
+		model.addAttribute("tittle", "First doctor, then procedure");		
 		return "choice_procedure_by_doctor";
 	}		
 	
@@ -297,6 +301,7 @@ public class IndexController {
 		else 
 			model.addAttribute("procedurelistempty", "Sorry this doctor don't make Combo with " + pService.findOne(cliente.getP1()).getName());
 	
+		model.addAttribute("tittle", "Choose other procedure for combo");
 		return "choice-combo-by-doctor-by-p1";
 	}			
 	
@@ -327,7 +332,8 @@ public class IndexController {
 			model.addAttribute("procedurelist", pService.findAllOrder()); 
 		else 
 			model.addAttribute("procedurelist", dService.findAllProcedureOfAllDoctorsByConditions(cliente.getConditionsList())) ;
-			
+		
+		model.addAttribute("tittle", "Procedure, then Doctor");
 		return "choice_doctor_by_procedure";
 	}
 		
@@ -389,6 +395,7 @@ public class IndexController {
 		else
 			model.addAttribute("doctorlist", dService.findAllByConditionsByProcedure(cliente.getConditionsList(), cliente.getP1())); 
 
+		model.addAttribute("tittle", "Choose other Procedure for Combo");
 		return "choice-combo-by-p1-by-doctor"; 
 	}	
 	
@@ -413,9 +420,10 @@ public class IndexController {
 		model.addAttribute("explanationb", "Only the doctors: "); 
 		model.addAttribute("explanationc", "perform the procedures on patients who have or are suffering " 
 				                         + cService.getConditionsWithValue(cliente, 2)
- 										 + " condition(s). Do you agree to be treated by any of these?");
+ 										 + " condition(s). Do you agree to be treated by any of these? \r\n Do you want choice the doctor now or see first the procedures?");
 		model.addAttribute("tips", "Do you want choice the doctor now or see first the procedures?");
 		model.addAttribute("doctors", dService.findAllbyConditions(cliente.getConditionsList()));
+		model.addAttribute("tittle", "Some Doctor for theese Condition");
 		return "somedoctors";
 	}
 	
@@ -424,11 +432,11 @@ public class IndexController {
 	@GetMapping({"result"})
 	public String result(Client cliente, Model model, SessionStatus st) {
 		List <String> choices = new ArrayList<>() ;
-		String observation = "Has not Remarks" ;
+		String observation = notRemarkHeader ;
 		
 		model.addAttribute("choice_h", questionnaireAnswerHeader);
 		choices.add("Condition: " + cService.getConditionsListCSV(cliente));
-		observation = cService.getRemarksListCSV(cliente);
+		observation = cService.getConditionsListCSV4Save(cliente);
 		
 		if (cliente.getDoctor()!=null) {
 			choices.add("Doctor: " + dService.findOne(cliente.getDoctor()).getName());
@@ -436,8 +444,13 @@ public class IndexController {
 			if (cliente.getP1()!=null) {
 				choices.add(p1 + pService.findOne(cliente.getP1()).getName()); 
 				model.addAttribute("observation", observation);
-				if (cliente.getP2()!=null)
+				if (pService.findOne(cliente.getP1()).isRequiredCellSaver())
+					model.addAttribute("needAddCell", "true");
+				if (cliente.getP2()!=null) {
 					choices.add("Combo with: " + pService.findOne(cliente.getP2()).getName());
+					if (pService.findOne(cliente.getP2()).isRequiredCellSaver())
+						model.addAttribute("needAddCell", "true");
+				}
 			}
 			else  
 				choices.add(decideNO);
@@ -447,9 +460,13 @@ public class IndexController {
 				 choices.add(p1 + pService.findOne(cliente.getP1()).getName()); 
 			choices.add(decideNO);
 		}
+		
 		model.addAttribute("choices", choices);
 		cliente.setDate(dService.findOne(cliente.getDoctor()).getDate());
 		model.addAttribute("minDate", dService.findOne(cliente.getDoctor()).getDate());
+		model.addAttribute("date4Surgery", date4Surgery);
+		model.addAttribute("tittle", "Summary");
+		model.addAttribute("needCellT", needCellT);
 		
 		return "result";
 	}
@@ -458,8 +475,10 @@ public class IndexController {
 // *******desarrollo******	
 	@PostMapping("result")
 	public String noAcceptedP(Client cliente, Model model, SessionStatus st) {
+		String cName = cService.getConditionsListCSV4Save(cliente);
+		cliente.setConditionsName(cName); // condiciones como string
 		cService.save(cliente);
-		return "redirect:/orders/order-form/0/" + cliente.getId();
+		return "redirect:/orders/order-form/" + cliente.getId();
 	}
 			
 	//*********************************************************************************************

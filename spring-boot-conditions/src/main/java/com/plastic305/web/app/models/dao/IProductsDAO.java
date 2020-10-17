@@ -136,6 +136,13 @@ public interface IProductsDAO extends PagingAndSortingRepository<Product, Long> 
 	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP1, Long idD, Long IdP2);
 	
 
+	@Query("SELECT prodrlist "
+			+ "FROM Procedure p "
+			+		"join p.productRecommendedList prodrlist "
+			+ 	 	"join prodrlist.product prod "
+			+ "WHERE p.id=?1")
+	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP); 
+	
 	
 	//  <<<<<<<<<<<<<<< NOOOOOOOOOOOOO se usan	 >>>>>>>>>>>>>>>
 	

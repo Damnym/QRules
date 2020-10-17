@@ -64,8 +64,6 @@ public class Doctor implements Serializable {
 		procList = new ArrayList<ProcByDoct>(); 
 	}
 	*/
-	
-	
 	public String getShortDate() {
 		Calendar c = new GregorianCalendar(); 
 		c.setTime(date);

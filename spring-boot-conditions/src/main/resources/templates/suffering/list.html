@@ -1,78 +1,68 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="layout/layout :: head"></head>
-<body>
-	<header th:replace="layout/layout :: header"></header>
-	<div class="container py-4">
-		<div class="card bg-light">
-			<div th:text="${tittle}" class="card-header bg-info text-white font-weight-bold" 
-				 align="center" ></div>
-			<div class="card-body">
-			<!-- sec:authorize="hasRole('ROLE_ADMIN')" 
-				<h4 align="right" class="card-tittle">
-					<a class="btn btn-secondary btn-xs" th:href="@{/product/form/}"
-				       th:text="'Registrar producto'"></a>
-				</h4>
-			-->
-				<table class="table table-striped table-bordered">
-					<!-- table-bordered -->
-					<thead align="center">
-						<tr>
-					<!--	<th style="width: 25%;" scope="col">Vista previa</th>
-					 	    <th scope="col">C�digo</th>   -->
-							<th th:text="'Name'" scope="col"></th> 
-							<th th:text="'Is Accepted'" scope="col"></th> 	
-							<th th:text="'Doctor'" scope="col"></th>
-							<!-- sec:authorize="hasRole('ROLE_ADMIN')" --> 		
-							<th th:text="Edit" scope="col"></th>
-							<!-- sec:authorize="hasRole('ROLE_ADMIN')" --> 		
-							<th th:text="Delete" scope="col"></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="s: ${suffering_list}">
-							<td th:text="${s.name}"></td>
-							<td th:if="${s.accepted == 0}" 
-								th:text="'NO'" align="right"></td>
-							<td th:if="${s.accepted == 1}" 
-								th:text="'SI'" align="right"></td>
-							<td th:if="${s.accepted == 2}" 
-								th:text="'By some doctors'" align="right"></td>
-							<td th:text="''" align="right"></td>
-
-							<!-- Editar producto -->
-							<td align="center">
-							<!--	<a th:href="@{/product/form/} + ${p.id}"> --> 
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16"
-										 width="14" height="16"> 
-										 	<path fill-rule="evenodd"
-											      d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 011.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z">
-											</path>
-									 </svg>
-							 <!--   </a> -->
-							</td>
- 
-						<!--	 Eliminar enfermedad -->
-							<td align="center">
-								<a th:href="@{/suffering/delete/} + ${s.id}"
-								   onclick="return confirm('Desea eliminar??');">
-									<svg xmlns="http://www.w3.org/2000/svg" 
-									     viewBox="0 0 12 16" width="12" height="16">
-										<path fill-rule="evenodd"
-										  	  d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z">
-								    	</path>
-									</svg>
-								</a>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<nav th:replace="layout/paginator-nav :: paginator"></nav>
-			</div>
-		</div>
-	</div>
-	
-	<footer th:replace="layout/layout :: footer"></footer>
-</body>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+       <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+   <head th:replace="layout/layout-conditions :: head"></head>
+   <body>
+      <header th:replace="layout/layout-conditions :: header"></header>
+      <div class="container py-1">
+         <div class="card bg-white border-305">
+            <div th:text="${tittle}" class="card-header border-305 text-white font-weight-bold" style="background-color: #0F3678" align="center"></div>
+            <div class="card-body">
+               <div class="row">
+                  <div class="col" align="right"> 
+                      <a th:href="@{/suffering/form/}" data-toggle="tooltip" data-placement="left" title="New condition" class="a a-305 fas fa-notes-medical fa-2x"></a>
+                  </div>
+               </div>
+               <div class="row mt-2">
+                  <div class="col">
+                     <table class="table table-striped hover compact" style="font-size: 14px" id="condition-table-list">
+                     <!-- table-bordered -->
+                        <thead align="center">
+                           <tr>
+                              <th th:text="'Name'" scope="col" width="22%"></th>
+                              <th th:text="'Can apply?'" scope="col" width="12%" ></th>
+                              <th th:text="'Remark'" scope="col" width="54%" ></th>
+                              <th th:text="'Edit'" scope="col" width="10%" ></th>
+                              <th th:text="'Remove'" scope="col" width="6%" ></th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr th:each="conditionWithDoctor: ${conditionList.keySet()}">
+                              <td th:text="${conditionWithDoctor.name}" align="justify" class="align-middle"></td>
+                           <!-- Can apply for surgery -->
+                              <td  align="center" class="align-middle">
+                                 <span th:if ="${conditionWithDoctor.accepted == 0}" th:text="'No'"></span>
+                                 <span th:if ="${conditionWithDoctor.accepted == 1}" th:text="'Yes'"></span>
+                                 <span th:if ="${conditionWithDoctor.accepted == 2}" th:text="'Some surgeons'" role="button"  data-toggle="popover"  data-trigger="hover" 
+                                       th:title="'Surgeons'" th:data-content="${conditionList.get(conditionWithDoctor)}"></span>
+                                 <span th:if ="${conditionWithDoctor.accepted == 3}" th:text="'Yes*'" align="center"></span>
+                              </td>
+                           <!-- ********************* -->
+                              <td th:text="${conditionWithDoctor.warning}" align="justify" class="align-middle"></td>   
+                           <!-- Editar condition -->
+                              <td align="center" class="align-middle">
+                                 <a th:href="@{/suffering/form/} + ${conditionWithDoctor.id}" class="a a-305 fas fa-pencil-alt" style="color: #000"></a>
+                              </td>
+                           <!-- Eliminar condition -->
+                            <td align="center" class="align-middle">
+                              <a th:href="'/suffering/delete/' + ${conditionWithDoctor.id}" onclick="return confirm('Do you want remove this Condition?');" type="button" 
+                                 class="btn fas fa-eraser"></a> 
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+     <!--                <div class="row">
+                     <div class="col" align="left">
+                     <h6 th:text="'*with remark'" style="font-style: italic;"></h6>
+                     </div>
+                     </div>-->
+                  </div>
+               </div> 
+            </div>
+         </div>
+      </div>
+      <footer th:replace="layout/layout-conditions :: footer"></footer>
+      <script th:src="@{/js/jquery.dataTables.min.js}"></script>
+      <script th:replace="suffering/js/utils-js.html :: utils"></script>
+   </body>
 </html>

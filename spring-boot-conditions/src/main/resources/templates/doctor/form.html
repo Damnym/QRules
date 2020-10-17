@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-doctor :: head"></head>
+<body>
+	<header th:replace="layout/layout-doctor :: header"></header>
+	<div class="container py-4" align="center">
+		<div class="card bg-white border-305" style="width: 70%;">
+			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#0F3678"></div>
+			<div class="card-body " align="left">
+				<form th:object="${doctor}" th:action="@{/doctor/form}" method="post" enctype="multipart/form-data" >
+				<!-- NOMBRE -->
+					<div class="form-group row">
+						<label for="name" class="col-form-label col-sm-3">Name:</label>
+						<div class="col-sm-8">
+							<input type="text" id="name" th:field="*{name}" class="form-control" th:errorclass="'form-control alert-danger'" />  
+							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>  
+						</div>
+					</div>
+				<!-- APELLIDO -->
+					<div class="form-group row">
+						<label for="surname" class="col-form-label col-sm-3">Surname:</label>
+						<div class="col-sm-8">
+							<input type="text" id="surname" th:field="*{surname}" class="form-control" th:errorclass="'form-control alert-danger'" />  
+							<small th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}" class="form-text text-danger"></small>  
+						</div>
+					</div>
+               <!-- Cell Saver? -->
+                    <div class="form-group row">
+                       <input type="checkbox" th:field="*{requiredCellSaver}" th:value="False" class="form-control col-1" th:errorclass="'form-control alert-danger'" />
+                       <label th:for="${#ids.prev('requiredCellSaver')}" th:text="'Mandatory Cell Saver?'" class="col-form-label col-sm-4"></label>
+                       <small th:if="${#fields.hasErrors('requiredCellSaver')}" th:errors="*{requiredCellSaver}" class="form-text text-danger"></small>
+                       
+                       <label for="date" class="col-form-label col-sm-3">Availability date:</label>
+                       <div class="col-sm-3">
+                          <input type="date" id="date" th:field="*{date}" class="form-control" th:errorclass="'form-control alert-danger'"  style="width: 100%"/>  
+                          <small th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="form-text text-danger"></small>
+                       </div>
+                    </div>
+               <!-- FECHA DE SUSCRIPCIÓN -->
+                    <div class="form-group row">
+                    </div>
+               
+               
+                     <div class="container">
+                        <!-- INICIO DEL ACORDEON -->
+                        <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" align="center">
+                           <div class="col-10" align="right">
+                              <div class="col " align="right">
+                                 
+                              <!-- Accordion card 1-->
+                                 <div class="card my-1" style="border-color: #0F3678; border-right-width: 3px">  
+                                 <!-- Card header -->                                                          
+                                    <div class="card-header" style="background-color:#fff; border-color: #0F3678; border-bottom-width: 3px" role="tab" 
+                                         th:id="'heading_procedures'">
+                                       <a data-toggle="collapse" data-parent="#accordionEx" aria-expanded="false" class="a a-305 fas fa-angle-down rotate-icon" 
+                                          th:href="'#collapse_procedures'" th:aria-controls="'collapse_procedures'">
+                                          <span th:text="'Asign procedures and combos'" class="text-center font-weight-bold" 
+                                                style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
+                                       </a>
+                                       </div>
+                                    <!-- Card body -->  
+                                       <div th:id="'collapse_procedures'" class="collapse" role="tabpanel" th:aria-labelledby="'heading_procedures'" 
+                                            data-parent="#accordionEx">
+                                          <div class="card-body">
+                                             <div class="row">
+                                                <div class="col combos" align="right">
+                                                   <ul class=" border-success" >
+                                                      <li th:text="'ddd'" class="text-left border-success"></li>
+                                                   </ul>
+                                                </div>
+                                             </div>   
+                                          </div>
+                                       </div>
+                                    </div><!-- Accordion card 1-->
+                                    
+                              <!-- Accordion card 2-->
+                                 <div class="card my-1" style="border-color: #0F3678; border-right-width: 3px">  
+                                 <!-- Card header -->                                                          
+                                    <div class="card-header" style="background-color:#fff; border-color: #0F3678; border-bottom-width: 3px" role="tab" 
+                                         th:id="'heading_condition'">
+                                       <a data-toggle="collapse" data-parent="#accordionEx" aria-expanded="false" class="a a-305 fas fa-angle-down rotate-icon" 
+                                          th:href="'#collapse_condition'" th:aria-controls="'collapse_condition'">
+                                          <span th:text="'Asign condition'" class="text-center font-weight-bold" 
+                                                data-toggle="tooltip" data-placement="right" title="Those that do not apply to all surgeons"
+                                                style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
+                                       </a>
+                                       </div>
+                                    <!-- Card body -->  
+                                       <div th:id="'collapse_condition'" class="collapse" role="tabpanel" th:aria-labelledby="'heading_condition'" 
+                                            data-parent="#accordionEx">
+                                          <div class="card-body">
+                                             <div class="row">
+                                                <div class="col combos" align="right">
+                                                   <ul class=" border-success" >
+                                                      <li th:text="'ddd'" class="text-left border-success"></li>
+                                                   </ul>
+                                                </div>
+                                             </div>   
+                                          </div>
+                                       </div>
+                                    </div><!-- Accordion card 2-->
+                                 </div>
+                              </div>
+                           </div><!-- FIN DEL ACORDEON -->
+                        </div>
+                  
+               
+               
+               
+					<!--  SUBMIT   -->
+					<div class="row mt-5">
+						<div class="col-6">  
+							<input type="reset" th:value="'Clear'" class="btn btn-block btn-dark" />
+	  					</div>
+	  					<div class="col-6">  
+	  						<input type="submit" th:value="${buttonaction}" class="btn  btn-block btn-305"/>
+	  					</div>
+	  				</div> 
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-doctor :: footer"></footer>
+    <script th:replace="doctor/js/utils-js.html :: utils"></script>
+</body>
+</html>

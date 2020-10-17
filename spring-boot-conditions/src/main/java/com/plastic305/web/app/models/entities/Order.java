@@ -28,26 +28,68 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-//	@NotEmpty
 	private String observation;
+	
+	private String doctorName ;
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date date;
 	
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date dateSurgery ;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Client client;
 	
-//	private Double totalOrder;
+	private boolean financed;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "order_id")
 	private List<OrderItem> itemList;
 	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "order_id")
+	private List<OrderProcedure> procedureList;
+	
 	//  <<<<< IMPLEMENTATION >>>>>
+
+	public boolean isFinanced() {
+		return financed;
+	}
+
+	public void setFinanced(boolean financed) {
+		this.financed = financed;
+	}
+
+	public Date getDateSurgery() {
+		return dateSurgery;
+	}
+
+	public void setDateSurgery(Date dateSurgery) {
+		this.dateSurgery = dateSurgery;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public List<OrderProcedure> getProcedureList() {
+		return procedureList;
+	}
+
+	public void setProcedureList(List<OrderProcedure> procedureList) {
+		this.procedureList = procedureList;
+	}
 
 	public Order() {
 		itemList  = new ArrayList<OrderItem>(); 
+		procedureList  = new ArrayList<OrderProcedure>(); 
 	}
 	
 	@PrePersist
@@ -60,11 +102,18 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 		for (int i = 0; i < itemList.size(); i++) {
 			totalOrder+=itemList.get(i).getSubTotal();
 		}
+		for (int i = 0; i < procedureList.size(); i++) {
+			totalOrder+=procedureList.get(i).getSubTotal();
+		}
 		return totalOrder;
 	}
 	
 	public void addItem(OrderItem item) {
 		itemList.add(item);
+	}
+
+	public void addProcedure(OrderProcedure procedure) {
+		procedureList.add(procedure);
 	}
 
 	public Long getId() {

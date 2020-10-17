@@ -25,8 +25,13 @@ public interface IDoctorService {
 	public void delete(Long id);
 	
 	public List<Procedure> findAllProcedurebyDoctorId(Long idD) ;
+	public List<Procedure> findProceduresNotBelongToDoctor(Long idD) ;
+	public List<Procedure> findProceduresNotBelongToDoctorByName(Long id, String term);
 	public List<Procedure> findAllProcedureOfAllDoctorsByCondition(Long idC) ;
 	public List<Procedure> findAllProcedureOfAllDoctorsByConditions(List<Suffering> conditions) ;
 	public List<Procedure> findAllProcedurebyDoctorIdbyFirstProcedure(Long idD, Long idP) ;// Para Combo
+	public List<String> findAllProcedureNamebyDoctorIdbyFirstProcedure(Long idD, Long idP) ;// Para Combo
+	
+	public Double getProcedurePrice(Long idD, Long idP, boolean isFinanced);
 
 }

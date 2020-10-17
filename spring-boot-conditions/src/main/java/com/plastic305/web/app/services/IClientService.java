@@ -16,13 +16,14 @@ public interface IClientService {
 //GENERAL
 //*******
 	public List<Client> findAll();
+	public List<Client> findByNameRegExp(String term);
 	public Page<Client> findAll(Pageable page);
 	public Client findOne(Long id);
 
 	public void save(Client nClient);
 	public void delete(Long id);
 	
-	public void clean(Client client);
+	public void prepare(Client client);
 
 //COMERCIAL
 //*********
@@ -49,6 +50,7 @@ public interface IClientService {
 //***********
 	public List<String> getConditionsWithValue(Client client, int value); 
 	public String getConditionsListCSV(Client client); 
+	public String getConditionsListCSV4Save(Client client);
 	public String getRemarksListCSV(Client client); 
 	public boolean haveRemark(Client client);
 	

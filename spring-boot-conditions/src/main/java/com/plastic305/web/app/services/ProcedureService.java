@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.plastic305.web.app.models.dao.IProcedureDAO;
+import com.plastic305.web.app.models.dao.IProductsDAO;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.ProductRecommendedByProcedure;
 
 @Service
 public class ProcedureService implements IProcedureService {
-    @Autowired
-    IProcedureDAO pDAO;
+    @Autowired IProcedureDAO pDAO;
+    @Autowired IProductsDAO iDAO;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -53,5 +55,12 @@ public class ProcedureService implements IProcedureService {
 	public List<Procedure> findAllOrder() {
 		return (List<Procedure>) pDAO.findAllByOrderByName();
 	}
+
+	@Override
+	public List<ProductRecommendedByProcedure> findProductsRecommended(Long idP) {
+		return iDAO.findProductsRecommendedByProcedure(idP);
+	}
+	
+	
 
 }

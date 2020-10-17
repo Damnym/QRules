@@ -1,115 +1,108 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/layout :: head"></head>
+<head th:replace="layout/layout-client :: head"></head>
 <body>
-	<header th:replace="layout/layout :: header"></header>
-	<div class="mr-3 ml-3 py-4" >
+	<header th:replace="layout/layout-client :: header"></header>
+	<div class="container py-1" style="font-size: 15px">
 		<form th:action="@{/r1}" method="post" class="form-inline" th:object="${client}">
 	 		<div class="row">  <!-- Fila Principal  -->
+	 			<div class="col-9"> <!-- Columna Der. Condiciones  -->
+					<div class="card bg-white">
+						<div th:text="${conditionHeader}" class="card-header font-weight-bold text-white" align="center" style="background-color:#0F3678"></div>
+						<div class="card-body" align="left">
+							<ul class="list-group ">
+								<li class="list-group-item">
+									<div class="container newspaper1">
+										<div th:each="s: ${sList}" class="row">
+											<div class="my-1"> 
+												<input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}"
+												 	   th:checked="${#lists.contains(client.conditionsList, s)}"> 
+											</div>
+											<div class="mx-2 my-1"> 
+												<label th:for="${#ids.prev('conditionsList')}" th:text="${s.name}"></label>
+											</div>
+										</div>
+									</div>	
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
 	      		<div class="col-3">    <!-- Columna Iz. con el cálculo de BMI y Hemoglobina -->
 					<div class="card bg-white" >
 						<div th:text="${bmiHeader}" class="card-header font-weight-bold bg-dark text-white" align="center"></div>
 						<div class="card-body">
-						<div th:if="${bmiEnglish}" class="row px-2"> <!-- Método English -->
-						
-							(English system&nbsp;|&nbsp; <a th:text="${bmiLink}" th:href="@{/r1-metric/}"></a>)
-							
-							<div class="row py-3">
-								<div class="row px-4">
-									<b>Height</b>
+							<!-- Método English -->
+							<div th:if="${bmiEnglish}" class="row px-2"> 
+								(English system&nbsp;|&nbsp; <a th:text="${bmiLink}" th:href="@{/r1-metric/}"></a>)
+								<div class="row py-3">
+									<div class="row px-4">
+										<b>Height</b>
+									</div>
+									<div class="form-group col-12">
+										<label for="heightFeetOrCentimeters" class="col-form-label col-7">Feet</label>
+										<input type="text" id="heightFeetOrCentimeters" th:field="*{heightFeetOrCentimeters}" class="form-control col-5"/> 
+										<label for="heightInches" class="col-form-label col-7 py-4">Inches</label>
+										<input type="text" id="heightInches" th:field="*{heightInches}" class="form-control col-5" /> 
+									</div>
 								</div>
-								<div class="form-group col-9">
-									<label for="heightFeetOrCentimeters" class="col-form-label col-7">Feet</label>
-									<input type="text" id="heightFeetOrCentimeters" th:field="*{heightFeetOrCentimeters}" class="form-control col-5"/> 
-									<label for="heightInches" class="col-form-label col-7 py-4">Inches</label>
-									<input type="text" id="heightInches" th:field="*{heightInches}" class="form-control col-5" /> 
-								</div>
-							</div>
-							<div class="row">
-								<div class="row px-4">
-									<b>Weight</b>
-								</div>
-								<div class="form-group col-9">  
-									<label for="weight" class="col-form-label col-7">Pounds</label>
-									<input type="text" id="weight" th:field="*{weight}" class="form-control col-5" /> 
-								</div>
-							</div>
-						</div>
-						<div th:if="${bmiMetric}" class="row px-2"> <!-- Método Metric -->
-							(<a th:text="${bmiLink}" th:href="@{/r1-english/}"></a> &nbsp;|&nbsp;Metric system)
-							<div class="row py-3">
-								<div class="row px-4">
-									<b>Height</b>
-								</div>
-								<div class="form-group col-9">
-									<label for="heightFeetOrCentimeters" class="col-form-label col-7">Centimeters</label>
-									<input type="text" id="heightFeetOrCentimeters" th:field="*{heightFeetOrCentimeters}" class="form-control col-5" /> 
+								<div class="row">
+									<div class="row px-4">
+										<b>Weight</b>
+									</div>
+									<div class="form-group col-12">  
+										<label for="weight" class="col-form-label col-7">Pounds</label>
+										<input type="text" id="weight" th:field="*{weight}" class="form-control col-5" /> 
+									</div>
 								</div>
 							</div>
-							<div class="row">
-								<div class="form-group px-2">
-									<b>Weight</b>
+							<div th:if="${bmiMetric}" class="row px-2"> <!-- Método Metric -->
+								(<a th:text="${bmiLink}" th:href="@{/r1-english/}"></a> &nbsp;|&nbsp;Metric system)
+								<div class="row py-3">
+									<div class="row px-4">
+										<b>Height</b>
+									</div>
+									<div class="form-group col-9">
+										<label for="heightFeetOrCentimeters" class="col-form-label col-7">Centimeters</label>
+										<input type="text" id="heightFeetOrCentimeters" th:field="*{heightFeetOrCentimeters}" class="form-control col-5" /> 
+									</div>
 								</div>
-								<div class="form-group col-9">  <!-- class="col-form-label col-sm-3" -->
-									<label for="weight" class="col-form-label col-7">Kilograms</label>
-									<input type="text" id="weight" th:field="*{weight}" class="form-control col-5" /> 
+								<div class="row">
+									<div class="form-group px-2">
+										<b>Weight</b>
+									</div>
+									<div class="form-group col-9">  <!-- class="col-form-label col-sm-3" -->
+										<label for="weight" class="col-form-label col-7">Kilograms</label>
+										<input type="text" id="weight" th:field="*{weight}" class="form-control col-5" /> 
+									</div>
 								</div>
 							</div>
-						</div>
-			 <!-- Columna Iz. 			<input type="submit" value="Continue..." class="btn btn-lg btn-block btn-outline-success">   -->	
 						</div>
 					</div>
+					<p></p>
 					<div class="card bg-white" >
 						<div th:text="'Hemoglobin'" class="card-header font-weight-bold bg-dark text-white py-2" align="center"></div>
 						<div class="card-body">
-							<div class="row "> 
+							<div class="row"> 
 								<div class="row py-3">
 									<div class="form-group">
 										<label for="hbg" class="col-form-label col-4">Value:</label>
-										<input type="text" id="hbg" th:field="*{hbg}" class="form-control col-8" /> 
+										<input type="text" id="hbg" th:field="*{hbg}" class="form-control col-6" /> 
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
+					<p></p>
+					<div class="row" align="right">
+						<div class="col-12" align="right">
+						<input type="submit" value="Continue..." class="btn btn-lg btn-block btn-305"> 
+						</div>
+					</div>
 	     		</div> 
-	  	  		<div class="col-9"> <!-- Columna Der. Condiciones  -->
-					<div class="card bg-light" >
-						<div th:text="${conditionHeader}" class="card-header font-weight-bold" align="center"></div>
-						<div class="card-body" align="left">
-<!-- aqui empezaba el form  -->
-							<div class="container my-2">
-								<div class="row">
-									<div class="col-sm">
-										<ul class="list-group my-1">
-											<li th:text="${conditionQuestion}" class="list-group-item active bg-info text-center font-weight-bold"></li>
-											<li class="list-group-item">
-												<div class="container newspaper1">
-													<div th:each="s: ${sList}" class="row">
-														<div class="mx-2 my-2"> 
-															<input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}"
-															 	   th:checked="${#lists.contains(client.conditionsList, s)}"> 
-														</div>
-														<div class="mx-2 my-2"> 
-															<label th:for="${#ids.prev('conditionsList')}" th:text="${s.name}"></label>
-														</div>
-													</div>	
-												</div>
-											</li>
-											<li class="list-group-item">
-												<input type="submit" value="Continue..." class="btn btn-lg btn-block btn-outline-success"> 
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-<!-- aqui terminaba el form  -->
-				        </div>
-				 	</div>
-	  	  	    </div>
 	  		</div>
 	  	</form>
 	</div>
-	<footer th:replace="layout/layout :: footer"></footer>
+	<footer th:replace="layout/layout-client :: footer"></footer>
 </body>
 </html>

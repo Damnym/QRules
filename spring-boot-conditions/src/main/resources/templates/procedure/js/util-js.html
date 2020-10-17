@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<script type="text/javascript" th:fragment="util">
+	
+	$(function () {
+		  $('[data-toggle="tooltip"]').tooltip();
+		//  alert(1);
+		  $('#procedure-table-list').DataTable();
+		})
+	
+		
+		
+	$(document).ready(function () {
+		$("#find_item").autocomplete({
+		
+			source : function(request, response) {
+				$.ajax({
+					url : "/procedure/load-products/" + request.term,
+					dataType : "json",
+					data : { term : request.term },
+					success : function(data) {
+						response($.map(data, function(item) {
+							return {
+								value : item.id,
+								label : item.name,
+								hasAmount: item.hasAmount,
+							};
+						}));
+					},
+				});
+			},
+		
+			select : function(event, ui) {
+				if (itemsHelper.hasProduct(ui.item.value)){  // hasProduct  
+					itemsHelper.incAmount(ui.item.value, ui.item.hasAmount);  // incAmount 
+					return false;
+				}
+			
+				var line = $("#procedureItemsLayout").html();  //#orderItemsLayout        
+				line = line.replace(/{ID}/g, ui.item.value);
+				line = line.replace(/{NAME}/g, ui.item.label);
+				
+				$("#loadProcedureItems tbody").append(line); //#loadProductItems
+				return false; 
+			}
+		});
+	    
+		$("form").submit(function(){
+			$("#procedureItemsLayout").remove();
+			return;
+		})
+
+	});
+	/////////////////////////
+		
+	var itemsHelper = {
+			hasProduct: function(id){
+			var result = false;
+			$('input[name="item_id[]"]').each(function(){   
+				if (parseInt(id) == parseInt($(this).val())){
+					result = true;
+			   	}
+			});
+			return result;
+		},
+			
+		incAmount: function(id, hasAmount){
+			if (hasAmount){
+				var amount = $("#amount_" + id).val() ? parseInt($("#amount_" + id).val()) : 0;
+				$("#amount_" + id).val(++amount);
+			}
+		},
+				
+		deleteLine: function(id){
+			$("#row_" + id).remove();
+			this.getTotal();
+		},
+	};
+	</script>
+</body>
+</html>

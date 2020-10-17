@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author damny
@@ -34,7 +35,7 @@ public class Product implements Serializable {
 	@NotEmpty
 	private String name;
 	
-	@NotEmpty
+	@NotNull
 	private double price;
 	
 	@Column(name="has_amount")
@@ -87,15 +88,13 @@ public class Product implements Serializable {
 		return this.price ;
 	}
 
-	public double getPriceCalc(int amount) {  /////////////////////////
-		double price = this.price ;
-		
-		for (OfertByAmount offer : ofertList) 
-			if (amount >= offer.getMount())
-				price = offer.getTotal_price()/offer.getMount();
-			else return price;
-		
-		return price;
+	public double getPrice(int amount) {  /////////////////////////
+		return 10;
+		//		double priceC = this.price ;
+//		for (OfertByAmount offer : ofertList) 
+//			if (amount >= offer.getMount())
+//				priceC = offer.getTotal_price()/offer.getMount();
+//		return priceC;
 	}
 
 	public void setPrice(double price) {

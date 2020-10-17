@@ -10,15 +10,99 @@ h2.color-azul {
   columns: auto 3;
 }
 
+.procedures {
+	column-count: 3;
+	column-gap: 0.1%;
+	column-width: auto; 
+}
+
+.proceduresb {
+	column-count: 3;
+	column-gap: 1.5%;
+	column-width: auto; 
+}
+
+.combos {
+	column-count: 4;
+	column-gap: 1%;
+	column-width: auto; 
+}
+
 .newspaper2 {
   columns: auto 3;
 }
 
-i.l {
+.twoColumn305{
+ 	column-count: 2;
+	column-gap: auto;
+	column-width: auto; 
+}
+
+.l305:active {
     /* flip vertically */
+    
     transform: rotateX(180deg);
 }
 
 btn.btn-outline-damny:hover {
 	background-color: #007da7; 
 }
+
+.borderlr305 {
+	border-bottom-width:0px; 
+	border-left-color: #0F3678; 
+	border-right-color: #0F3678;
+}
+
+.a.a-305 {
+	color:#808080;
+}
+
+.modal-danger-header-305 {
+    color:#fff;
+    padding:9px 15px;
+    border-bottom:0px solid #970000;
+    background-color: #970000;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+}
+
+.popover-header{   
+	padding:.5rem .75rem; 
+	margin-bottom:0;
+	font-size:1rem;
+	font-weight:bold;
+	text-decoration:underline;
+	text-align:center;
+	background-color: #fff;
+	border-color:#0F3678;
+	color:#0F3678;
+	border-top: 1px solid  #0F3678;
+	border-left: 1px solid  #0F3678;
+	border-bottom: 1px transparent ;
+	border-right: 3px solid  #0F3678;
+	border-top-left-radius:calc(.3rem - 1px);
+	border-top-right-radius:calc(.3rem - 3px)
+}
+
+.popover{
+	width: 1300px
+}
+
+.input-group{width:88%}
+
+.popover-body{
+	font-size:1rem;
+	padding:.5rem .75rem;
+	color:#0F3678;
+	border-right: 3px solid  #0F3678;
+	border-left: 1px solid  #0F3678;
+	border-bottom: 3px solid  #0F3678;
+	}
+
+.bs-popover-auto[x-placement^=right]>.arrow::before,.bs-popover-right>.arrow::before{left:0;border-width:.5rem .5rem .5rem 0;border-right-color:#0F3678}
+.bs-popover-auto[x-placement^=right]>.arrow::after,.bs-popover-right>.arrow::after{left:1px;border-width:.5rem .5rem .5rem 0;border-right-color:#f7f7f7}

@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="layout/layout :: head"></head>
-<body>
-	<header th:replace="layout/layout :: header"></header>
-
-	<div class="row py-4 px-4">   <!-- Contenedor -->
+<head th:replace="layout/layout-client :: head"></head>
+<body  style="font-size: 15px">
+	<header th:replace="layout/layout-client :: header"></header>
+   <div class="container py-1" >
+	<div class="row">
+		<div class="col">
+			<a th:href="@{'/orders/view-order/' + ${order.id}(format=pdf)}" class="btn btn-xs float-right mx-auto" target="_blank"> 
+				<img align="left" th:src="@{/imgs/pdf.png}" alt="pdf-view">
+			</a>
+		</div>
+	</div>
+	<div class="row mt-2 ">   <!-- Contenedor -->
 		<div class="col">     <!-- para todo el ancho -->
 			<div class="card bg-white">
 				<div th:text="${orderClientHeader}" class="card-header text-white font-weight-bold" style="background-color: #0F3678" align="center"></div>
 				<div class="card-body">
-					<div class="row" align="right">
-						<h4 align="right" class="card-tittle"> 
-							<a class="btn btn-xs float-right mx-auto" th:href="@{'/r1/' + ${client.id}(format=pdf)}"> 
-								<img align="right" th:src="@{/imgs/pdf.png}" alt="pdf-view">
-							</a>
-						</h4>
-					</div>	
 					<div class="row"> <!-- Datos personales cliente -->
 						<div class="col-12"> 
 							<div class="card bg-white">
@@ -60,7 +60,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="row py-2">   <!-- Datos condición de salud y decisiones-->
+					<div class="row py-2">   <!-- Datos condiciÃ³n de salud y decisiones-->
 						<div class="col-6">   
 							<div class="row">
 								<div class="col-12">
@@ -106,9 +106,10 @@
 													<span th:text="'Principal procedure: '" class="font-weight-bold"></span>
 													<span th:text="${p1}"></span>
 												</li>
-												<li th:if="${combo}" class="list-group-item">
+												<li class="list-group-item">
 													<span th:text="'Combo with: '" class="font-weight-bold"></span>
-													<span th:text="${combo}"></span>
+													<span th:if="${combo}" th:text="${combo}"></span>
+													<span th:unless="${combo}" th:text="'Not Combo'"></span>
 												</li>
 												<li class="list-group-item">
 												<span th:text="'Desired operation date: '" class="font-weight-bold"></span>
@@ -126,51 +127,68 @@
 								<div th:text="${tittle}" class="card-header text-white font-weight-bold" style="background-color: #0F3678" align="center"></div>
 								<div class="card-body border border-dark rounded-bottom border-top-0">
 									<div class="row"> 
-										<div class="col-4">  <!-- Datos Generales orden-->
-											<ul class="list-group">
-												<li class="list-group-item">
-													<span th:text="'Date: '" class="font-weight-bold"></span> 
-													<span th:text="${order.date}"></span>
-												</li>
-												<li class="list-group-item">
-													<span th:text="'Observation: '" class="font-weight-bold"></span> 
-													<span th:text="${order.observation}"></span>
-												</li>
-												<li class="list-group-item">
-													<span th:text="'Gender: '" class="font-weight-bold"></span> 
-													<span th:text="${client.gender}"></span>
-												</li>
-											</ul>
+										<div class="col-9"> 
+											<div class="row">
+												<div class="col-4">  <!-- Datos Generales orden-->
+													<ul class="list-group">
+														<li class="list-group-item">
+															<span th:text="'Date: '" class="font-weight-bold"></span> 
+															<span th:text="${order.date}"></span>
+														</li>
+														<li class="list-group-item">
+															<span th:text="${p1} + ' price: '" class="font-weight-bold"></span> 
+															<span th:text="'$'"></span> 
+															<span th:text="${order.procedureList.get(0).getSubTotal()}"></span>
+														</li>
+														<li th:if="${combo}" class="list-group-item">
+															<span th:text="${combo} + ' price: '" class="font-weight-bold"></span>
+															<span th:text="'$'"></span> 
+															<span th:text="${order.procedureList.get(1).getSubTotal()}"></span>
+														</li>
+													</ul>
+												</div>
+												<div class="col-8">    <!-- Datos item comprados-->
+													<ul class="list-group">
+														<li class="list-group-item list-group-item-dark text-center">  <!-- Datos incluidos-->
+															<span th:text="'Mandatory and/or selected items'" class="font-weight-bold"></span> 
+														</li>
+														<li class="list-group-item">
+															<table th:if="${not #lists.isEmpty(order.itemList)}"
+					   											   class="table table-striped table-bordered table-hover my-2">
+			    												<thead align="center" class="thead-dark">
+																	<tr>
+																		<th scope="col">Item</th>
+																		<th scope="col">Price</th>
+																		<th scope="col">Amount</th>
+																		<th scope="col">Subtotal</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr th:each="line: ${order.itemList}">
+																		<td th:text="${line.product.name}"></td>
+																		<td th:text="'$' + ${line.product.price}" align="right"></td>
+																		<td th:text="${line.amount}" align="center"></td>
+										 								<td th:text="'$' + ${line.subTotal}" align="center"></td>
+																	</tr>
+																</tbody>
+															</table>
+														</li>
+													</ul>
+												</div>
+											</div>
+											<p></p>
+											<div class="row">
+												<div class="col-12">  <!-- Observaciones-->
+													<ul class="list-group">
+														<li class="list-group-item border border-warning">
+															<span th:text="'Observation: '" class="font-weight-bold"></span> 
+															<span th:text="${order.observation}"></span>
+														</li>
+													</ul>
+												</div>
+											</div>
 										</div>
-										<div class="col-4">    <!-- Datos item comprados-->
-											<ul class="list-group">
-												<li class="list-group-item list-group-item-dark text-center">  <!-- Datos incluidos-->
-													<span th:text="'Mandatory and/or selected items'" class="font-weight-bold"></span> 
-												</li>
-												<li class="list-group-item">
-													<table th:if="${not #lists.isEmpty(order.itemList)}"
-					   									   class="table table-striped table-bordered table-hover my-2">
-			    										<thead align="center" class="thead-dark">
-															<tr>
-																<th scope="col">Item</th>
-																<th scope="col">Price</th>
-																<th scope="col">Amount</th>
-																<th scope="col">Subtotal</th>
-															</tr>
-														</thead>
-														<tbody>
-															<tr th:each="line: ${order.itemList}">
-																<td th:text="${line.product.name}"></td>
-																<td th:text="${line.product.price}" align="right"></td>
-																<td th:text="${line.amount}" align="center"></td>
-								 								<td th:text="${line.subTotal}" align="center"></td>
-															</tr>
-														</tbody>
-													</table>
-												</li>
-											</ul>
-										</div>
-										<div class="col-4">
+										<div class="col-3">
 											<ul class="list-group">
 												<li class="list-group-item list-group-item-dark text-center">  <!-- Datos incluidos-->
 													<span th:text="Included" class="font-weight-bold"></span> 
@@ -181,14 +199,40 @@
 											</ul>
 										</div>
 									</div>
+									<div class="row">
+										<div class="col my-2">
+											<h5 align="right">Total order: <span th:text="'$ ' + ${order.totalOrder}" class="badge badge-success">0</span></h5>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-6 my-1" align="right">
+											<a th:href="@{'/orders/view-order/' + ${order.id}(format=pdf)}" class="btn btn-xs float-center mx-auto" target="_blank"> 
+												<img align="left" th:src="@{/imgs/pdf.png}" alt="pdf-view" data-toggle="tooltip" data-placement="left" title="Generate order in PDF Format">
+											</a>
+										</div>
+										<div class="col-6 my-1" align="right">
+											<a class="btn btn-xs float-center mx-auto" th:href="@{#}"  data-toggle="tooltip" data-placement="left" title="Up"> 
+												<i class="fa fa-angle-up rotate-icon"></i>
+											</a>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
+					</div>
+					<div class="col mt-2" align="right">                                 
+						<a th:href="@{/clients/form/}" th:text="'Next client'" class="btn btn-lg btn-block btn-305"></a>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<footer th:replace="layout/layout :: footer"></footer>
+   </div>
+	<footer th:replace="layout/layout-client :: footer"></footer>
+	<script type="text/javascript">
+ 		$(function () {
+		  $('[data-toggle="tooltip"]').tooltip()
+		})
+	</script>
 </body>
 </html>

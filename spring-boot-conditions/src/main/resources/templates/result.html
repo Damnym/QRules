@@ -1,37 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/layout :: head"></head>
+<head th:replace="layout/layout-client :: head"></head>
 <body>
-	<header th:replace="layout/layout :: header"></header>
-	<div class="container" >
+	<header th:replace="layout/layout-client :: header"></header>
+	<div class="container py-1" >
 	<form th:action="@{/result}" th:object="${client}" method="post" enctype="multipart/form-data">
 		<div class="row px-4 py-4" >
-			<div class="col-5" align="right">
-				<ul  class="list-group">      <!-- CALENDARIO -->
-					<li th:text="'Choose the tentative date for your surgery, take into account the availability of the surgeon'" 
-						class="list-group-item list-group-item-info text-center font-weight-bold">
-					<li class="list-group-item text-left">
-						<input type="date" id="date-a" class="form-control" th:field="*{date}" th:min="${minDate}"/>
-						
-					</li>
+			<div class="col-4" align="right"> <!-- GroupBox de las elecciones -->
+				<ul th:if="${choices}" class="list-group border-success">
+					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
+					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left border-success"></li>
+					<li th:if="${observation}" th:text="'Remarks: ' + ${observation}" class="list-group-item text-left border-success"></li>
 				</ul>
 			</div>
-			<div class="col-6" align="right">
-				<ul th:if="${choices}" class="list-group">
-					<li th:text="${choice_h}" class="list-group-item list-group-item-primary text-center font-weight-bold"></li>
-					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left"></li>
-					<li th:if="${observation}" th:text="'Remarks: ' + ${observation}" class="list-group-item text-left"></li>
-				</ul>
-			</div>
+			<div class="col-8">
+				<div class="row">	
+					<div class="col-6" align="right">
+						<ul  class="list-group">      <!-- CALENDARIO -->
+							<li th:text="${date4Surgery}" 
+								class="list-group-item list-group-item text-center font-weight-bold text-white" style="background-color:#0F3678">
+							<li class="list-group-item text-left border-305 py-3">
+								<input type="date" id="date-a" class="form-control" th:field="*{date}" th:min="${minDate}"/>
+							</li>
+						</ul>
+					</div>
+					<div class="col-6" align="right">
+						<ul  class="list-group">      <!-- needCell -->	
+							<li th:if="${needAddCell}" th:text="${needCellT}" class="list-group-item text-center text-white font-weight-bold" style="background-color:#0F3678"></li>
+							<li th:if="${needAddCell}" class="list-group-item text-left border-305">
+								<div class="row">
+									<div class="mx-2 my-2"> 
+										<input type="checkbox" th:field="*{hasWeightLoss}" th:value="'1'" th:checked="${hasWeightLoss}"> 
+									</div>
+									<div class="mx-2 my-2"> 
+										<label th:for="${#ids.prev('hasWeightLoss')}" th:text="'Have had weight loss surgery?'"></label>
+									</div>
+								</div>
+								<div class="row">
+									<div class="mx-2 my-2"> 
+										<input type="checkbox" th:field="*{moreOneLipo}" th:value="'2'" th:checked="${moreOneLipo}"> 
+									</div>
+									<div class="mx-2 my-2"> 
+										<label th:for="${#ids.prev('moreOneLipo')}" th:text="'Do you have had any Lipo Before?'"></label>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>		
 		</div>
-		<div class="row px-4 py-4 float-right ">
-
-			<div class="col py-2">
-				<input type="submit" value="Show Post-surgical items" class="btn btn-lg btn-block btn-primary"/>
+		<div class="row">
+			<div class="col-12" align="left">
+				<input type="submit" value="Show Post-surgical items" class="btn btn-lg btn-block btn-305"/>
 			</div>
 		</div>
 	</form>
 	</div>
-	<footer th:replace="layout/layout :: footer"></footer>
+	<footer th:replace="layout/layout-client :: footer"></footer>
 </body>
 </html>

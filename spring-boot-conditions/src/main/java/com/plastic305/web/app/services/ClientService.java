@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.plastic305.web.app.models.dao.IClientDAO;
 import com.plastic305.web.app.models.dao.IOrderDAO;
 import com.plastic305.web.app.models.dao.IProductsDAO;
+import com.plastic305.web.app.models.dao.ISufferingDAOPagNSortRepository;
 import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.models.entities.Order;
 import com.plastic305.web.app.models.entities.Product;
@@ -24,9 +25,10 @@ import com.plastic305.web.app.models.entities.Suffering;
 
 @Service
 public class ClientService implements IClientService {
-	@Autowired IClientDAO iCDAO;
+	@Autowired IClientDAO cDAO;
 	@Autowired IOrderDAO iODAO;
 	@Autowired IProductsDAO iPDAO;
+	@Autowired ISufferingDAOPagNSortRepository sDAO;
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
@@ -37,27 +39,32 @@ public class ClientService implements IClientService {
 //*******
 	@Override @Transactional(readOnly = true)
 	public List<Client> findAll() { 
-		return (List<Client>) iCDAO.findAll(); 
+		return (List<Client>) cDAO.findAll(); 
 	}
 	
 	@Override @Transactional(readOnly = true)
 	public Page<Client> findAll(Pageable page) {
-		return iCDAO.findAll(page);
+		return cDAO.findAll(page);
 	}
 	
 	@Override @Transactional(readOnly = true) 
 	public Client findOne(Long id) { 
-		return iCDAO.findById(id).orElse(null); 
+		return cDAO.findById(id).orElse(null); 
 	}
 	
 	@Override @Transactional 
 	public void save(Client nClient) { 
-		iCDAO.save(nClient); 
+		cDAO.save(nClient); 
 	}
 	
 	@Override @Transactional
 	public void delete(Long id) { 
-		iCDAO.deleteById(id); 
+		cDAO.deleteById(id); 
+	}
+	
+	@Override
+	public List<Client> findByNameRegExp(String term) {
+		return cDAO.findByNameRegExp(term);
 	}
 
 	
@@ -75,7 +82,7 @@ public class ClientService implements IClientService {
 
 	@Override @Transactional(readOnly = true)
 	public Client fetchClientByIdWithOrder(Long id) { 
-		return iCDAO.fetchClientByIdWithOrder(id); 
+		return cDAO.fetchClientByIdWithOrder(id); 
 	}
 
 	@Override @Transactional(readOnly = true)
@@ -217,6 +224,16 @@ public class ClientService implements IClientService {
 			return conditions.substring(0, conditions.lastIndexOf(", "));
 	}
 
+	@Override 
+	public String getConditionsListCSV4Save(Client client) {
+		String conditions = "";
+		for (Suffering c: client.getConditionsList()) 
+			conditions += (c.getName() + ",");
+		if (conditions.equals(""))
+			return "No";
+		else
+			return conditions.substring(0, conditions.lastIndexOf(","));
+	}
 	@Override @Transactional(readOnly = true)
 	public boolean haveRemark(Client client) {
 		List<String> conditions = this.getConditionsWithValue(client, 3);
@@ -242,20 +259,22 @@ public class ClientService implements IClientService {
 	}
 
 	@Override
-	public void clean(Client cliente) {
-		cliente.setAccepted(null);
-		cliente.setDate(null);
-		cliente.setDoctor(null);
+	public void prepare(Client cliente) {  
+		cliente.setAccepted(null);   // es aceptado?
+		cliente.setDate(null);       // fecha elegida
+		cliente.setDoctor(null);     
 		cliente.setHbg(null);
-		cliente.setHeightFeetOrCentimeters(null);
-		cliente.setHeightInches(null);
 		cliente.setP1(null);
 		cliente.setP2(null);
 		cliente.setWeight(null);
-		cliente.setConditionsList(new ArrayList<Suffering>());
+		
+		List <Suffering> sList = new ArrayList<Suffering>();
+		if (cliente.getConditionsName()!=null && !cliente.getConditionsName().isBlank()) {
+			String[] conditions = cliente.getConditionsName().split(",");
+			for (String condition: conditions) 
+				sList.add(sDAO.findByName(condition));
+		}
+		cliente.setConditionsList(sList);
 	}
-
-
-
 
 }

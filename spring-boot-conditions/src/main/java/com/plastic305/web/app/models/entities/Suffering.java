@@ -25,7 +25,7 @@ public class Suffering implements Serializable {
 	@NotEmpty
 	private String name;
 	
-	@NotEmpty
+//	@NotEmpty
 	private int accepted;
 	
 	private String warning;
@@ -55,15 +55,13 @@ public class Suffering implements Serializable {
 	/**
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(long id) {
-		this.id = id;
-	}
+
 	/**
 	 * @return the name
 	 */

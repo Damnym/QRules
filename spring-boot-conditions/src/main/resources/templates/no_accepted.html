@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/layout :: head"></head>
+<head th:replace="layout/layout-client :: head"></head>
 <body>
-	<header th:replace="layout/layout :: header"></header>
-	<div class="container py-4" >
-		<div class="row">
- 	 		<div class="col-4">
-				<ul th:if="${choices}" class="list-group" >
-					<li th:text="${choice_h}" class="list-group-item list-group-item-success text-center font-weight-bold"></li>
-					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left"></li>
+	<header th:replace="layout/layout-client :: header"></header>
+	<div class="container">
+		<div class="row px-4 py-4">
+ 	 		<div class="col-4" align="right">  <!-- GroupBox de las elecciones -->
+				<ul th:if="${choices}" class="list-group border-success">
+					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
+					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left border-success"></li>
 				</ul>
 		 	</div> 
    			<div class="col-8">
-				<div class="card bg-light border-primary" >
-					<div th:text="${msg}" class="card-header bg-primary  font-weight-bold text-white" align="center"></div>
+				<div class="card bg-light border-danger" >
+					<div th:text="${msg}" class="card-header bg-danger font-weight-bold text-white" align="center"></div>
 					<div class="card-body bg-white" align="left">
 						<form th:action="@{/clients/client-list}" th:object="${client}" method="get" class="form-inline">
 							<div class="container my-2">
@@ -23,12 +23,11 @@
 											<li th:each="d: ${decision}" th:text="${d}" class="list-group-item list-group-item-flush border-danger"></li>
 										</ul>
 										<hr />
-										<hr />
-										<ul class="list-group my-1">
-											<li class="list-group-item">
-												<input type="submit" value="Next client" class="btn btn-lg btn-block btn-outline-primary"> 
-											</li>
-										</ul>
+										<div class="row">
+											<div class="col">   
+												<input type="submit" value="Next client" class="btn btn-lg btn-block btn-305wr"> 
+				  							</div>
+				  						</div>
 									</div>
 								</div>
 							</div>
@@ -38,6 +37,6 @@
 	  		</div>
 	  	</div>
 	</div>
-	<footer th:replace="layout/layout :: footer"></footer>
+	<footer th:replace="layout/layout-client :: footer"></footer>
 </body>
 </html>

@@ -60,7 +60,7 @@ public class OrderItem implements Serializable{
 	}
 
 	public void setSubTotal() {
-		this.subTotal = this.amount * this.product.getPriceCalc(this.amount);   // ESTE getPrice() DE PRODUCTO TIENE Q ESTAR CON LA OFERTA YA...SINO CAMBIAR
+		this.subTotal = this.amount * this.product.getPrice();   // ESTE getPrice() DE PRODUCTO TIENE Q ESTAR CON LA OFERTA YA...SINO CAMBIAR
 	}
 
 	public Boolean getIsOfert() {
