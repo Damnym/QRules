@@ -22,6 +22,8 @@ public interface ISufferingService {
 	
 	public List<Suffering> findAllRefusedOrWarning();
 	
+	public int getDoctorCountsByConditionsId(Long id);
+	
 //	public List<String> findByDoctorID(Long idD, Long idS);
 	
 	public void delete(Long id);

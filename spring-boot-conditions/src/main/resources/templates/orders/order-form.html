@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="layout/layout-client :: head"></head>
+<!-- <link href="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" rel="stylesheet"/>  -->
 <body style="font-size: 15px">
 	<header th:replace="layout/layout-client :: header"></header>
    <div class="container pt-1" >
@@ -64,7 +65,7 @@
 						<div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" >
                         <div class="col-12" align="left" >
 							<!-- Accordion card 1-->
-							<div class="card" style="border-color: #0F3678; border-right-width: 4px; border-radius: 15px 15px 0 0;">  <!-- seccion para los obligatorios-->
+							<div class="card" style="border-color: #0F3678; border-right-width: 4px; border-radius: 15px 15px 0 0;">  <!-- seccion para los procedures-->
 								<!-- Card header -->
 								<div class="card-header" style="background-color:#fff; border-color: #0F3678; border-right-width: 4px; border-bottom-width: 2px;
                                    border-radius: 15px 15px 0 0;" role="tab" id="headingOne1">
@@ -238,16 +239,20 @@
 							</div><!-- Accordion wrapper -->
                      </div>
 							  <!-- FIN DEL ACORDEON -->
-  							<hr>
-  							<p></p><p></p>
+						</div> 
+                        <div class="row">
+                           <div class="col">
+                                                   <hr>
+                     <p></p><p></p>
                             <div class="col pt-3" align="right">
-   							  <h5 align="right">Total order: <span class="badge badge-success" id="total">0</span></h5>
+                           <h5 align="right">Total order: <span class="badge badge-success" id="total">0</span></h5>
                             </div>  
-							<div class="col-12 py-4">
-								<input type="submit" th:value="'View pre-order'" class="btn btn-lg btn-block btn-305"/>
-							</div>
-						</div>
+                     <div class="col-12 py-4">
+                        <input type="submit" th:value="'View pre-order'" class="btn btn-lg btn-block btn-305"/>
+                     </div>
+                        </div>              
 					</div>
+               </div>
 			
 		</div>
 		</form>
@@ -256,5 +261,6 @@
 	<script
 		th:replace="orders/js/products-autocomplete :: javascriptAutoComplete">
 	</script>
+<!-- 		<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script>  -->
 </body>
 </html>

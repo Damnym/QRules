@@ -4,7 +4,7 @@
 <body>
 	<header th:replace="layout/layout-doctor :: header"></header>
 	<div class="container py-4" align="center">
-		<div class="card bg-white border-305" style="width: 70%;">
+		<div class="card bg-white border-305" style="width: 90%;">
 			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#0F3678"></div>
 			<div class="card-body " align="left">
 				<form th:object="${doctor}" th:action="@{/doctor/form}" method="post" enctype="multipart/form-data" >
@@ -44,7 +44,7 @@
                      <div class="container">
                         <!-- INICIO DEL ACORDEON -->
                         <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" align="center">
-                           <div class="col-10" align="right">
+                           <div class="col-12" align="right">
                               <div class="col " align="right">
                                  
                               <!-- Accordion card 1-->
@@ -63,10 +63,16 @@
                                             data-parent="#accordionEx">
                                           <div class="card-body">
                                              <div class="row">
-                                                <div class="col combos" align="right">
-                                                   <ul class=" border-success" >
-                                                      <li th:text="'ddd'" class="text-left border-success"></li>
-                                                   </ul>
+                                                <div class="col proceduresb" align="right">
+                                                   <div th:each="sbyd: ${sbydList}" class="row">
+                                                      <div class="my-1 mx-4"> 
+                                                         <input type="checkbox" th:field="*{sufferingsList}" th:value="${sbyd.id}" 
+                                                                th:checked="${#lists.contains(doctor.sufferingsList, sbyd)}"> 
+                                                      </div>
+                                                      <div class="mx-1 my-1"> 
+                                                         <label th:for="${#ids.prev('sufferingsList')}" th:text="${sbyd.suffering.name}"></label>
+                                                      </div>
+                                                   </div>
                                                 </div>
                                              </div>   
                                           </div>

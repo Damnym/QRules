@@ -41,23 +41,27 @@ public class IndexController {
 	private static final String noAcceptedByConditionExp = ". Condition(s) that makes it impossible for you to apply the desired treatment" ;
 	private static final String noAcceptedByBMIH = "Your BMI is: " ;
 	private static final String noAcceptedByWeightH = "Yours weight is: " ;  
+	private static final String weightLowerHPre = "You need to gain " ;  
+	private static final String weightUpperHPre = "You need to lose " ;  
+	private static final String weightHPost = " pounds to be able to have the surgery with the Dr. " ;  
 	private static final String noAcceptedByWeighExp = ", therefore is greater than what is allowed" ;
-	private static final String noAcceptedByBMIUpperExp = ", Indicating your weight is greater than what is allowed" ;
+	private static final String noAcceptedByBMIUpperExp = ", indicating your weight is greater than what is allowed" ;
+	private static final String noAcceptedByBMILowerExp = ", indicating your weight is lower than what is allowed" ;
 	private static final String acceptedMsg = "You have been accepted, select the procedure or doctor you want" ;
 	private static final String acceptedWithRemarkHeader = "Accepted with Remarks" ;
 	private static final String notRemarkHeader = "Has not Remarks" ;
 	private static final String acceptedHeader = "Accepted" ;
 	private static final String hbgOutsideLimits = "Your hemoglobin level is outside the desired range" ;
 	private static final String date4Surgery = "Choose the tentative date for your surgery, take into account the availability of the surgeon" ;
-	private static final String date4SurgeryT = "Summary - Surgery date - Need cellsaver" ;
 	private static final String needCellT = "Information needed to perform Lipo" ;
 	
-	private static final Double bmiUpperLimit = Double.valueOf(35) ;
-	private static final Double poundstUpperLimit = Double.valueOf(190) ;
+//	private static final Double bmiUpperLimit = Double.valueOf(35) ;
+//	private static final Double poundstUpperLimit = Double.valueOf(190) ;
 	private static final Double hbgFUpperLimit = Double.valueOf(16) ;
 	private static final Double hbgFLowerLimit = Double.valueOf(12) ;
 	private static final Double hbgMUpperLimit = Double.valueOf(18) ;
 	private static final Double hbgMLowerLimit = Double.valueOf(14) ;
+	private boolean remark;
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
@@ -74,6 +78,7 @@ public class IndexController {
 	public String form(@PathVariable(value = "clientId") Long clientId, Model model) {
 		Client cliente =  cService.findOne(clientId) ;
 		cService.prepare(cliente);
+		remark = false;
 		
 		List <Suffering> sList = sService.findAll(); 
 
@@ -131,25 +136,33 @@ public class IndexController {
 // *******************      NUEVO PARA AGREGAR EL BMI
 // *******EN USO******	
 	@PostMapping({"/r1"})    
-	public String formProcess(Client cliente, Model model) {
+	public String formProcess(Client cliente, Model model) {  // Se asume que la cantidad de Dr nunca será 0!!!
 		String url = "redirect:/doctor_or_procedure" ;
 		for (Suffering c: cliente.getConditionsList()) {
-			if (c.getAccepted() == 0) { 
+			if (sService.getDoctorCountsByConditionsId(c.getId())!=0 && sService.getDoctorCountsByConditionsId(c.getId()) < dService.findAll().size())    
+				url = "redirect:/somedoctors";
+			  else if (sService.getDoctorCountsByConditionsId(c.getId())==0) {
+				cliente.setAccepted(Long.valueOf(0));   
+				return "redirect:/no_accepted";
+			}// logger.info(">>>> Desde IndexCotroller: " + sService.getDoctorCountsByConditionsId(c.getId()) + " doctores la operan si la presentan <<<<");
+			
+/*			if (c.getAccepted() == 0) { 
 				cliente.setAccepted(Long.valueOf(0));   
 				return "redirect:/no_accepted";
 			}
 			else if (c.getAccepted() == 2) 
-					url = "redirect:/somedoctors";
+					url = "redirect:/somedoctors"; */
+			if (c.getWarning() !=null && !c.getWarning().isBlank())
+				remark = true;
 		}
-		// CALCULANDO EL BMI y el Peso   AGREGAR lo de la hemoglobina
-		Double weight = cliente.getWeight() ;  
-		if (cliente.getHeightInches() == null) weight = weight * 1000 / 460 ; // Era en KG
-		
-		if (weight > poundstUpperLimit  ||   // Peso por encima de lo permitido
-			cService.getBMI(cliente) > bmiUpperLimit) {     // BMI por encima de lo permitido
-			return "redirect:/no_accepted";
-		}
-		
+//		// CALCULANDO EL BMI y el Peso   AGREGAR lo de la hemoglobina   //#### Cambiar lo de la BMI, aqui no hacer nada...solo guardar ####
+//		Double weight = cliente.getWeight() ;  
+//		if (cliente.getHeightInches() == null) weight = weight * 1000 / 460 ; // Era en KG
+//		
+//		if (weight > poundstUpperLimit  ||   // Peso por encima de lo permitido
+//			cService.getBMI(cliente) > bmiUpperLimit) {     // BMI por encima de lo permitido
+//			return "redirect:/no_accepted";
+//		}
 		return url;
 	}
 		
@@ -172,16 +185,16 @@ public class IndexController {
 									"Height: " + cliente.getHeightFeetOrCentimeters() + " Centimeters");
 		
 		if (cliente.getAccepted() != null && cliente.getAccepted()== 0)
-			decision.add(noAcceptedByConditionH + cService.getConditionsWithValue(cliente, 0) + noAcceptedByConditionExp);
+			decision.add(noAcceptedByConditionH + cService.getConditionsWithValueNewAll(cliente, 0) + noAcceptedByConditionExp);
 		
-		Double weight = cliente.getWeight() ;  
-		if (cliente.getHeightInches() == null) weight = weight * 1000 / 460 ; // Era en KG
-		if (weight > poundstUpperLimit)
-			decision.add(noAcceptedByWeightH + String.format("%.2f", cliente.getWeight()) + noAcceptedByWeighExp);
-
-		double bmi = cService.getBMI(cliente) ; 
-		if (bmi > bmiUpperLimit)
-			decision.add(noAcceptedByBMIH + String.format("%.2f", bmi) + noAcceptedByBMIUpperExp);
+//		Double weight = cliente.getWeight() ;  
+//		if (cliente.getHeightInches() == null) weight = weight * 1000 / 460 ; // Era en KG
+//		if (weight > poundstUpperLimit)
+//			decision.add(noAcceptedByWeightH + String.format("%.2f", cliente.getWeight()) + noAcceptedByWeighExp);
+//
+//		double bmi = cService.getBMI(cliente) ; 
+//		if (bmi > bmiUpperLimit)
+//			decision.add(noAcceptedByBMIH + String.format("%.2f", bmi) + noAcceptedByBMIUpperExp);
 		
 		// Pasando al modelo
 		model.addAttribute("choice_h", choiceH);
@@ -210,7 +223,8 @@ public class IndexController {
 	@GetMapping({"doctor_or_procedure"})   // Si llega aquí es pq es candidato 
 	public String doctorOrProcedure(Client cliente, Model model, SessionStatus s) {
 		model.addAttribute("choice_h", questionnaireAnswerHeader);
-		if (!cService.haveRemark(cliente))  
+//		if (!cService.haveRemark(cliente))
+		if (!remark)
 			model.addAttribute("msg", acceptedHeader);
 		else 
 			model.addAttribute("msg", acceptedWithRemarkHeader);
@@ -236,7 +250,7 @@ public class IndexController {
 		model.addAttribute("cardHeader", "Choose the doctor, then the procedure");
 		model.addAttribute("doctorlisth", "Doctors list"); 
 		
-		if (cService.getConditionsWithValue(cliente, 2).isEmpty())  // Que no tiene condición especial
+		if (cService.getConditionsWithValueNewAll(cliente, 2).isEmpty())  // Que no tiene condición especial
 			model.addAttribute("doctorlist", dService.findAll()); 
 		else  
 			model.addAttribute("doctorlist", dService.findAllbyConditions(cliente.getConditionsList())) ;
@@ -262,7 +276,7 @@ public class IndexController {
 		model.addAttribute("cardHeader", "Choose the doctor, then the procedure");
 		
 		model.addAttribute("doctorlisth", "Doctors list");
-		if (cService.getConditionsWithValue(cliente, 2).isEmpty())  // Que no tiene condición especial
+		if (cService.getConditionsWithValueNewAll(cliente, 2).isEmpty())  // Que no tiene condición especial
 			model.addAttribute("doctorlist", dService.findAll()); 
 		else 
 			model.addAttribute("doctorlist", dService.findAllbyConditions(cliente.getConditionsList())) ;
@@ -288,7 +302,7 @@ public class IndexController {
 		model.addAttribute("cardHeader", "Choose the procedure to make a Combo");
 		
 		model.addAttribute("doctorlisth", "Doctors list"); 
-		if (cService.getConditionsWithValue(cliente, 2).isEmpty())  // Que no tiene condición especial
+		if (cService.getConditionsWithValueNewAll(cliente, 2).isEmpty())  // Que no tiene condición especial
 			model.addAttribute("doctorlist", dService.findAllbyProcedure(cliente.getP1())); 
 		else  
 			model.addAttribute("doctorlist", dService.findAllByConditionsByProcedure(cliente.getConditionsList(), cliente.getP1())) ;
@@ -328,7 +342,7 @@ public class IndexController {
 		model.addAttribute("doctorlistempty", "Choose the procedure to see the doctors who practice them"); 
 		
 		model.addAttribute("procedurelisth", "Procedures list"); 
-		if (cService.getConditionsWithValue(cliente, 2).isEmpty())
+		if (cService.getConditionsWithValueNewAll(cliente, 2).isEmpty())
 			model.addAttribute("procedurelist", pService.findAllOrder()); 
 		else 
 			model.addAttribute("procedurelist", dService.findAllProcedureOfAllDoctorsByConditions(cliente.getConditionsList())) ;
@@ -353,7 +367,7 @@ public class IndexController {
 		model.addAttribute("procedurelisth", "Procedures list"); 
 		model.addAttribute("doctorlisth", "List of doctors who practice the " + pService.findOne(idproc).getName() + " procedure"); 
 
-		if (cService.getConditionsWithValue(cliente, 2).isEmpty()) {
+		if (cService.getConditionsWithValueNewAll(cliente, 2).isEmpty()) {
 			model.addAttribute("procedurelist", pService.findAllOrder()); 
 			model.addAttribute("doctorlist", dService.findAllbyProcedure(idproc)); 
 		}
@@ -390,7 +404,7 @@ public class IndexController {
 		model.addAttribute("doctorlisth", "List of doctors who practice the " + pService.findOne(cliente.getP1()).getName() +
 										  " procedure");
 		
-		if (cService.getConditionsWithValue(cliente, 2).isEmpty())
+		if (cService.getConditionsWithValueNewAll(cliente, 2).isEmpty())
 			model.addAttribute("doctorlist", dService.findAllbyProcedure(cliente.getP1())); 
 		else
 			model.addAttribute("doctorlist", dService.findAllByConditionsByProcedure(cliente.getConditionsList(), cliente.getP1())); 
@@ -415,28 +429,34 @@ public class IndexController {
 	public String somedoctor(Client cliente, Model model, SessionStatus st) {
 		
 		model.addAttribute("choice", "Condition: " + cService.getConditionsListCSV(cliente));
-		model.addAttribute("msg", "Observation");
+		model.addAttribute("msg", "Remark");
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("explanationb", "Only the doctors: "); 
 		model.addAttribute("explanationc", "perform the procedures on patients who have or are suffering " 
-				                         + cService.getConditionsWithValue(cliente, 2)
+				                         + cService.getConditionsWithValueNewAll(cliente, 2)
  										 + " condition(s). Do you agree to be treated by any of these? \r\n Do you want choice the doctor now or see first the procedures?");
 		model.addAttribute("tips", "Do you want choice the doctor now or see first the procedures?");
 		model.addAttribute("doctors", dService.findAllbyConditions(cliente.getConditionsList()));
 		model.addAttribute("tittle", "Some Doctor for theese Condition");
+		
+		if ((cliente.getGender().equals("Woman") && (cliente.getHbg()>hbgFUpperLimit || cliente.getHbg()<hbgFLowerLimit)) ||  // Mujer con hemoglobina fuera del rango		
+			    (cliente.getGender().equals("Man")   && (cliente.getHbg()>hbgMUpperLimit || cliente.getHbg()<hbgMLowerLimit)))    // Hombre con la hemoglobina fuera del rango
+				model.addAttribute("hbgOutsideRange", hbgOutsideLimits);
+		
 		return "somedoctors";
 	}
 	
 //****************
 // *******EN USO******
 	@GetMapping({"result"})
-	public String result(Client cliente, Model model, SessionStatus st) {
+	public String result(Client cliente, Model model, SessionStatus st) {  // aqui con el peso dar los mensajes 
 		List <String> choices = new ArrayList<>() ;
 		String observation = notRemarkHeader ;
+		boolean needAddCell = false ;
 		
 		model.addAttribute("choice_h", questionnaireAnswerHeader);
 		choices.add("Condition: " + cService.getConditionsListCSV(cliente));
-		observation = cService.getConditionsListCSV4Save(cliente);
+		observation = cService.getRemarksListCSV(cliente);
 		
 		if (cliente.getDoctor()!=null) {
 			choices.add("Doctor: " + dService.findOne(cliente.getDoctor()).getName());
@@ -444,16 +464,49 @@ public class IndexController {
 			if (cliente.getP1()!=null) {
 				choices.add(p1 + pService.findOne(cliente.getP1()).getName()); 
 				model.addAttribute("observation", observation);
-				if (pService.findOne(cliente.getP1()).isRequiredCellSaver())
-					model.addAttribute("needAddCell", "true");
+				needAddCell = (pService.findOne(cliente.getP1()).isRequiredCellSaver());
 				if (cliente.getP2()!=null) {
 					choices.add("Combo with: " + pService.findOne(cliente.getP2()).getName());
-					if (pService.findOne(cliente.getP2()).isRequiredCellSaver())
-						model.addAttribute("needAddCell", "true");
+					needAddCell |= (pService.findOne(cliente.getP2()).isRequiredCellSaver());
 				}
 			}
 			else  
 				choices.add(decideNO);
+			model.addAttribute("needAddCell", needAddCell && !dService.findOne(cliente.getDoctor()).isRequiredCellSaver()); 
+			
+			
+//			// CALCULANDO EL BMI y el Peso     
+			Double weightA = (cliente.getHeightInches() == null)? cliente.getWeight()*1000/460: cliente.getWeight();  // Por si era en KG, ya están en libras
+
+			if (dService.findOne(cliente.getDoctor()).isUseBMI()) { // Si el doctor se fija en el BMI
+				if (cService.getBMI(cliente) > dService.findOne(cliente.getDoctor()).getMaxBMI()) {
+					// si el bmi es mayor q el max
+					model.addAttribute("weightProblem", noAcceptedByBMIH  + String.format("%.2f",cService.getBMI(cliente)) + noAcceptedByBMIUpperExp);
+					model.addAttribute("weightCalculate", weightUpperHPre  + 
+							             String.format("%.2f", weightA * (cService.getBMI(cliente) - dService.findOne(cliente.getDoctor()).getMaxBMI()) / cService.getBMI(cliente)) + 
+													      weightHPost + dService.findOne(cliente.getDoctor()).getName());
+				}
+				else if (cService.getBMI(cliente) < dService.findOne(cliente.getDoctor()).getMinBMI()) {
+					model.addAttribute("weightProblem", noAcceptedByBMIH  + String.format("%.2f",cService.getBMI(cliente)) + noAcceptedByBMILowerExp);
+					model.addAttribute("weightCalculate", weightLowerHPre  + 
+							             String.format("%.2f", weightA * (dService.findOne(cliente.getDoctor()).getMinBMI() - cService.getBMI(cliente)) / cService.getBMI(cliente)) + 
+													      weightHPost + dService.findOne(cliente.getDoctor()).getName());
+				}
+			}
+			else { // Si el doctor se fija solo en el peso
+				if (weightA > dService.findOne(cliente.getDoctor()).getMaxWeight()) {
+					model.addAttribute("weightProblem", noAcceptedByWeightH  + weightA + noAcceptedByWeighExp);
+					model.addAttribute("weightCalculate", weightUpperHPre + String.format("%.0f", weightA- dService.findOne(cliente.getDoctor()).getMaxWeight()) + 
+														  weightHPost + dService.findOne(cliente.getDoctor()).getName());
+				}
+				else if (weightA < dService.findOne(cliente.getDoctor()).getMinWeight()) {
+					model.addAttribute("weightProblem", noAcceptedByWeightH  + weightA + noAcceptedByBMILowerExp);
+					model.addAttribute("weightCalculate", weightLowerHPre + String.format("%.0f", dService.findOne(cliente.getDoctor()).getMinWeight() - weightA) +
+														  weightHPost + dService.findOne(cliente.getDoctor()).getName());
+				}
+			}
+			
+			
 		}
 		else {
 			if (cliente.getP1()!=null) 

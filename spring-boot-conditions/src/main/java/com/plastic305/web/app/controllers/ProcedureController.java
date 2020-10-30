@@ -1,5 +1,6 @@
 package com.plastic305.web.app.controllers;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -110,6 +111,7 @@ public class ProcedureController {
 	public String list(Model model) {
 		model.addAttribute("tittle", tittleList);
 		model.addAttribute("procedureList", procedureService.findAll());
+		model.addAttribute("update", new Date());
 
 		return "/procedure/list-procedure";
 	}

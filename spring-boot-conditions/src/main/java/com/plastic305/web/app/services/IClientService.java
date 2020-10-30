@@ -39,6 +39,9 @@ public interface IClientService {
 	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP1, Long idP2);  //
 	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP1, Long idP2, Long idD);  //
 	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP1, Long idP2, Long idD); //
+	
+	public List<Product> mandatoryScrubber(List<Product> l1, List<Product> l2);
+	
 	public Product findProductById(Long id);
 
 	public Order findOrderById(Long id);
@@ -49,6 +52,12 @@ public interface IClientService {
 //ASISTENCIAL
 //***********
 	public List<String> getConditionsWithValue(Client client, int value); 
+	
+	public List<String> getConditionsWithValueNewAll(Client client, int value);
+	
+	
+	
+	
 	public String getConditionsListCSV(Client client); 
 	public String getConditionsListCSV4Save(Client client);
 	public String getRemarksListCSV(Client client); 

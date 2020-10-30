@@ -41,6 +41,8 @@ public class Product implements Serializable {
 	@Column(name="has_amount")
 	private boolean hasAmount;
 	
+	private int min;
+	
 	private String tips;  //Remark
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -51,6 +53,14 @@ public class Product implements Serializable {
 	
 	public Product() {
 		ofertList  = new ArrayList<OfertByAmount>(); 
+	}
+
+	public int getMin() {
+		return min;
+	}
+
+	public void setMin(int min) {
+		this.min = min;
 	}
 
 	public Long getId() {

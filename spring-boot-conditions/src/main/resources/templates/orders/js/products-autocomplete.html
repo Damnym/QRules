@@ -22,9 +22,11 @@
 						success : function(data) {
 							response($.map(data, function(item) {
 								return {
-									value : item.id,
-									label : item.name,
-									price : item.price,
+									value   : item.id,
+									label   : item.name,
+									price   : item.price,
+									mind    : item.min,
+									can_inc : item.hasAmount,
 								};
 							}));
 						},
@@ -33,7 +35,7 @@
 				select : function(event, ui) {
 					//$("#find_product").val(ui.item.label);
 					if (itemsHelper.hasProduct(ui.item.value)){  // hasProduct funcion mas abajo
-						itemsHelper.incAmount(ui.item.value, ui.item.price);          // incAmount funcion mas abajo
+						itemsHelper.incAmount(ui.item.value, ui.item.label, ui.item.price);          // incAmount funcion mas abajo
 						return false;
 					}
 					
@@ -44,7 +46,18 @@
 					line = line.replace(/{PRICE}/g, ui.item.price);
 					
 					$("#loadProductItems tbody").append(line);
-					itemsHelper.getSubtotal(ui.item.value, ui.item.price, 1);
+					
+					$('#amount_' + ui.item.value).val(ui.item.mind);
+					
+					if (!ui.item.can_inc){
+						 $('#amount_' + ui.item.value).attr({ 
+						     "max" : 1,  // substitute your own 
+						     "min" : 1   // values (or variables) here 
+						    }); 
+					}
+
+					var amount = $("#amount_" + ui.item.value).val() ? parseInt($("#amount_" + ui.item.value).val()) : 1;
+					itemsHelper.getSubtotal(ui.item.value, ui.item.price,ui.item.label, amount);
 					return false;
 				}
 			});
@@ -56,8 +69,28 @@
 		
 		
 		var itemsHelper = {
-				getSubtotal: function(id, price, amount){
+				getSubtotal: function(id, price, name, amount){
 		//subtotal se encuentra en items-layout, el método html inyecta html en la plantilla
+					if (name === "Recovery H" && amount < 4)
+						bootbox.confirm({
+						    title: '<i class="fas fa-exclamation-triangle fa-2x" style="color: #FF0000"></i>' + "  Will you specify the quantity less than 4?",
+						    message: "Alert! You are trying to specify less than desired amount to " + name,
+						    buttons: {
+						        cancel: {
+						            label: '<i class="fa fa-times"></i> Cancel'
+						        },
+						        confirm: {
+						            label: '<i class="fa fa-check"></i> Confirm'
+						        }
+						    },
+						    callback: function (result) {
+						        		if (!result){
+						        			$('#amount_' + id).val(4);
+						        			$("#subtotal_" + id).html(parseInt(price) * parseInt(4));
+						        			itemsHelper.getTotalC();
+						        		}
+						    		  }
+						});
 					$("#subtotal_" + id).html(parseInt(price) * parseInt(amount));
 					this.getTotalC();
 				},
@@ -79,10 +112,10 @@
 					return result;
 				},
 				
-				incAmount: function(id, price){
+				incAmount: function(id, name, price){
 					var amount = $("#amount_" + id).val() ? parseInt($("#amount_" + id).val()) : 0;
 					$("#amount_" + id).val(++amount);
-					this.getSubtotal(id, price, amount);
+					this.getSubtotal(id, price, name, amount);
 				},
 				
 				deleteLine: function(id){
@@ -130,7 +163,7 @@
 																	line = line.replace(/{PRICE}/g, item.price);
 						
 																	$("#loadProductItems tbody").append(line);
-																	itemsHelper.getSubtotal(item.id, item.price, 1);
+																	itemsHelper.getSubtotal(item.id, item.price, item.name, 1);
 																	$("#seva").hide();
 																	
 																	return false;

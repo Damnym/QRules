@@ -1,25 +1,33 @@
 package com.plastic305.web.app.controllers;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
+
+//import javax.validation.Valid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.Procedure;
-import com.plastic305.web.app.models.entities.Product;
+//import com.plastic305.web.app.models.entities.ProductRecommendedByProcedure;
 import com.plastic305.web.app.models.entities.Suffering;
+import com.plastic305.web.app.models.entities.SufferingByDoctor;
 import com.plastic305.web.app.services.IDoctorService;
 import com.plastic305.web.app.services.ISufferingService;
 
@@ -31,11 +39,11 @@ public class DoctorController {
 	private static final String tittleList= "Doctor list" ;
 	private static final String errorNotZero= "Id 0 don't exist!!!" ;
 	private static final String tittleNewDoctor = "New Doctor" ;
-	private static final String bEditDoctor = "Update Doctor" ;
+//	private static final String bEditDoctor = "Update Doctor" ;
 	private static final String bAddCDoctor = "Add Doctor" ;
 	private static final String msgNewDoctor = "New Doctor form" ;
-	private static final String tittleEditDoctor = "Edit Doctor" ;
-	private static final String msgEditDoctor = "Edit Doctor form" ;
+//	private static final String tittleEditDoctor = "Edit Doctor" ;
+//	private static final String msgEditDoctor = "Edit Doctor form" ;
 	private static final String msgAddProcedureToDoctor = "Add procedure to Dr. " ;
 	private static final String msgAvailableProcedures = "List of available procedures" ;
 	
@@ -50,14 +58,40 @@ public class DoctorController {
 		return doctorService.findProceduresNotBelongToDoctorByName(id, term);
 	}
 	
-	@GetMapping({"/form"})
+	@GetMapping({"/form"}) //NEW
 	public String create(Model model) {
+		Doctor doctor = new Doctor();
+		List <Suffering> sList = sufferingService.findAll();
+		List <SufferingByDoctor> sbydL = new ArrayList<SufferingByDoctor>();
+		
+		Long i = Long.valueOf(1);
+		for (Suffering s: sList) {
+			SufferingByDoctor sbyd = new SufferingByDoctor();
+			sbyd.setSuffering(s);
+			sbyd.setId(i++);
+			sbydL.add(sbyd);
+		}
+		doctor.setSufferingsList(sbydL);
+		
 		model.addAttribute("tittle", tittleNewDoctor);
 		model.addAttribute("msg", msgNewDoctor);
-		model.addAttribute("doctor", new Doctor());
+		
+		model.addAttribute("doctor", doctor);
+		model.addAttribute("sbydList", sbydL);
+		
 		model.addAttribute("buttonaction", bAddCDoctor);
 		return "/doctor/form"; 
 	}
+	
+	
+	@PostMapping("/form")      
+	public String guardar(Doctor doctor, BindingResult bResult, Model model, RedirectAttributes flash, SessionStatus st) {
+		for (SufferingByDoctor a : doctor.getSufferingsList()) {
+			logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>: " + a.getSuffering().getName());
+		}
+		
+		return "/doctor/list";
+	}	
 
 	@GetMapping("/add-procedure/{id-doctor}")
 	public String addProcedure(@PathVariable(value = "id-doctor") Long id, Model model) {

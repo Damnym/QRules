@@ -3,28 +3,23 @@
 <head th:replace="layout/layout-client :: head"></head>
 <body>
 	<header th:replace="layout/layout-client :: header"></header>
-	<div class="container py-1" style="font-size: 15px">
+	<div class="container my-4" style="font-size: 15px">
 		<form th:action="@{/r1}" method="post" class="form-inline" th:object="${client}">
 	 		<div class="row">  <!-- Fila Principal  -->
 	 			<div class="col-9"> <!-- Columna Der. Condiciones  -->
 					<div class="card bg-white">
 						<div th:text="${conditionHeader}" class="card-header font-weight-bold text-white" align="center" style="background-color:#0F3678"></div>
 						<div class="card-body" align="left">
-							<ul class="list-group ">
-								<li class="list-group-item">
-									<div class="container newspaper1">
-										<div th:each="s: ${sList}" class="row">
-											<div class="my-1"> 
-												<input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}"
-												 	   th:checked="${#lists.contains(client.conditionsList, s)}"> 
-											</div>
-											<div class="mx-2 my-1"> 
-												<label th:for="${#ids.prev('conditionsList')}" th:text="${s.name}"></label>
-											</div>
-										</div>
-									</div>	
-								</li>
-							</ul>
+						   <div class="container newspaper1">
+						      <div th:each="s: ${sList}" class="row">
+							     <div class="my-1"> 
+								    <input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}" th:checked="${#lists.contains(client.conditionsList, s)}"> 
+								 </div>
+								 <div class="mx-2 my-1"> 
+								    <label th:for="${#ids.prev('conditionsList')}" th:text="${s.name}"></label>
+						 		 </div>
+						      </div>
+						   </div>	
 						</div>
 					</div>
 				</div>

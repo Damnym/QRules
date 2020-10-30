@@ -7,7 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.Procedure;
-import com.plastic305.web.app.models.entities.Product;
 
 public interface IDoctorDAO extends CrudRepository<Doctor, Long> {
 	

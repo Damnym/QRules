@@ -22,7 +22,6 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.plastic305.web.app.models.entities.Client;
-import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.Order;
 import com.plastic305.web.app.models.entities.OrderItem;
 import com.plastic305.web.app.models.entities.OrderProcedure;
@@ -110,7 +109,8 @@ public class OrderController {
 				
 				if (  !(pService.findOne(cliente.getP2()).getName().equals("BBL") || pService.findOne(cliente.getP1()).getName().equals("BBL"))    // No es un BBL
 				    && (pService.findOne(cliente.getP2()).isRequiredCellSaver() || (pService.findOne(cliente.getP1()).isRequiredCellSaver())       //   y el procedimiento requiere Cell, es Lipo
-				    && (cliente.isHasWeightLoss() || cliente.isMoreOneLipo())))         //   y el cliente ha perdido peso o es mas de una Lipo
+				    && (cliente.isHasWeightLoss() || cliente.isMoreOneLipo()))         //   y el cliente ha perdido peso o es mas de una Lipo
+				    &&  !dService.findOne(cliente.getDoctor()).isRequiredCellSaver()) // y ya el doctor no lo pide
 					cell = 1; 														// es obligatorio el Cell
 			}
 			else {
@@ -118,7 +118,8 @@ public class OrderController {
 				recommendedItemStrHeader = recommendedItemsHeader + pService.findOne(cliente.getP1()).getName() + " procedure";
 				if (   !pService.findOne(cliente.getP1()).getName().equals("BBL")    // No es un BBL
 					&&  pService.findOne(cliente.getP1()).isRequiredCellSaver()      //   y el procedimiento requiere Cell, es Lipo
-					&&	(cliente.isHasWeightLoss() || cliente.isMoreOneLipo()))      //   y el cliente ha perdido peso o es mas de una Lipo
+					&&	(cliente.isHasWeightLoss() || cliente.isMoreOneLipo())         //   y el cliente ha perdido peso o es mas de una Lipo
+				    &&  !dService.findOne(cliente.getDoctor()).isRequiredCellSaver()) // y ya el doctor no lo pide
 					cell = 1; 														 // es obligatorio el Cell
 			}
 			
@@ -146,7 +147,11 @@ public class OrderController {
 			model.addAttribute("p2PF", p2PF);  
 			
 			model.addAttribute("mandatoryItemList", cService.findProductsMandatoryByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2(), cell));  
-			model.addAttribute("mandatoryAndIncludedItemList", cService.findProductsMandatoryAndIncludedByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2()));
+//			logger.info("#####" + cService.findProductsMandatoryByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2(), cell).get(0).getName());
+			
+			model.addAttribute("mandatoryAndIncludedItemList", 
+								cService.findProductsMandatoryAndIncludedByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2()));
+//			logger.info("#####" + cService.findProductsMandatoryAndIncludedByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2()).get(0).getName());
 			model.addAttribute("recommendedItemList", cService.findProductsRecommendedByProcedure(cliente.getP1(), cliente.getP2(), cliente.getDoctor()));  //
 			model.addAttribute("restItemList", cService.findProductsNotMandatoryAndNotRecommended(cliente.getP1(), cliente.getP2(), cliente.getDoctor()));//
 			model.addAttribute("order", order);

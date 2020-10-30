@@ -29,6 +29,7 @@ public class ClientService implements IClientService {
 	@Autowired IOrderDAO iODAO;
 	@Autowired IProductsDAO iPDAO;
 	@Autowired ISufferingDAOPagNSortRepository sDAO;
+	@Autowired IDoctorService dService;
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
@@ -206,12 +207,33 @@ public class ClientService implements IClientService {
 //***********	
 	@Override @Transactional(readOnly = true)
 	public List<String> getConditionsWithValue(Client client, int value) {
-		List<String> conditions = new ArrayList<String>();
+/*		List<String> conditions = new ArrayList<String>();
 		for (Suffering c: client.getConditionsList()) 
 			if (c.getAccepted() == value) 
+				conditions.add(c.getName()); */
+		return null;
+	}
+	
+	
+	@Override @Transactional(readOnly = true)
+	public List<String> getConditionsWithValueNewAll(Client client, int value) {
+		List<String> conditions = new ArrayList<String>();
+		int valueLocal = 0 ;
+		for (Suffering c: client.getConditionsList()) {
+			if (sDAO.getDoctorCountsByConditionsId(c.getId()) == 0) 
+				valueLocal = 0 ;
+			else if (sDAO.getDoctorCountsByConditionsId(c.getId()) < dService.findAll().size()) 
+					valueLocal = 2 ;
+				else if ((sDAO.getDoctorCountsByConditionsId(c.getId()) == dService.findAll().size()) && (c.getWarning() !=null && !c.getWarning().isBlank())) 
+						valueLocal = 3 ;
+					else 
+						valueLocal = 1;
+			if (valueLocal == value) 
 				conditions.add(c.getName());
+		}
 		return conditions;
 	}
+	
 
 	@Override @Transactional(readOnly = true)   // esto cambiar  a JPA
 	public String getConditionsListCSV(Client client) {
@@ -228,15 +250,17 @@ public class ClientService implements IClientService {
 	public String getConditionsListCSV4Save(Client client) {
 		String conditions = "";
 		for (Suffering c: client.getConditionsList()) 
-			conditions += (c.getName() + ",");
-		if (conditions.equals(""))
+			conditions += (c.getWarning()+ ",");   // estaba Name() idem al de arriba
+ 		if (conditions.equals(""))
 			return "No";
 		else
 			return conditions.substring(0, conditions.lastIndexOf(","));
 	}
+	
+	
 	@Override @Transactional(readOnly = true)
 	public boolean haveRemark(Client client) {
-		List<String> conditions = this.getConditionsWithValue(client, 3);
+		List<String> conditions = this.getConditionsWithValueNewAll(client, 3);  // otra forma de verlo
 		return conditions!=null;
 	}
 
@@ -275,6 +299,15 @@ public class ClientService implements IClientService {
 				sList.add(sDAO.findByName(condition));
 		}
 		cliente.setConditionsList(sList);
+	}
+
+	@Override
+	public List<Product> mandatoryScrubber(List<Product> l1, List<Product> l2) {
+		
+		for (int i=0; i<l2.size(); i++)
+			if ( l1.indexOf(l2.get(i))!=-1 )
+				l1.add(l2.get(i));
+		return l1 ;
 	}
 
 }

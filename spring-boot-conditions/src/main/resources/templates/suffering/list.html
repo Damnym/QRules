@@ -31,11 +31,14 @@
                               <td th:text="${conditionWithDoctor.name}" align="justify" class="align-middle"></td>
                            <!-- Can apply for surgery -->
                               <td  align="center" class="align-middle">
-                                 <span th:if ="${conditionWithDoctor.accepted == 0}" th:text="'No'"></span>
+                                 <span th:if ="${conditionList.get(conditionWithDoctor).isBlank()}" th:text="'No'"></span>
+                                 <span th:unless ="${conditionList.get(conditionWithDoctor).isBlank()}" th:text="'Yes'" role="button" data-toggle="popover" 
+                                       data-trigger="hover" th:title="'Surgeons'" th:data-content="${conditionList.get(conditionWithDoctor)}"></span>
+                          <!--        <span th:if ="${conditionWithDoctor.accepted == 0}" th:text="'No'"></span>
                                  <span th:if ="${conditionWithDoctor.accepted == 1}" th:text="'Yes'"></span>
                                  <span th:if ="${conditionWithDoctor.accepted == 2}" th:text="'Some surgeons'" role="button"  data-toggle="popover"  data-trigger="hover" 
                                        th:title="'Surgeons'" th:data-content="${conditionList.get(conditionWithDoctor)}"></span>
-                                 <span th:if ="${conditionWithDoctor.accepted == 3}" th:text="'Yes*'" align="center"></span>
+                                 <span th:if ="${conditionWithDoctor.accepted == 3}" th:text="'Yes*'" align="center"></span> -->
                               </td>
                            <!-- ********************* -->
                               <td th:text="${conditionWithDoctor.warning}" align="justify" class="align-middle"></td>   

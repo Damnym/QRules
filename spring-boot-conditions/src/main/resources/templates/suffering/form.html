@@ -17,7 +17,7 @@
 							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>  
 						</div>
 					</div>
-               <!-- Aceptada? -->
+               <!-- Aceptada? 
                     <div class="form-group row my-1">
                     <div class="col-3"></div>
                     <div class="col-9" align="left">
@@ -26,7 +26,7 @@
                          <label class="input-group-text" for="inputGroupSelect01">Can apply?</label>
                        </div>
                        <select  class="custom-select form-control" id="accepted" th:field="*{accepted}" th:errorclass="'form-control alert-danger'">
-                  <!--        <option selected>Choose...</option>-->
+                       <option selected>Choose...</option>
                           <optgroup label="Can apply">
                              <option selected value="1" th:text="'Without remark'"></option>
                              <option value="2" th:text="'With some doctor'"></option>
@@ -39,7 +39,7 @@
                        <small th:if="${#fields.hasErrors('accepted')}" th:errors="*{accepted}" class="form-text text-danger"></small>
                      </div>
                      </div>
-                     </div>
+                     </div>-->
 					<!-- tips -->
 					<div class="form-group row">
 						<label for="tips" class="col-form-label col-sm-3">Remark:</label>

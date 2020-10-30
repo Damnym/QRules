@@ -28,6 +28,13 @@ h2.color-azul {
 	column-width: auto; 
 }
 
+
+.procedures-doctor-form{
+	column-count: 2;
+	column-gap: 1%;
+	column-width: auto; 
+}
+
 .newspaper2 {
   columns: auto 3;
 }

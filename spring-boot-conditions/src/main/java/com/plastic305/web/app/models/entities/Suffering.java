@@ -26,7 +26,7 @@ public class Suffering implements Serializable {
 	private String name;
 	
 //	@NotEmpty
-	private int accepted;
+//	private int accepted;
 	
 	private String warning;
 	
@@ -76,15 +76,15 @@ public class Suffering implements Serializable {
 	}
 	/**
 	 * @return the accepted
-	 */
+	
 	public int getAccepted() {
 		return accepted;
-	}
+	} */
 	/**
 	 * @param accepted the accepted to set
-	 */
+	 
 	public void setAccepted(int accepted) {
 		this.accepted = accepted;
-	}
+	}*/
 
 }

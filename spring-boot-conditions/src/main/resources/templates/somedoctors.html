@@ -3,7 +3,18 @@
 <head th:replace="layout/layout-client :: head"></head>
 <body>
 	<header th:replace="layout/layout-client :: header"></header>
-	<div class="row px-4 py-4">
+	<div class="container py-1" style="font-size: 15px">
+      <div class="row">    <!-- FILA PARA EL ALERTA -->
+         <div class="col">
+            <div th:if="${hbgOutsideRange}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                  <span th:text="${hbgOutsideRange}"></span>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+            </div>
+         </div>
+      </div>   
+      <div class="row py-4">
  	 		<div class="col-3">
 				<ul th:if="${choice}" class="list-group border-success" >
 					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
@@ -40,6 +51,7 @@
 					</div>
 				</div>
 	  		</div>
+         </div>
 	  	</div>
 	<footer th:replace="layout/layout-client :: footer"></footer>
 </body>

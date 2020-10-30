@@ -1,6 +1,7 @@
 package com.plastic305.web.app.models.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -39,6 +40,25 @@ public class Doctor implements Serializable {
 	@Column(name = "required_cell_saver")
 	private boolean requiredCellSaver;
 	
+	@Column(name = "use_bmi")
+	private boolean useBMI;
+	
+	@Column(name = "min_weight")
+	private Double minWeight;
+	
+	@Column(name = "max_weight")
+	private Double maxWeight;
+	
+	@Column(name = "min_bmi")
+	private Double minBMI;
+	
+	@Column(name = "max_bmi")
+	private Double maxBMI;
+	
+	
+	
+	
+	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date date;
@@ -57,13 +77,53 @@ public class Doctor implements Serializable {
 	
 	//  <<<<< IMPLEMENTATION >>>>>
 	
-/*	
+	
 	public Doctor() {
 		sufferingsList = new ArrayList<SufferingByDoctor>(); 
-		comboList = new ArrayList<ComboByDoctor>(); 
-		procList = new ArrayList<ProcByDoct>(); 
+//		comboList = new ArrayList<ComboByDoctor>(); 
+//		procList = new ArrayList<ProcByDoct>(); 
 	}
-	*/
+
+	public Double getMinWeight() {
+		return minWeight;
+	}
+
+	public void setMinWeight(Double minWeight) {
+		this.minWeight = minWeight;
+	}
+
+	public Double getMaxWeight() {
+		return maxWeight;
+	}
+
+	public void setMaxWeight(Double maxWeight) {
+		this.maxWeight = maxWeight;
+	}
+
+	public Double getMinBMI() {
+		return minBMI;
+	}
+
+	public void setMinBMI(Double minBMI) {
+		this.minBMI = minBMI;
+	}
+
+	public Double getMaxBMI() {
+		return maxBMI;
+	}
+
+	public void setMaxBMI(Double maxBMI) {
+		this.maxBMI = maxBMI;
+	}
+
+	public boolean isUseBMI() {
+		return useBMI;
+	}
+
+	public void setUseBMI(boolean useBMI) {
+		this.useBMI = useBMI;
+	}
+
 	public String getShortDate() {
 		Calendar c = new GregorianCalendar(); 
 		c.setTime(date);
@@ -128,6 +188,12 @@ public class Doctor implements Serializable {
 	 */
 	public void setSufferingsList(List<SufferingByDoctor> sufferingsList) {
 		this.sufferingsList = sufferingsList;
+	}
+	
+	public void addSuffering(Suffering s ) {
+		SufferingByDoctor sByD = new SufferingByDoctor();
+		sByD.setSuffering(s);
+		sufferingsList.add(sByD);
 	}
 	
 	/**

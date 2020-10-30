@@ -1,8 +1,6 @@
 package com.plastic305.web.app.views;
 
 import java.awt.Color;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
