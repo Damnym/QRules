@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,7 @@ import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.models.entities.SufferingByDoctor;
 
 @Service
-public class DoctorService implements IDoctorService{
+public class DoctorService implements IDoctorService{ protected final Log logger = LogFactory.getLog(this.getClass());
 	@Autowired private IDoctorDAO doctorDAO;
 	
 	@Override
@@ -88,6 +90,18 @@ public class DoctorService implements IDoctorService{
 	public List<Procedure> findAllProcedurebyDoctorId(Long idD) {
 		return doctorDAO.fetchProceduresByDoctorId(idD);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Procedure> findAllPrincipalProceduresbyDoctorId(Long idD) {
+		return doctorDAO.findPProceduresByDoctorId(idD);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Procedure> findAllAditionalProceduresbyDoctorId(Long idD) {
+		return doctorDAO.findAProceduresByDoctorId(idD);
+	}
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -143,6 +157,52 @@ public class DoctorService implements IDoctorService{
 		});
 		return procedureList;
 	}
+	
+	@Override
+	@Transactional(readOnly = true) 
+	public List<Procedure> findAllPrincipalProcedurebyDoctorIdbyFirstProcedure(Long idD, Long idP) {
+		ArrayList<Procedure> procedureList = new ArrayList<Procedure>();
+		
+		//Lista de combos de este doctor
+		List<ComboByDoctor> ComboList = findOne(idD).getComboList();
+		List<Combo> comboListWithParamProcedure = new ArrayList<Combo>();
+		for (ComboByDoctor oneComboByDoct: ComboList) {
+			//Tener lista de combos con el procedimiento Parametro
+			for (ProcByCombo oneProcedureByCombo: oneComboByDoct.getCombo().getProcedureList()) {
+				if (oneProcedureByCombo.getProcedure().getId()==idP)
+					comboListWithParamProcedure.add(oneComboByDoct.getCombo());
+			}
+		}
+		for (Combo combo: comboListWithParamProcedure) {
+			for (ProcByCombo oneProcedureByCombo: combo.getProcedureList()) {
+				if (oneProcedureByCombo.getProcedure().getId()!=idP && !oneProcedureByCombo.getProcedure().getAditional())
+					procedureList.add(oneProcedureByCombo.getProcedure());
+			}
+		}
+		procedureList.sort(new Comparator<Procedure>()
+		{
+			public int compare(Procedure p1, Procedure p2) {
+				return p1.getName().compareToIgnoreCase(p2.getName());
+			}
+		});
+		return procedureList;
+	}
+	
+	////////////////////
+	@Override
+	@Transactional(readOnly = true) 
+	public List<Procedure> findAllAditionalProcedurebyDoctorIdbyCombo(Long idD, Long idP1, Long idP2) 
+	{
+		ArrayList<Procedure> procedureList = new ArrayList<Procedure>();
+		
+		for (Procedure procedure: doctorDAO.findAProceduresByDoctorId(idD)) 
+			if (this.findAllProcedurebyDoctorIdbyFirstProcedure(idD, idP1).contains(procedure) && 
+				(idP2==null || this.findAllProcedurebyDoctorIdbyFirstProcedure(idD, idP2).contains(procedure)) )
+				procedureList.add(procedure);
+
+		return procedureList;
+	}
+	////////////////////
 	
 	@Override
 	@Transactional(readOnly = true) //Tratar hacerlo con JPA

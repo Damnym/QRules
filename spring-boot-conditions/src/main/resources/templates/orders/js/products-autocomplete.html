@@ -34,6 +34,7 @@
 				},
 				select : function(event, ui) {
 					//$("#find_product").val(ui.item.label);
+					//alert("select >>> " + ui.item.value); // OK
 					if (itemsHelper.hasProduct(ui.item.value)){  // hasProduct funcion mas abajo
 						itemsHelper.incAmount(ui.item.value, ui.item.label, ui.item.price);          // incAmount funcion mas abajo
 						return false;
@@ -101,11 +102,11 @@
 					this.getTotalM();
 				},
 				
-				
 				hasProduct: function(id){
 					var result = false;
-					$('input[name="item_id[]"]').each(function(){
+					$('input[name="item_id_c[]"]').each(function(){
 						if (parseInt(id) == parseInt($(this).val())){
+							//alert("hasProduct");
 							result = true;
 					    }
 					});

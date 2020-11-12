@@ -23,6 +23,10 @@ public class ComboByDoctor implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "combo_id")
 	private Combo combo;
+	
+	
+	
+	
 
 	/**
 	 * @return the id

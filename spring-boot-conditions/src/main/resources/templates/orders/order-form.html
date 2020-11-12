@@ -9,7 +9,7 @@
 			<button type="button" class="btn fas fa-info-circle fa-3x" data-toggle="popover" th:title="${productTexth}"  data-placement="left"
 					th:data-content="${productText}" style="color: #0F3678;"></button>
 		</div>
-		<form th:action="@{/orders/order-form}" th:object="${order}" method="post" enctype="multipart/form-data">
+		<form th:id="f2" th:action="@{/orders/order-form}" th:object="${order}" method="post">
 		<div class="row pl-3 py-2">
 			<div class="col-6"> <!-- GroupBox de las productos en venta -->
 				<div class="row"> <!-- GroupBox de las productos sugeridos en dependencia del Procedimiento -->
@@ -60,199 +60,213 @@
 				</div>
 			</div> 
 			<div class="col-6 bg-white">  <!-- seccion para los items elegidos y obligatorios-->
-				<div class="row">
-					    <!-- INICIO DEL ACORDEON -->
-						<div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" >
-                        <div class="col-12" align="left" >
-							<!-- Accordion card 1-->
-							<div class="card" style="border-color: #0F3678; border-right-width: 4px; border-radius: 15px 15px 0 0;">  <!-- seccion para los procedures-->
-								<!-- Card header -->
-								<div class="card-header" style="background-color:#fff; border-color: #0F3678; border-right-width: 4px; border-bottom-width: 2px;
-                                   border-radius: 15px 15px 0 0;" role="tab" id="headingOne1">
-							    	<a data-toggle="collapse" data-parent="#accordionEx" href="#collapseOne1" aria-expanded="true" aria-controls="collapseOne1"
-									   class="fa fa-angle-down rotate-icon" style="font-size: 14px; color:#0F3678;">
-									   <span th:text="'($'" style="font-size: 14px; color:#0F3678;"></span>
-									   <span id="totalp_h" style="font-family:sans-serif; font-size: 14px; color:#0F3678; font-weight:lighter;" >0</span> 
-									   <span th:text="') - '" style="font-size: 14px; color:#0F3678;"></span>
-									   <span th:text="${procedureHeader}" class="font-weight-bold" style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
-									</a>
-								</div>
-										  <!-- Card body -->
-								<div id="collapseOne1" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionEx">
-									<div class="card-body"  >
-										<div>
-										<div class="row">
-											<div class="col" align="right">
-												<input type="checkbox" th:field="*{financed}" th:value="'1'" th:checked="${financed}" 
-												       th:onchange="'itemsHelper.totalProcedure(' + ${p1PC} + ',' + ${p1PF} + ',' + ${p2PC} + ',' + ${p2PF} + ',' + this.checked + ');'">
-											   <label th:for="${#ids.prev('financed')}" th:text="'Financed pay?'"></label>
-										   </div>
-										</div>
-											<table class="table table-sm table-striped table-hover">
-												<thead>
-													<tr align="center">
-														<th width="50%" th:text="'Surgery'" ></th>
-														<th width="25%" th:text="'Price Cash'"></th>
-														<th width="25%" th:text="'Price Financed'"></th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr>
-														<td th:text="${p1N}" class="align-middle"></td>
-														<td align="center" class="align-middle">
-															<span th:id="p1pc" th:text="${p1PC}"></span>
-														</td>
-														<td align="center" class="align-middle">
-															<span th:id="p1pf" th:text="${p1PF}"></span>
-														</td>
-													</tr>								
-													<tr th:ifh="${p2N}">
-														<td th:text="${p2N}" class="align-middle"></td>
-														<td align="center" class="align-middle">
-															<span th:id="p2pc" th:text="${p2PC}"></span>
-														</td>
-														<td align="center" class="align-middle">
-															<span th:id="p2pf" th:text="${p2PF}"></span>
-														</td>
-													</tr>
-												</tbody>
-											</table>
-											<hr style="background-color:#0F3678;"/>
-												<h5 align="right">Total surgeries: <span class="badge badge-warning" id="totalp">0</span></h5>
-										</div>
-								</div>
-								</div>
-							</div><!-- Accordion card 1-->
+			   <div class="row">
+            
+			      <!-- INICIO DEL ACORDEON -->
+			      <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" >
+                     <div class="col-12" align="left" >
+			
+         		 <!-- Accordion card 1--><!-- seccion para los procedures-->
+					    <div class="card col-12" style="border-color: #0F3678; border-right-width: 4px; border-radius: 15px 15px 0 0;">  
+						
+                  <!-- Card header -->
+						   <div class="card-header" style="background-color:#fff; border-color: #0F3678; border-right-width: 4px; border-bottom-width: 2px;
+                                border-radius: 15px 15px 0 0;" role="tab" id="headingOne1">
+						      <a data-toggle="collapse" data-parent="#accordionEx" href="#collapseOne1" aria-expanded="true" aria-controls="collapseOne1"
+								 class="fa fa-angle-down rotate-icon" style="font-size: 14px; color:#0F3678;">
+							     <span th:text="'($'" style="font-size: 14px; color:#0F3678;"></span>
+								 <span th:text="${totalProcedureCashPrice}" id="totalp_h" style="font-family:sans-serif; font-size: 14px; color:#0F3678; font-weight:lighter;" ></span> 
+								 <span th:text="') - '" style="font-size: 14px; color:#0F3678;"></span>
+								 <span th:text="${procedureHeader}" class="font-weight-bold" style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
+							  </a>
+						   </div>
+					    
+                   <!-- Card body -->
+						   <div id="collapseOne1" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionEx">
+						      <div class="card-body"  >
+							     <div>
+								    <div class="row">
+									   <div class="col" align="right">
+									      <input type="checkbox" th:field="*{financed}" th:value="'1'" th:checked="${financed}" 
+										  th:onchange="'itemsHelper.totalProcedure(' + ${totalProcedureCashPrice} + ',' + ${totalProcedureFinancedPrice} + ',' + this.checked + ');'">
+										  <label th:for="${#ids.prev('financed')}" th:text="'Financed pay?'"></label>
+									   </div>
+									</div>
+									<table class="table table-sm table-striped table-hover">
+									   <thead>
+									      <tr align="center">
+										     <th width="50%" th:text="'Surgery'" ></th>
+											 <th width="25%" th:text="'Price Cash'"></th>
+											 <th width="25%" th:text="'Price Financed'"></th>
+										  </tr>
+									    </thead>
+										<tbody>
+										   <tr th:each="pdata: ${proceduresData}">
+										      <td th:text="${pdata.name}" class="align-middle"></td>
+											  <td align="center" class="align-middle">
+											     <span th:id="p1pc" th:text="${pdata.priceCash}"></span>
+									 		  </td>
+											  <td align="center" class="align-middle">
+											     <span th:id="p1pf" th:text="${pdata.priceFinanced}"></span>
+											  </td>
+										   </tr>								
+										</tbody>
+									</table>
+									<hr style="background-color:#0F3678;"/>
+									<h5 align="right">Total surgeries: <span class="badge badge-warning" id="totalp" th:text="${totalProcedureCashPrice}"></span></h5>
+								 </div>
+							  </div>
+						   </div>
+						</div><!-- Accordion card 1-->
 								
-							 			  <!-- Accordion card 2-->
-								<div class="card" style="border-color: #0F3678 ; border-right-width: 4px">   <!-- seccion para los items obligatorios -->
-									    	  <!-- Card header -->
-								  	<div class="card-header" style="background-color:#fff; border-color: #0F3678; border-right-width: 4px; border-bottom-width: 2px;" 
-                                          role="tab" id="headingTwo2">
-										<a class="fa fa-angle-down rotate-icon collapsed" style="font-size: 14px; color:#0F3678;" 
-                                           data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2">
-                                          <span th:text="'($'" style="font-size: 14px; color:#0F3678;"></span>
-										  <span id="totalm_h" style="font-family:sans-serif; font-size: 14px; color:#0F3678; font-weight:lighter;">0</span> 
-                                          <span th:text="') - '" style="font-size: 14px; color:#0F3678;"></span>
-										  <span th:text="${mandatoryItemHeader}" class="font-weight-bold" style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
-										</a>
-									</div>
-											  <!-- Card body -->
-									<div id="collapseTwo2" class="collapse" role="tabpanel" aria-labelledby="headingTwo2" data-parent="#accordionEx">
-										<div class="card-body">
-											<div class="border-secondary">
-												<table class="table table-sm table-striped table-hover">
-													<thead>
-														<tr align="center">
-															<th width="50%" th:text="'Description'" ></th>
-															<th width="30%" th:text="'Price'"></th>
-															<th width="10%" th:text="'Amount'"></th>
-															<th width="10%" th:text="'Subtotal'"></th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr th:each="mi: ${mandatoryItemList}">
-															<td class="d-none">
-																<input type="hidden" th:value="${mi.id}" name="item_id_m[]" />     <!-- ID para guardar -->
-															</td>
-															<td th:text="${mi.name}" class="align-middle"></td> <!-- Nombre -->
-															<td th:text="${mi.price}" th:id="'p_' + ${mi.id}" class="align-middle" align="center"></td>  <!-- Precio -->
-															<td class="align-middle">   <!-- Cantidad -->                   
-																<input th:if="${mi.isHasAmount()}" value="1" type="number" class="form-control" min="0"  
-												   					   th:id="'amountm_'+${mi.id}"  name="amount_m[]"
-												   					   th:onchange="'itemsHelper.getSubtotalM(' + ${mi.id} +', parseInt($(p_' + ${mi.id} + ').text()), this.value);'" />
-																<input th:unless="${mi.isHasAmount()}" value="1" type="text" class="form-control" readonly="readonly"
-												   					   th:id="'amountm_'+${mi.id}"  name="amount_m[]"
-									   								   th:onchange="'itemsHelper.getSubtotalM(' + ${mi.id} +', parseInt($(p_' + ${mi.id} + ').text()), this.value);'" />
-															</td>
-															<td align="center" class="align-middle">
-																<span th:id="'subtotalm_'+${mi.id}" th:text='${mi.price}'></span>
-															</td>
-														</tr>								
-														<tr th:each="mi: ${mandatoryAndIncludedItemList}">
-															<td class="d-none">
-																<input type="hidden" th:value="${mi.id}" name="item_id_mi[]" />     <!-- ID para guardar -->
-															</td>
-															<td th:text="${mi.name}" class="align-middle"></td>    <!-- Nombre -->
-															<td th:text="${mi.tips}" class="align-middle" align="center"></td> <!-- Remark -->
-															<td align="center" class="align-middle">
-																<input value="1" type="text" class="form-control" readonly="readonly" />
-															</td> <!-- Cantidad -->
-															<td th:text="'0'" class="align-middle" align="center"></td>      <!-- Precio -->
-														</tr>
-													</tbody>
-												</table>
-												<hr style="background-color:#0F3678"/>
-												<h5 align="right">Total mandatory: <span class="badge badge-warning" id="totalm">0</span></h5>
-											</div>
-							  			</div>
-									</div>
-								</div>  <!-- Accordion card 2-->
-								 			  <!-- Accordion card 3-->
-								<div class="card" style="border-color: #0F3678 ; border-right-width: 4px ; border-bottom-width: 3px;">   <!-- seccion para los items elegidos -->
-									    	  <!-- Card header -->
-								  	<div class="card-header" style="background-color:#fff; border-color: #0F3678; border-right-width: 4px; border-bottom-width: 2px;"
-                                                role="tab" id="headingThree3">
-										<a class="collapsed fa fa-angle-down rotate-icon" style="font-size: 14px; color:#0F3678;"
-                                           data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree3" aria-expanded="false" aria-controls="collapseThree3">
-										   		<span th:text="'($'" style="font-size: 14px; color:#0F3678;"></span>
-										   		<span id="totalc_h" style="font-family:sans-serif; font-size: 14px; color:#0F3678; font-weight:lighter;" >0</span> 
-                                                <span th:text="') - '" style="font-size: 14px; color:#0F3678;"></span> 
-												<span th:text="'Choose items'" class="font-weight-bold" style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
-										</a>
-									</div>
-											  <!-- Card body -->
-									<div id="collapseThree3" class="collapse" role="tabpanel" aria-labelledby="headingThree3" data-parent="#accordionEx" style="border-bottom-width: 3px;
-                                         border-radius: 0 0 15px 15px;">
-										<div class="card-body" style="border-bottom-width: 3px; border-radius: 0 0 15px 15px;">
-											<div class="form-group row">
-												<label th:text="'Find product: '" for="find_product" class="col-form-label col-sm-4 font-weight-bold"></label>
-												<div class="col"> <input type="text" name="find_product" id="find_product" class="form-control" /></div>
-											</div>
-											<table th:replace="orders/items-layout :: orderItems" style="font-size: 13px"></table>  
-											<table id="loadProductItems" class="table table-sm table-striped table-hover">
-												<thead>
-													<tr>
-														<th width="65%" th:text="'Description'"></th>
-														<th width="9%" th:text="'Price'"></th>
-														<th width="8%" th:text="'Amount'"></th>
-														<th width="8%" th:text="'Subtotal'"></th>
-														<th width="10%" th:text="'Delete'"></th>
-													</tr>
-												</thead>
-												<tbody></tbody>
-											</table>
-											<h5 align="right">Total choosed: <span id="totalc" class="badge badge-warning">0</span></h5>
-											<hr>	
-											<div class="form-group row">
-												<label th:text="'Observations: '" for="observation" class="col-form-label col-sm-3 font-weight-bold"
-                                                       style="font-size: 13px"></label>
-												<div class="col">
-													<textarea id="observation" th:field="*{observation}" class="form-control" rows="6" 
-												  	 		  th:errorclass="'form-control alert-danger'" style="font-size: 13px"></textarea>
-													<small th:if="${#fields.hasErrors('observation')}" th:errors="*{observation}" class="form-text text-danger"></small>
-												</div>
-											</div>
+				 <!-- Accordion card 2-->
+						<div class="card col-12" style="border-color: #0F3678 ; border-right-width: 4px">   <!-- seccion para los items obligatorios -->
+									    	  
+                        <!-- Card header -->
+						   <div class="card-header" style="background-color:#fff; border-color: #0F3678; border-right-width: 4px; border-bottom-width: 2px;" 
+                                role="tab" id="headingTwo2">
+						      <a class="fa fa-angle-down rotate-icon collapsed" style="font-size: 14px; color:#0F3678;" 
+                                 data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2">
+                                <span th:text="'($'" style="font-size: 14px; color:#0F3678;"></span>
+								<span id="totalm_h" style="font-family:sans-serif; font-size: 14px; color:#0F3678; font-weight:lighter;">0</span> 
+                                <span th:text="') - '" style="font-size: 14px; color:#0F3678;"></span>
+								<span th:text="${mandatoryItemHeader}" class="font-weight-bold" style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
+							  </a>
+						   </div>
+                     
+					    <!-- Card body -->
+						   <div id="collapseTwo2" class="collapse" role="tabpanel" aria-labelledby="headingTwo2" data-parent="#accordionEx">
+							  <div class="card-body">
+							     <div class="border-secondary">
+								    <table class="table table-sm table-striped table-hover">
+									   <thead>
+									      <tr align="center">
+									         <th width="50%" th:text="'Description'" ></th>
+										     <th width="30%" th:text="'Price'"></th>
+										     <th width="10%" th:text="'Amount'"></th>
+										     <th width="10%" th:text="'Subtotal'"></th>
+							 		     </tr>
+									   </thead>
+									   <tbody>
+									      <tr th:each="mi: ${mandatoryItemList}">
+										     <td class="d-none">
+											    <input type="hidden" th:value="${mi.id}" name="item_id_m[]" />     <!-- ID para guardar -->
+											 </td>
+											 <td th:text="${mi.name}" class="align-middle"></td> <!-- Nombre -->
+											 <td th:text="${mi.price}" th:id="'p_' + ${mi.id}" class="align-middle" align="center"></td>  <!-- Precio -->
+											 <td class="align-middle">   <!-- Cantidad -->                   
+											    <input th:if="${mi.isHasAmount()}" value="1" type="number" class="form-control" min="0"  
+												       th:id="'amountm_'+${mi.id}"  name="amount_m[]"
+												   	   th:onchange="'itemsHelper.getSubtotalM(' + ${mi.id} +', parseInt($(p_' + ${mi.id} + ').text()), this.value);'" />
+												<input th:unless="${mi.isHasAmount()}" value="1" type="text" class="form-control" readonly="readonly"
+												       th:id="'amountm_'+${mi.id}"  name="amount_m[]"
+									   				   th:onchange="'itemsHelper.getSubtotalM(' + ${mi.id} +', parseInt($(p_' + ${mi.id} + ').text()), this.value);'" />
+											 </td>
+											 <td align="center" class="align-middle">
+											    <span th:id="'subtotalm_'+${mi.id}" th:text='${mi.price}'></span>
+											 </td>
+										  </tr>								
+										  <tr th:each="mi: ${mandatoryAndIncludedItemList}">
+										     <td class="d-none">
+											    <input type="hidden" th:value="${mi.id}" name="item_id_mi[]" />     <!-- ID para guardar -->
+											 </td>
+											 <td th:text="${mi.name}" class="align-middle"></td>    <!-- Nombre -->
+											 <td th:text="${mi.tips}" class="align-middle" align="center"></td> <!-- Remark -->
+											 <td align="center" class="align-middle">
+											    <input value="1" type="text" class="form-control" readonly="readonly" />
+								 			 </td> <!-- Cantidad -->
+											 <td th:text="'0'" class="align-middle" align="center"></td>      <!-- Precio -->
+												</tr>
+									   </tbody>
+									</table>
+									<hr style="background-color:#0F3678"/>
+									<h5 align="right">Total mandatory: <span class="badge badge-warning" id="totalm">0</span></h5>
+								 </div>
+							  </div>
+						   </div>
+						</div>  <!-- Accordion card 2-->
+                  
+					  <!-- Accordion card 3-->
+						<div class="card col-12" style="border-color: #0F3678 ; border-right-width: 4px ; border-bottom-width: 3px;">   <!-- seccion para los items elegidos -->
+									    	  
+                      <!-- Card header -->
+							<div class="card-header" style="background-color:#fff; border-color: #0F3678; border-right-width: 4px; border-bottom-width: 2px;"
+                                 role="tab" id="headingThree3">
+							   <a class="collapsed fa fa-angle-down rotate-icon" style="font-size: 14px; color:#0F3678;"
+                                  data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree3" aria-expanded="false" aria-controls="collapseThree3">
+								  <span th:text="'($'" style="font-size: 14px; color:#0F3678;"></span>
+								  <span id="totalc_h" style="font-family:sans-serif; font-size: 14px; color:#0F3678; font-weight:lighter;" >0</span> 
+                                  <span th:text="') - '" style="font-size: 14px; color:#0F3678;"></span> 
+								  <span th:text="'Choose items'" class="font-weight-bold" style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
+						 	   </a>
+							</div>
+											  
+                      <!-- Card body -->
+							<div id="collapseThree3" class="collapse" role="tabpanel" aria-labelledby="headingThree3" data-parent="#accordionEx" style="border-bottom-width: 3px;
+                                 border-radius: 0 0 15px 15px;">
+							   <div class="card-body" style="border-bottom-width: 3px; border-radius: 0 0 15px 15px;">
+							      <div class="form-group row">
+								       <label th:text="'Find product: '" for="find_product" class="col-form-label col-sm-4 font-weight-bold"></label>
+									   <div class="col"> 
+                                          <input type="text" name="find_product" id="find_product" class="form-control" />
+                                       </div>
+								  </div>
+								  <table th:replace="orders/items-layout :: orderItems" style="font-size: 13px"></table>  
+								  <table id="loadProductItems" class="table table-sm table-striped table-hover">
+								     <thead>
+									    <tr>
+										   <th width="65%" th:text="'Description'"></th>
+										   <th width="9%" th:text="'Price'"></th>
+										   <th width="8%" th:text="'Amount'"></th>
+										   <th width="8%" th:text="'Subtotal'"></th>
+										   <th width="10%" th:text="'Delete'"></th>
+										</tr>
+									 </thead>
+								     <tbody></tbody>
+								  </table>
+								  <h5 align="right">Total choosed: <span id="totalc" class="badge badge-warning">0</span></h5>
+								  <hr>	
+								  <div class="form-group row">
+								     <label th:text="'Observations: '" for="observation" class="col-form-label col-sm-3 font-weight-bold" style="font-size: 13px"></label>
+									    <div class="col">
+										   <textarea id="observation" th:field="*{observation}" class="form-control" rows="6" 
+												  	 th:errorclass="'form-control alert-danger'" style="font-size: 13px"></textarea>
+										    <small th:if="${#fields.hasErrors('observation')}" th:errors="*{observation}" class="form-text text-danger"></small>
 										</div>
-									</div>
-								</div>  <!-- Accordion card 3-->
-							</div><!-- Accordion wrapper -->
-                     </div>
+								  </div>
+								</div>
+							</div>
+						</div>  <!-- Accordion card 3-->
+				     </div><!-- Accordion wrapper -->
+                  </div>
 							  <!-- FIN DEL ACORDEON -->
-						</div> 
-                        <div class="row">
-                           <div class="col">
-                                                   <hr>
-                     <p></p><p></p>
-                            <div class="col pt-3" align="right">
-                           <h5 align="right">Total order: <span class="badge badge-success" id="total">0</span></h5>
-                            </div>  
-                     <div class="col-12 py-4">
-                        <input type="submit" th:value="'View pre-order'" class="btn btn-lg btn-block btn-305"/>
+			   </div>
+               <div class="row">
+                  <div class="col">
+                     <hr>
+                     <p></p>
+                     <p></p>
+                     <div class="row">
+                        <div class="col pt-3" align="right">
+                           <h5 align="right">
+                              Total order: 
+                              <span class="badge badge-success" id="total">0</span>
+                           </h5>
+                        </div>
                      </div>
-                        </div>              
-					</div>
+                     <div class="row">   
+                        <div class="col-6 py-4">
+                           <a class="btn btn-lg btn-block btn-305"
+                              th:href="@{/doctor_or_procedure/}"
+                              th:text="'Add'"></a>  
+                        </div>
+                        <div class="col-6 py-4">
+                           <input type="submit" th:value="'View pre-order'" class="btn btn-lg btn-block btn-305" />
+                        </div>
+                     </div>   
+                  </div>
                </div>
+            </div>
 			
 		</div>
 		</form>

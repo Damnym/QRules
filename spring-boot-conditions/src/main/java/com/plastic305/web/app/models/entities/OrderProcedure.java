@@ -13,12 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "order_procedures")
-public class OrderProcedure implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6708753856536301907L;
-
+public class OrderProcedure implements Serializable{ private static final long serialVersionUID = -6708753856536301907L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

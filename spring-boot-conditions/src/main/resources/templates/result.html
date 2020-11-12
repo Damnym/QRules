@@ -24,9 +24,10 @@
 							</li>
 						</ul>
 					</div>
-					<div class="col-6" align="right">
-						<ul th:if="${needAddCell}" class="list-group">      <!-- needCell -->	
-							<li th:text="${needCellT}" class="list-group-item text-center text-white font-weight-bold" style="background-color:#0F3678"></li>
+					<div class="col-6" align="right" >
+						<ul class="list-group">      <!-- needCell th:if="${needAddCell}" -->	
+							<li th:text="${needCellT}" class="list-group-item text-center font-weight-bold border-305" 
+                                style="background-color:#FFFFFF; color:#0F3678"></li>
 							<li class="list-group-item text-left border-305">
 								<div class="row">
 									<div class="mx-2 my-2"> 
@@ -41,24 +42,43 @@
 										<input type="checkbox" th:field="*{moreOneLipo}" th:value="'2'" th:checked="${moreOneLipo}"> 
 									</div>
 									<div class="mx-2 my-2"> 
-										<label th:for="${#ids.prev('moreOneLipo')}" th:text="'Do you have had any Lipo Before?'"></label>
+										<label th:for="${#ids.prev('moreOneLipo')}" th:text="'Have you had any Lipo or BBL before?'"></label>
 									</div>
 								</div>
 							</li>
 						</ul>
 					</div>
 				</div>
-                <div class="row mt-3">
+                <div th:if="${aditionalProcedures}" class="row mt-3">
                   <div class="col">
-                     <div th:if="${weightProblem}" class="alert alert-danger alert-dismissible fade show border-danger" role="alert">
-                        <p> <span th:text="${weightProblem}"></span> </p>
-                        <span th:text="${weightCalculate}"></span>
-                     </div>
+                     <ul class="list-group">      <!-- Aditional Procedures -->  
+                        <li th:text="${aditionalProcedureH}" class="list-group-item text-center text-white font-weight-bold" style="background-color:#0F3678"></li>
+                        <li class="list-group-item text-left border-305">
+                           <div class="container newspaper1">
+                              <div th:each="ap: ${aditionalProcedures}" class="row">
+                                 <div class="my-1"> 
+                                    <input type="checkbox" th:field="*{aditionalProcedures}" th:value="${ap.id}" th:checked="${#lists.contains(client.aditionalProcedures, ap)}"> 
+                                 </div>
+                                 <div class="mx-2 my-1"> 
+                                    <label th:for="${#ids.prev('aditionalProcedures')}" th:text="${ap.name}"></label>
+                                 </div>
+                              </div>
+                           </div>   
+                        </li>
+                      </ul>
                   </div>
                 </div>
 			</div>		
 		</div>
-		<div class="row">
+        <div class="row px-4">
+           <div class="col">
+              <div th:if="${weightProblem}" class="alert alert-danger alert-dismissible fade show border-danger" role="alert">
+                 <p> <span th:text="${weightProblem}"></span> </p>
+                 <span th:text="${weightCalculate}"></span>
+              </div>
+           </div>
+        </div>
+		<div class="row px-4">
 			<div class="col-12" align="left">
 				<input type="submit" value="Show Post-surgical items" class="btn btn-lg btn-block btn-305"/>
 			</div>

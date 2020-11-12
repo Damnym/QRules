@@ -17,9 +17,9 @@
 		<div class="row py-4" style="font-size: 15px"> <!-- GENERAL -->    <!-- FILA PARA EL RESTO DEL CONTENIDO -->
  	 		<div class="col-3"> <!-- COLUMNA CON LA TRAZA -->
 				<ul th:if="${choice}" class="list-group border-success" >
-					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
-					<li th:text="${choice}" class="list-group-item text-left border-success"></li>
-				</ul>
+                  <li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
+                  <li th:each="c: ${choice}" th:text="${c}" class="list-group-item text-left border-success"></li>
+                </ul>
 		 	</div> 
    			<div class="col-9">   <!-- COLUMNA CON LAS OPCIONES -->
 				<div class="card bg-white border-305" >

@@ -80,6 +80,9 @@ public class Client implements Serializable {
 	@Transient                               
 	private List<Suffering> conditionsList;
 	
+	@Transient  
+	private List<Procedure> aditionalProcedures;
+	
 	private boolean moreOneLipo;
 	
 	private boolean hasWeightLoss;
@@ -104,6 +107,14 @@ public class Client implements Serializable {
 	
 	public boolean isMoreOneLipo() {
 		return moreOneLipo;
+	}
+
+	public List<Procedure> getAditionalProcedures() {
+		return aditionalProcedures;
+	}
+
+	public void setAditionalProcedures(List<Procedure> aditionalProcedures) {
+		this.aditionalProcedures = aditionalProcedures;
 	}
 
 	public void setMoreOneLipo(boolean moreOneLipo) {
@@ -355,6 +366,7 @@ public class Client implements Serializable {
 	public Client() {
 		conditionsList = new ArrayList<Suffering>(); 
 		orderList  = new ArrayList<Order>(); 
+		aditionalProcedures = new ArrayList<Procedure>();
 	}
 
 	public boolean isMakeCellSaver() {

@@ -2,6 +2,7 @@ package com.plastic305.web.app.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.plastic305.web.app.models.entities.Client;
+import com.plastic305.web.app.models.entities.Order;
+import com.plastic305.web.app.models.entities.OrderProcedure;
 import com.plastic305.web.app.models.entities.Procedure;
 import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.services.IClientService;
@@ -54,9 +57,8 @@ public class IndexController {
 	private static final String hbgOutsideLimits = "Your hemoglobin level is outside the desired range" ;
 	private static final String date4Surgery = "Choose the tentative date for your surgery, take into account the availability of the surgeon" ;
 	private static final String needCellT = "Information needed to perform Lipo" ;
+	private static final String aditionalProcedureH = "Select aditional procedures" ;
 	
-//	private static final Double bmiUpperLimit = Double.valueOf(35) ;
-//	private static final Double poundstUpperLimit = Double.valueOf(190) ;
 	private static final Double hbgFUpperLimit = Double.valueOf(16) ;
 	private static final Double hbgFLowerLimit = Double.valueOf(12) ;
 	private static final Double hbgMUpperLimit = Double.valueOf(18) ;
@@ -77,7 +79,7 @@ public class IndexController {
 	@GetMapping({"/r1/{clientId}"})   
 	public String form(@PathVariable(value = "clientId") Long clientId, Model model) {
 		Client cliente =  cService.findOne(clientId) ;
-		cService.prepare(cliente);
+		cService.prepare(cliente);   // 30/10/20  este metodo cambiarlo pq tienen q ser mas procedimientos
 		remark = false;
 		
 		List <Suffering> sList = sService.findAll(); 
@@ -133,7 +135,7 @@ public class IndexController {
 	 	return "r1";
 	}	
 	
-// *******************      NUEVO PARA AGREGAR EL BMI
+// *******************      
 // *******EN USO******	
 	@PostMapping({"/r1"})    
 	public String formProcess(Client cliente, Model model) {  // Se asume que la cantidad de Dr nunca será 0!!!
@@ -144,30 +146,16 @@ public class IndexController {
 			  else if (sService.getDoctorCountsByConditionsId(c.getId())==0) {
 				cliente.setAccepted(Long.valueOf(0));   
 				return "redirect:/no_accepted";
-			}// logger.info(">>>> Desde IndexCotroller: " + sService.getDoctorCountsByConditionsId(c.getId()) + " doctores la operan si la presentan <<<<");
-			
-/*			if (c.getAccepted() == 0) { 
-				cliente.setAccepted(Long.valueOf(0));   
-				return "redirect:/no_accepted";
 			}
-			else if (c.getAccepted() == 2) 
-					url = "redirect:/somedoctors"; */
+			
 			if (c.getWarning() !=null && !c.getWarning().isBlank())
 				remark = true;
 		}
-//		// CALCULANDO EL BMI y el Peso   AGREGAR lo de la hemoglobina   //#### Cambiar lo de la BMI, aqui no hacer nada...solo guardar ####
-//		Double weight = cliente.getWeight() ;  
-//		if (cliente.getHeightInches() == null) weight = weight * 1000 / 460 ; // Era en KG
-//		
-//		if (weight > poundstUpperLimit  ||   // Peso por encima de lo permitido
-//			cService.getBMI(cliente) > bmiUpperLimit) {     // BMI por encima de lo permitido
-//			return "redirect:/no_accepted";
-//		}
 		return url;
 	}
 		
 // *******************
-// *******EN USO******	NUEVO PARA AGREGAR EL BMI
+// *******EN USO******	 
 	@GetMapping({"no_accepted"})       
 	public String noAccepted(Client cliente, Model model, SessionStatus st) {
 		// Locales necesarias
@@ -186,15 +174,6 @@ public class IndexController {
 		
 		if (cliente.getAccepted() != null && cliente.getAccepted()== 0)
 			decision.add(noAcceptedByConditionH + cService.getConditionsWithValueNewAll(cliente, 0) + noAcceptedByConditionExp);
-		
-//		Double weight = cliente.getWeight() ;  
-//		if (cliente.getHeightInches() == null) weight = weight * 1000 / 460 ; // Era en KG
-//		if (weight > poundstUpperLimit)
-//			decision.add(noAcceptedByWeightH + String.format("%.2f", cliente.getWeight()) + noAcceptedByWeighExp);
-//
-//		double bmi = cService.getBMI(cliente) ; 
-//		if (bmi > bmiUpperLimit)
-//			decision.add(noAcceptedByBMIH + String.format("%.2f", bmi) + noAcceptedByBMIUpperExp);
 		
 		// Pasando al modelo
 		model.addAttribute("choice_h", choiceH);
@@ -222,13 +201,23 @@ public class IndexController {
 // *******EN USO******           
 	@GetMapping({"doctor_or_procedure"})   // Si llega aquí es pq es candidato 
 	public String doctorOrProcedure(Client cliente, Model model, SessionStatus s) {
+		Order order = (Order) model.getAttribute("order");
+		if (order != null)
+			logger.info("Index >>> No null" + order.getDoctorName());
+		else
+			logger.info("Index >>> Null");
+			
+		
 		model.addAttribute("choice_h", questionnaireAnswerHeader);
-//		if (!cService.haveRemark(cliente))
 		if (!remark)
 			model.addAttribute("msg", acceptedHeader);
 		else 
 			model.addAttribute("msg", acceptedWithRemarkHeader);
-		model.addAttribute("choice", "Condition: " + cService.getConditionsListCSV(cliente));
+		
+		List <String> choices = Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
+	              							  "Remarks: " + cService.getRemarksListCSV(cliente));
+		
+		model.addAttribute("choice", choices);
 		model.addAttribute("explanationb", acceptedMsg);
 		
 		if ((cliente.getGender().equals("Woman") && (cliente.getHbg()>hbgFUpperLimit || cliente.getHbg()<hbgFLowerLimit)) ||  // Mujer con hemoglobina fuera del rango		
@@ -263,7 +252,7 @@ public class IndexController {
 	
 // *******************
 // *******EN USO******
-	@GetMapping({"choice_procedure_by_doctor/{iddoct}"})   
+	@GetMapping({"choice_procedure_by_doctor/{iddoct}"})       /// ///    // 30/10/20    EMPEZAR A VER EL TRABAJO CON LOS COMBOS 
 	public String choiceProcedureByDoctorSelect(@PathVariable(value = "iddoct") Long iddoct, Client cliente, Model model, SessionStatus s) {
 		cliente.setDoctor(iddoct);
 		cliente.setP1(null);
@@ -282,17 +271,17 @@ public class IndexController {
 			model.addAttribute("doctorlist", dService.findAllbyConditions(cliente.getConditionsList())) ;
 		
 		model.addAttribute("procedurelisth", "Procedures list of doctor " + dService.findOne(iddoct).getName()); 
-		model.addAttribute("procedurelist", dService.findAllProcedurebyDoctorId(iddoct)); 
+		model.addAttribute("procedurelist", dService.findAllPrincipalProceduresbyDoctorId(iddoct));   // AQUI se sustituyó findAllProcedurebyDoctorId
 		model.addAttribute("tittle", "First doctor, then procedure");		
 		return "choice_procedure_by_doctor";
 	}		
 	
 // *******************
 // *******EN USO******    
-	@GetMapping({"choice-combo-by-doctor-by-p1"})   
+	@GetMapping({"choice-combo-by-doctor-by-p1"})    ///    // 30/10/20    EMPEZAR A VER EL TRABAJO CON LOS COMBOS 
 	public String choiceComboByDoctorByP1(Client cliente, Model model, SessionStatus st) {
-		//Hasta aquí hay: Conditions, Doctor y P1
-		cliente.setP2(null); 
+		//Hasta aquí hay: Conditions, Doctor y P1 
+		cliente.setP2(null);     
 		
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("choices", Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
@@ -308,8 +297,11 @@ public class IndexController {
 			model.addAttribute("doctorlist", dService.findAllByConditionsByProcedure(cliente.getConditionsList(), cliente.getP1())) ;
 		
 		model.addAttribute("procedurelisth", "Procedures list of doctor " + dService.findOne(cliente.getDoctor()).getName() + 
-				 		   " that make combo with " + pService.findOne(cliente.getP1()).getName()); 
-		List<Procedure> listProcedure = dService.findAllProcedurebyDoctorIdbyFirstProcedure(cliente.getDoctor(), cliente.getP1());	
+				 		   " that make combo with " + pService.findOne(cliente.getP1()).getName());
+		
+		// Aquí se sustituyó findAllProcedurebyDoctorIdbyFirstProcedure
+		List<Procedure> listProcedure = dService.findAllPrincipalProcedurebyDoctorIdbyFirstProcedure(cliente.getDoctor(), cliente.getP1());  
+		
 		if (!listProcedure.isEmpty())
 			model.addAttribute("procedurelist", listProcedure);
 		else 
@@ -426,9 +418,12 @@ public class IndexController {
 // *******************
 // *******EN USO******	
 	@GetMapping({"somedoctors"})
-	public String somedoctor(Client cliente, Model model, SessionStatus st) {
+	public String somedoctor(Client cliente, Model model, SessionStatus st)
+	{
+		List <String> choices = Arrays.asList("Condition: " + cService.getConditionsListCSV(cliente), 
+				                              "Remarks: " + cService.getRemarksListCSV(cliente));
+		model.addAttribute("choices", choices);
 		
-		model.addAttribute("choice", "Condition: " + cService.getConditionsListCSV(cliente));
 		model.addAttribute("msg", "Remark");
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("explanationb", "Only the doctors: "); 
@@ -505,8 +500,11 @@ public class IndexController {
 														  weightHPost + dService.findOne(cliente.getDoctor()).getName());
 				}
 			}
+//			// CALCULANDO EL BMI y el Peso    
 			
-			
+			model.addAttribute("aditionalProcedureH", aditionalProcedureH);
+			model.addAttribute("aditionalProcedures", dService.findAllAditionalProcedurebyDoctorIdbyCombo(cliente.getDoctor(), cliente.getP1(), cliente.getP2()));
+		
 		}
 		else {
 			if (cliente.getP1()!=null) 
@@ -527,13 +525,45 @@ public class IndexController {
 //****************
 // *******desarrollo******	
 	@PostMapping("result")
-	public String noAcceptedP(Client cliente, Model model, SessionStatus st) {
+	public String resultProcess(Client cliente, Model model, SessionStatus st) {
 		String cName = cService.getConditionsListCSV4Save(cliente);
 		cliente.setConditionsName(cName); // condiciones como string
 		cService.save(cliente);
-		return "redirect:/orders/order-form/" + cliente.getId();
+		
+		// Valorar crear la orden aqui para meterlos los procedimientos q ya estan elegidos
+		// si esto funciona quitar los p1 y p2 de la bd en el cliente
+		Order order = new Order();
+		OrderProcedure lineP = null ;
+		
+		order.setClient(cliente);
+		order.setDoctorName(dService.findOne(cliente.getDoctor()).getName());
+		order.setDate(new Date());
+		order.setDateSurgery(cliente.getDate());
+
+		lineP = new OrderProcedure();
+		lineP.setProcedure(pService.findOne(cliente.getP1()));
+		order.addProcedure(lineP);
+		
+		if (cliente.getP2() != null) {
+			lineP = new OrderProcedure();
+			lineP.setProcedure(pService.findOne(cliente.getP2()));
+			order.addProcedure(lineP);
+		}
+		
+		for (Procedure aditionals: cliente.getAditionalProcedures()) {
+			lineP = new OrderProcedure();
+			lineP.setProcedure(aditionals);
+			order.addProcedure(lineP);
+		}
+		st.setComplete();
+		cService.saveOrder(order);
+		logger.info("INDEX>>>>" + order.getId());
+		logger.info("INDEX>>>> items count: " + order.getItemList().size());
+		
+		//***********************************
+		//return "redirect:/orders/order-form/" + cliente.getId();   CAMBIADO PARA AHORA PASAR LA ORDEN AL ORDER-FORM
+		return "redirect:/orders/order-form/" + order.getId();
 	}
-			
 	//*********************************************************************************************
 	
 }

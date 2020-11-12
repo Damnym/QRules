@@ -16,9 +16,9 @@
       </div>   
       <div class="row py-4">
  	 		<div class="col-3">
-				<ul th:if="${choice}" class="list-group border-success" >
-					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
-					<li th:text="${choice}" class="list-group-item text-left border-success"></li>
+				<ul th:if="${choices}" class="list-group border-success" >
+				  <li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
+                  <li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left border-success"></li>
 				</ul>
 		 	</div> 
    			<div class="col-9">

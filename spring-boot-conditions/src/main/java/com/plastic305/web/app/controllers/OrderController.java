@@ -1,5 +1,6 @@
 package com.plastic305.web.app.controllers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.models.entities.Order;
 import com.plastic305.web.app.models.entities.OrderItem;
 import com.plastic305.web.app.models.entities.OrderProcedure;
-import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.ProcedureCart;
 import com.plastic305.web.app.models.entities.Product;
 import com.plastic305.web.app.services.IClientService;
 import com.plastic305.web.app.services.IDoctorService;
@@ -54,7 +55,6 @@ public class OrderController {
 	private static final String opDecision = "Operation decision" ;
 	private static final String observationCellByWeightLoss = "Added mandatory Cell Saver item for presenting a history of weight loss surgery. " ;
 	private static final String observationCellByMoreOneLipo = "Added mandatory Cell saver due to having performed another similar surgery previously. " ;
-
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
@@ -81,100 +81,91 @@ public class OrderController {
 	}
 // *************** UTIL     
 	
-	
-	// *******DESARROLLANDO******    
-		@GetMapping("/order-form/{clientid}")  // {cell} es 1 si lleva cellsaver obligatorio 0 sino
-		public String create(@PathVariable(value = "clientid") Long clientid, Model model, RedirectAttributes flash, SessionStatus st) {
-			String mandatoryItemHeader = "";
-			String recommendedItemStrHeader ="";
-			int cell = 0 ; // no es obligatorio el Cell, si se cambia a 1 si
-			String observationStr = "";
-			
-			Double p1PC = null, p2PC = null, p1PF = null, p2PF = null;
-			String p1N = null, p2N = null;
-																	
-			Client cliente = cService.findOne(clientid);
-			Order order = new Order();
-			order.setClient(cliente);
-			order.setDateSurgery(cliente.getDate());
-	
-			if (cliente.getP2() != null) { 
-				mandatoryItemHeader = mandatoryItemsHeader + dService.findOne(cliente.getDoctor()).getName() + " and " + pService.findOne(cliente.getP1()).getName() + ", " 
-			                                               + pService.findOne(cliente.getP2()).getName() + " procedures";
-				recommendedItemStrHeader = recommendedItemsHeader + pService.findOne(cliente.getP1()).getName() + " and " 
-			                                                      + pService.findOne(cliente.getP2()).getName()  + " procedures";
-				p2N = pService.findOne(cliente.getP2()).getName();                                                  
-				p2PC = dService.getProcedurePrice(cliente.getDoctor(), cliente.getP2(), false) ;                                                  
-				p2PF = dService.getProcedurePrice(cliente.getDoctor(), cliente.getP2(), true) ;
+	@GetMapping("/order-form/{orderid}")  // 
+	public String create(@PathVariable(value = "orderid") Long orderid, Model model, RedirectAttributes flash, SessionStatus st)
+	{
+		Order order = cService.findOrderById(orderid);
+		logger.info("ORDER-CREATE>>>> items count: " + order.getItemList().size());
 				
-				if (  !(pService.findOne(cliente.getP2()).getName().equals("BBL") || pService.findOne(cliente.getP1()).getName().equals("BBL"))    // No es un BBL
-				    && (pService.findOne(cliente.getP2()).isRequiredCellSaver() || (pService.findOne(cliente.getP1()).isRequiredCellSaver())       //   y el procedimiento requiere Cell, es Lipo
-				    && (cliente.isHasWeightLoss() || cliente.isMoreOneLipo()))         //   y el cliente ha perdido peso o es mas de una Lipo
-				    &&  !dService.findOne(cliente.getDoctor()).isRequiredCellSaver()) // y ya el doctor no lo pide
-					cell = 1; 														// es obligatorio el Cell
-			}
-			else {
-				mandatoryItemHeader = mandatoryItemsHeader + dService.findOne(cliente.getDoctor()).getName() + " and " + pService.findOne(cliente.getP1()).getName() + " procedure" ;
-				recommendedItemStrHeader = recommendedItemsHeader + pService.findOne(cliente.getP1()).getName() + " procedure";
-				if (   !pService.findOne(cliente.getP1()).getName().equals("BBL")    // No es un BBL
-					&&  pService.findOne(cliente.getP1()).isRequiredCellSaver()      //   y el procedimiento requiere Cell, es Lipo
-					&&	(cliente.isHasWeightLoss() || cliente.isMoreOneLipo())         //   y el cliente ha perdido peso o es mas de una Lipo
-				    &&  !dService.findOne(cliente.getDoctor()).isRequiredCellSaver()) // y ya el doctor no lo pide
-					cell = 1; 														 // es obligatorio el Cell
-			}
+		int cell = 0 ; // no es obligatorio el Cell, si se cambia a 1 si
+		String proceduresNames = " ";
+		Double procedureFinancedPrice = Double.valueOf(0) ;
+		Double procedureCashPrice = Double.valueOf(0) ;
+		List<ProcedureCart> proceduresData = new ArrayList<>();
+		for (OrderProcedure procedure: order.getProcedureList()) 
+		{ 
+			proceduresNames += procedure.getProcedure().getName() + ", " ;
+			procedureCashPrice += dService.getProcedurePrice(order.getClient().getDoctor(), procedure.getProcedure().getId(), false) ;
+			procedureFinancedPrice += dService.getProcedurePrice(order.getClient().getDoctor(), procedure.getProcedure().getId(), true) ;
 			
-			p1N = pService.findOne(cliente.getP1()).getName();                                                  
-			p1PC = dService.getProcedurePrice(cliente.getDoctor(), cliente.getP1(), false) ;                                                  
-			p1PF = dService.getProcedurePrice(cliente.getDoctor(), cliente.getP1(), true) ;
+			proceduresData.add(new ProcedureCart(procedure.getProcedure().getName(), 
+												 dService.getProcedurePrice(order.getClient().getDoctor(), procedure.getProcedure().getId(), false), 
+												 dService.getProcedurePrice(order.getClient().getDoctor(), procedure.getProcedure().getId(), true)));
 			
-			if (cell == 1 && cliente.isHasWeightLoss())
-				observationStr = observationCellByWeightLoss + changeLine ;
-			if (cell == 1 && cliente.isMoreOneLipo())
-				observationStr = observationStr  + observationCellByMoreOneLipo ;
-			order.setObservation(observationStr);
-						
-			model.addAttribute("productText", productText); 
-			model.addAttribute("productTexth", productTextH); 
-			model.addAttribute("mandatoryItemHeader", mandatoryItemHeader);
-			model.addAttribute("procedureHeader", surgeriesHeader);
-			model.addAttribute("recommendedItemStrHeader", recommendedItemStrHeader);
-			
-			model.addAttribute("p1N", p1N);  
-			model.addAttribute("p1PC", p1PC);  
-			model.addAttribute("p1PF", p1PF);  
-			model.addAttribute("p2N", p2N);  
-			model.addAttribute("p2PC", p2PC);  
-			model.addAttribute("p2PF", p2PF);  
-			
-			model.addAttribute("mandatoryItemList", cService.findProductsMandatoryByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2(), cell));  
-//			logger.info("#####" + cService.findProductsMandatoryByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2(), cell).get(0).getName());
-			
-			model.addAttribute("mandatoryAndIncludedItemList", 
-								cService.findProductsMandatoryAndIncludedByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2()));
-//			logger.info("#####" + cService.findProductsMandatoryAndIncludedByDoctorByProcedure(cliente.getDoctor(), cliente.getP1(), cliente.getP2()).get(0).getName());
-			model.addAttribute("recommendedItemList", cService.findProductsRecommendedByProcedure(cliente.getP1(), cliente.getP2(), cliente.getDoctor()));  //
-			model.addAttribute("restItemList", cService.findProductsNotMandatoryAndNotRecommended(cliente.getP1(), cliente.getP2(), cliente.getDoctor()));//
-			model.addAttribute("order", order);
-			model.addAttribute("tittle", orderClientHeader);
-			
-			return "/orders/order-form"; 
+			if (cell == 0 &&   // Si todavía no requiere CellSaver
+				procedure.getProcedure().isRequiredCellSaver() &&  // y el procedimiento la requiere 
+				(order.getClient().isHasWeightLoss() || order.getClient().isMoreOneLipo()) &&  // y el cliente ha presentado esto 
+				!dService.findOne(order.getClient().getDoctor()).isRequiredCellSaver())  // y el doctor no la pide
+				cell = 1; 
 		}
+		proceduresNames = proceduresNames.substring(0, proceduresNames.length()-2);
 		
+		String mandatoryItemHeader = mandatoryItemsHeader + order.getDoctorName() + " and " + proceduresNames + " procedure(s)";
+		String recommendedItemStrHeader = recommendedItemsHeader + proceduresNames + " procedure(s)";
+			
+		String observationStr = "";
+		if (cell == 1 && order.getClient().isHasWeightLoss())
+			observationStr = observationCellByWeightLoss + changeLine ;
+		if (cell == 1 && order.getClient().isMoreOneLipo())
+			observationStr = observationStr  + observationCellByMoreOneLipo ;
+		order.setObservation(observationStr);
+					
+		model.addAttribute("tittle", orderClientHeader);
+		model.addAttribute("productText", productText); 
+		model.addAttribute("productTexth", productTextH); 
+		model.addAttribute("mandatoryItemHeader", mandatoryItemHeader);
+		model.addAttribute("procedureHeader", surgeriesHeader);
+		model.addAttribute("recommendedItemStrHeader", recommendedItemStrHeader);
+		model.addAttribute("totalProcedureCashPrice", procedureCashPrice);  
+		model.addAttribute("totalProcedureFinancedPrice", procedureFinancedPrice);  
+		model.addAttribute("proceduresData", proceduresData);  
+
+		model.addAttribute("mandatoryItemList", cService.findProductsMandatoryByDoctorByProcedure(order.getClient().getDoctor(), order.getProcedureList(), cell));  
+		model.addAttribute("mandatoryAndIncludedItemList", cService.findProductsMandatoryAndIncludedByDoctorByProcedure(order.getClient().getDoctor(), order.getProcedureList()));
+		model.addAttribute("recommendedItemList", cService.findProductsRecommendedByProcedure(order.getClient().getDoctor(), order.getProcedureList()));  
+		model.addAttribute("restItemList", cService.findProductsNotMandatoryAndNotRecommended(order.getProcedureList(), order.getClient().getDoctor()));
 		
-		
+		model.addAttribute("order", order);
+			
+		return "/orders/order-form"; 
+	}
+	
 	/*******************
 	// *******DESARROLLANDO******/ 	
 		@PostMapping("/order-form")
 		public String save(@Valid Order order, BindingResult bR, Model model, 
-						   @RequestParam(name = "item_id_m[]", required = false) Long itemIdM[],  @RequestParam(name = "item_id_mi[]", required = false) Long itemIdMI[],
+						   @RequestParam(name = "item_id_m[]", required = false) Long itemIdM[],  
+						   @RequestParam(name = "amount_m[]", required = false) Integer amountM[], 
+						   @RequestParam(name = "item_id_mi[]", required = false) Long itemIdMI[],
 						   @RequestParam(name = "item_id_c[]", required = false) Long itemIdC[],
-						   @RequestParam(name = "amount_m[]", required = false) Integer amountM[], @RequestParam(name = "amount_c[]", required = false) Integer amountC[],
-						   RedirectAttributes flash, SessionStatus st) {
-			OrderItem lineI = null ;
-			OrderProcedure lineP = null ;
-			Product item = null ;
-			Procedure procedure = null ;
+						   @RequestParam(name = "amount_c[]", required = false) Integer amountC[],
+						   RedirectAttributes flash, SessionStatus st) 
+		{
+			logger.info("<<<<ORDER-UPDATE>>>> order id: " + order.getId());
+			logger.info("<<<<ORDER-UPDATE>>>> doctor name: " + order.getDoctorName());
+			logger.info("<<<<ORDER-UPDATE>>>> client name: " + order.getClient().getName());
+			logger.info("<<<<ORDER-UPDATE>>>> procedures count: " + order.getProcedureList().size());
+			logger.info("<<<<ORDER-UPDATE>>>> items count: " + order.getItemList().size());
 			
+			for (OrderProcedure procedureChoosed: order.getProcedureList()) 
+				procedureChoosed.setSubTotal(dService.getProcedurePrice(cService.findOne(order.getClient().getId()).getDoctor(),
+						procedureChoosed.getProcedure().getId(), 
+						order.isFinanced()));
+			logger.info("ORDER<<<< Se tragó los procedimientos");
+
+			OrderItem lineI = null ;
+			Product item = null ;
+//			
 			// Recorrer cada lista de items (Mandatories, includies, Chosen)
 			if (itemIdM!=null) // Mandatories
 				for (int i = 0; i < itemIdM.length; i++) {			
@@ -186,6 +177,8 @@ public class OrderController {
 					order.addItem(lineI);
 					logger.info("Mandatory Add --> ID: " + itemIdM[i].toString() + ", Cantidad: " + amountM[i].toString());
 				}
+			logger.info("ORDER<<<< Se tragó los obligatorios");
+			
 			if (itemIdMI!=null) ///			Mandatories, includies,
 				for (int i = 0; i < itemIdMI.length; i++) {		
 					item = prodService.findOne(itemIdMI[i]);
@@ -196,6 +189,8 @@ public class OrderController {
 					order.addItem(lineI);
 					logger.info("Included Add --> ID: " + itemIdMI[i].toString());
 				}
+			logger.info("ORDER<<<< Se tragó los incluidos");
+			
 			if (itemIdC!=null)  //Chosen
 				for (int i = 0; i < itemIdC.length; i++) {     
 					item = prodService.findOne(itemIdC[i]);
@@ -206,49 +201,35 @@ public class OrderController {
 					order.addItem(lineI);
 					logger.info("Choosen Add -->: " + itemIdC[i].toString() + ", Cantidad: " + amountC[i].toString());
 				}
-			
-			lineP = new OrderProcedure();
-			procedure = pService.findOne(cService.findOne(order.getClient().getId()).getP1());
-			lineP.setProcedure(procedure);
-			lineP.setSubTotal(dService.getProcedurePrice(cService.findOne(order.getClient().getId()).getDoctor(),
-														 cService.findOne(order.getClient().getId()).getP1(), 
-														 order.isFinanced()));
-			order.addProcedure(lineP);
-			if (cService.findOne(order.getClient().getId()).getP2()!=null) {
-				lineP = new OrderProcedure();
-				procedure = pService.findOne(cService.findOne(order.getClient().getId()).getP2());
-				lineP.setProcedure(procedure);
-				lineP.setSubTotal(dService.getProcedurePrice(cService.findOne(order.getClient().getId()).getDoctor(),
-								  cService.findOne(order.getClient().getId()).getP2(), 
-								  order.isFinanced()));
-				order.addProcedure(lineP);
-			}
-			//el doctor
-			order.setDoctorName(dService.findOne(cService.findOne(order.getClient().getId()).getDoctor()).getName());
-			
+			logger.info("ORDER<<<< Se tragó los elegidos");
+
 			cService.saveOrder(order);
 
 			String flashMsg = "Order for the client: \"" + order.getClient().getName() + "\" created successfully!!!";
 			flash.addFlashAttribute("success", flashMsg);
-//			st.setComplete();
 			
-			return  "redirect:/orders/view-order/" +  order.getId(); // order.getClient().getId() + "/" +  
+			st.setComplete();
+//			
+			return "redirect:/orders/view-order/" + order.getId(); // order.getClient().getId() + "/" +
 		}
 		
 		
 		@GetMapping(value = "/view-order/{orderid}") // {clientid}/
-		public String view(@PathVariable(value = "orderid") Long orderid, Model model, RedirectAttributes flash) { // @PathVariable(value = "clientid") Long clientid, 
+		public String view(@PathVariable(value = "orderid") Long orderid, Model model, RedirectAttributes flash, SessionStatus st) { // @PathVariable(value = "clientid") Long clientid, 
+			
+			logger.info("ORDER<<<< " + orderid);
 			
 			Order order = null ;
 			Client cliente = null;
 			
 			if (orderid > 0) {
 				order = cService.findOrderById(orderid);
-				if (order == null) {
-					flash.addFlashAttribute("error", "Don't exits order with this Id in the system");
-					return "redirect:/clients/client-list";    // otra cosa tiene q ser
-				}
-				else
+				logger.info("ORDER\\view<<<< " + order.getDoctorName() + "  " + order.getClient().getId());
+//				if (order == null) {
+//					flash.addFlashAttribute("error", "Don't exits order with this Id in the system");
+//					return "redirect:/clients/client-list";    // otra cosa tiene q ser
+//				}
+//				else
 					cliente = cService.findOne(order.getClient().getId());
 			}
 			else {
@@ -292,6 +273,23 @@ public class OrderController {
 			else
 				model.addAttribute("combo", null);
 
+			// para lo del portapapeles
+			String text = order.getDoctorName() + ", ";
+			for (OrderProcedure procedureChoosed: order.getProcedureList()) 
+				text = text.concat(procedureChoosed.getProcedure().getName()).concat(" + ");
+			text = text.substring(0, text.length()-2);
+			text = text.concat("$").concat(order.getTotalOrder().toString());
+			text = text.concat(changeLine);
+			text = text.concat("Descripción de lo que se hace en las cirugías");
+			text = text.concat(changeLine);
+			//Items
+			for (OrderItem item: order.getItemList()) 
+				text = text.concat(item.getProduct().getName()).concat(changeLine);
+			for (String other: included)
+				text = text.concat(other).concat(changeLine);
+			text = text.concat("Puede fijar este precio con un pequeño depósito de $ 250.00");
+			model.addAttribute("text", text);
+			
 			return "/orders/view-order";
 		}
 		

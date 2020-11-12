@@ -23,15 +23,21 @@ public interface IDoctorService {
 	
 	public void save(Doctor nDoctor);
 	public void delete(Long id);
-	
+	                       
+	public List<Procedure> findAllPrincipalProceduresbyDoctorId(Long idD) ;   // new por los de los adicionales
+	public List<Procedure> findAllAditionalProceduresbyDoctorId(Long idD) ;   // new por los de los adicionales
 	public List<Procedure> findAllProcedurebyDoctorId(Long idD) ;
 	public List<Procedure> findProceduresNotBelongToDoctor(Long idD) ;
 	public List<Procedure> findProceduresNotBelongToDoctorByName(Long id, String term);
 	public List<Procedure> findAllProcedureOfAllDoctorsByCondition(Long idC) ;
 	public List<Procedure> findAllProcedureOfAllDoctorsByConditions(List<Suffering> conditions) ;
+	public List<Procedure> findAllPrincipalProcedurebyDoctorIdbyFirstProcedure(Long idD, Long idP) ;// Para Combo // new por los de los adicionales
 	public List<Procedure> findAllProcedurebyDoctorIdbyFirstProcedure(Long idD, Long idP) ;// Para Combo
 	public List<String> findAllProcedureNamebyDoctorIdbyFirstProcedure(Long idD, Long idP) ;// Para Combo
 	
 	public Double getProcedurePrice(Long idD, Long idP, boolean isFinanced);
+	
+	//NEW  por los de los adicionales
+	List<Procedure> findAllAditionalProcedurebyDoctorIdbyCombo(Long idD, Long idP1, Long idP2);
 
 }

@@ -31,6 +31,15 @@ public class OrderItem implements Serializable{
 	
 	//  <<<<< IMPLEMENTATION >>>>>
 	
+	public OrderItem() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public void setSubTotal(Double subTotal) {
+		this.subTotal = subTotal;
+	}
+
 	public Long getId() {
 		return id;
 	}

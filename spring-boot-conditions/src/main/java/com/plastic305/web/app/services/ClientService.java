@@ -18,6 +18,7 @@ import com.plastic305.web.app.models.dao.IProductsDAO;
 import com.plastic305.web.app.models.dao.ISufferingDAOPagNSortRepository;
 import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.models.entities.Order;
+import com.plastic305.web.app.models.entities.OrderProcedure;
 import com.plastic305.web.app.models.entities.Product;
 import com.plastic305.web.app.models.entities.ProductByDoctAndProc;
 import com.plastic305.web.app.models.entities.ProductRecommendedByProcedure;
@@ -116,8 +117,10 @@ public class ClientService implements IClientService {
 		return iODAO.fetchOrderByIdWithClientWithOrderItemWithProduct(id);
 	}
 	
+	// ESTA VERSIÓN ES RECIBIENDO EL CLIENTE...SE CAMBIÓ POR LA DE ABAJO PARA RECIBIR PARTE DE LA ORDEN
+		//***************************************************************************************************
 	@Override @Transactional(readOnly = true)
-	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, Long idP1, Long idP2, int loss) {
+	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, Long idP1, Long idP2, int loss) {  // Llamar solo al ByProcedure
 		List<Product> mandatoryItemsList = new ArrayList<Product>();
 		if (idP2!=null)
 			mandatoryItemsList = iPDAO.findProductsMandatoryByDoctorByCombo(idD, idP1, idP2);
@@ -139,6 +142,96 @@ public class ClientService implements IClientService {
 		return mandatoryItemsList;
 	}
 
+	@Override @Transactional(readOnly = true)
+	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, List<OrderProcedure> procedureList, int loss)  // Llamar solo al ByProcedure
+	{ 
+		List<Product> mandatoryItemsList = new ArrayList<Product>();
+		for (OrderProcedure procedure: procedureList) 
+			mandatoryItemsList.addAll(iPDAO.findProductsMandatoryByDoctorByProcedure(idD, procedure.getProcedure().getId()));
+		if (loss==1) 
+			mandatoryItemsList.add(iPDAO.findOneByName("cell"));
+		
+		for (int i=0; i<mandatoryItemsList.size(); i++)
+		{
+			int j = i+1 ;
+			while (j<mandatoryItemsList.size())
+			{
+				if (mandatoryItemsList.get(i).getId().equals(mandatoryItemsList.get(j).getId())) 
+					mandatoryItemsList.remove(j);
+				else
+					j++;
+			}
+		}
+		return mandatoryItemsList;
+	}
+	
+	@Override @Transactional(readOnly = true)
+	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, List<OrderProcedure> procedureList) 
+	{
+		List<Product> mandatoryAndIncludedItemsList = new ArrayList<Product>();
+		for (OrderProcedure procedure: procedureList) 
+			mandatoryAndIncludedItemsList.addAll(iPDAO.findProductsMandatoryAndIncludedByDoctorByProcedure(idD, procedure.getProcedure().getId()));
+		
+		for (int i=0; i<mandatoryAndIncludedItemsList.size(); i++)
+		{
+			int j = i+1 ;
+			while (j<mandatoryAndIncludedItemsList.size())
+			{
+				if (mandatoryAndIncludedItemsList.get(i).getId().equals(mandatoryAndIncludedItemsList.get(j).getId())) 
+					mandatoryAndIncludedItemsList.remove(j);
+				else
+					j++;
+			}
+		}
+		return mandatoryAndIncludedItemsList;
+	}
+	
+	
+	@Override @Transactional(readOnly = true)
+	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idD, List<OrderProcedure> procedureList) 
+	{
+		List<ProductRecommendedByProcedure> recommendedItemsList = new ArrayList<ProductRecommendedByProcedure>();
+		for (OrderProcedure procedure: procedureList) 
+			recommendedItemsList.addAll(iPDAO.findProductsRecommendedByProcedure(procedure.getProcedure().getId(), idD));
+		
+		for (int i=0; i<recommendedItemsList.size(); i++)
+		{
+			int j = i+1 ;
+			while (j<recommendedItemsList.size())
+			{
+				if (recommendedItemsList.get(i).getProduct().getId().equals(recommendedItemsList.get(j).getProduct().getId())) 
+					recommendedItemsList.remove(j);
+				else
+					j++;
+			}
+		}
+		return recommendedItemsList;
+	}
+	
+	
+	@Override @Transactional(readOnly = true)
+	public List<Product> findProductsNotMandatoryAndNotRecommended(List<OrderProcedure> procedureList, Long idD) 
+	{
+		List<Product> productsNotMandatoryAndNotRecommended = new ArrayList<Product>();
+		for (OrderProcedure procedure: procedureList) 
+			productsNotMandatoryAndNotRecommended.addAll(iPDAO.findProductsNotMandatoryAndNotRecommended(procedure.getProcedure().getId(), idD));
+		
+		for (int i=0; i<productsNotMandatoryAndNotRecommended.size(); i++)
+		{
+			int j = i+1 ;
+			while (j<productsNotMandatoryAndNotRecommended.size())
+			{
+				if (productsNotMandatoryAndNotRecommended.get(i).getId().equals(productsNotMandatoryAndNotRecommended.get(j).getId())) 
+					productsNotMandatoryAndNotRecommended.remove(j);
+				else
+					j++;
+			}
+		}
+		return productsNotMandatoryAndNotRecommended;
+	}
+
+	
+	
 	@Override @Transactional(readOnly = true)
 	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP1, Long idP2) {
 		List<Product> mandatoryAndIncludedItemsList = new ArrayList<Product>();
@@ -191,15 +284,12 @@ public class ClientService implements IClientService {
 		return recommendedItemsList;
 	}
 	
-
 	@Override @Transactional(readOnly = true)
 	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP1, Long idP2, Long idD) {
 		if (idP2!=null)
 			return iPDAO.findProductsNotMandatoryAndNotRecommended(idP1, idD, idP2);
 		else
 			return iPDAO.findProductsNotMandatoryAndNotRecommended(idP1, idD);
-		
-		
 	}
 	
 

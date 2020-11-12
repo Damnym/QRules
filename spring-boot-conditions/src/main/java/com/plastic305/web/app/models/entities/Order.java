@@ -54,6 +54,11 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 	private List<OrderProcedure> procedureList;
 	
 	//  <<<<< IMPLEMENTATION >>>>>
+	
+	public Order() {
+		itemList  = new ArrayList<OrderItem>(); 
+		procedureList  = new ArrayList<OrderProcedure>(); 
+	}
 
 	public boolean isFinanced() {
 		return financed;
@@ -87,10 +92,6 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 		this.procedureList = procedureList;
 	}
 
-	public Order() {
-		itemList  = new ArrayList<OrderItem>(); 
-		procedureList  = new ArrayList<OrderProcedure>(); 
-	}
 	
 	@PrePersist
 	public void dateGenerate() {

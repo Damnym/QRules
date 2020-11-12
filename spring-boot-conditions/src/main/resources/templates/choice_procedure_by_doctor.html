@@ -6,10 +6,19 @@
       <div class="container py-1" >
 		<div class="row py-4">
 	   		<div class="col-3"> <!-- GroupBox de las elecciones -->
-				<ul th:if="${choices}" class="list-group border-success">
-					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
-					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left border-success"></li>
-				</ul>
+               <div class="row">
+      			  <div class="col">
+                  <ul th:if="${choices}" class="list-group border-success">
+      					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
+      					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left border-success"></li>
+      				</ul>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col">
+                     <img id="imgprocedure" src="">
+                  </div>
+               </div>
 		 	</div> 
 		 	<div class="col-9"> <!-- GroupBox para las listas de medicos y procedimientos -->
 				<div class="card bg-white border-305" >
@@ -40,7 +49,7 @@
 														<input type="radio" th:field="*{p1}" th:value="${p.getId()}">
 													</div>
 													<div class="mx-1 my-2">
-														<label th:for="${#ids.prev('p1')}" th:text="${p.getName()}"></label>
+														<label th:for="${#ids.prev('p1')}" th:text="${p.getName()}" onmouseover="pintar('#0000ff')"></label>
 													</div>
 												</div>
 											</div>

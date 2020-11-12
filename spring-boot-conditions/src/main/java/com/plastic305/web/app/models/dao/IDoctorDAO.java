@@ -49,8 +49,23 @@ public interface IDoctorDAO extends CrudRepository<Doctor, Long> {
 			+ "join pl.procedure p "
 			+ "WHERE d.id=?1 "
 			+ "ORDER BY p.name")
-	public List<Procedure> fetchProceduresByDoctorId(Long id);
+	public List<Procedure> fetchProceduresByDoctorId(Long id); // todos los procedimienos por doctor
+	
+	@Query("SELECT p FROM Doctor d "
+			+ "join d.procList pl "
+			+ "join pl.procedure p "
+			+ "WHERE d.id=?1 AND p.aditional = false "
+			+ "ORDER BY p.name")
+	public List<Procedure> findPProceduresByDoctorId(Long id);    // procedimienos PRINCIPALES por doctor
 
+	@Query("SELECT p FROM Doctor d "
+			+ "join d.procList pl "
+			+ "join pl.procedure p "
+			+ "WHERE d.id=?1 AND p.aditional = true "
+			+ "ORDER BY p.name")
+	public List<Procedure> findAProceduresByDoctorId(Long id);    // procedimienos ADICIONALES por doctor
+	
+	
 	@Query("SELECT proc FROM Procedure proc "
 		    + "WHERE proc NOT IN (SELECT p FROM Doctor d "
 			+ 				 	    "join d.procList pl "

@@ -55,10 +55,6 @@ public class Doctor implements Serializable {
 	@Column(name = "max_bmi")
 	private Double maxBMI;
 	
-	
-	
-	
-	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date date;

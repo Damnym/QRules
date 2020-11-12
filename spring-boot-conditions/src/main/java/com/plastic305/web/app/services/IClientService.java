@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.models.entities.Order;
+import com.plastic305.web.app.models.entities.OrderProcedure;
 import com.plastic305.web.app.models.entities.Product;
 import com.plastic305.web.app.models.entities.ProductByDoctAndProc;
 import com.plastic305.web.app.models.entities.ProductRecommendedByProcedure;
@@ -36,9 +37,13 @@ public interface IClientService {
 	public List<Product> findNotMandatoryByName(String term, Long idD, Long idP);
 	
 	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, Long idP1, Long idP2, int loss);  //
+	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, List<OrderProcedure> procedureList, int loss);  //
 	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, Long idP1, Long idP2);  //
+	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, List<OrderProcedure> procedureList);
 	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idP1, Long idP2, Long idD);  //
+	public List<ProductRecommendedByProcedure> findProductsRecommendedByProcedure(Long idD, List<OrderProcedure> procedureList);  //
 	public List<Product> findProductsNotMandatoryAndNotRecommended(Long idP1, Long idP2, Long idD); //
+	public List<Product> findProductsNotMandatoryAndNotRecommended(List<OrderProcedure> procedureList, Long idD); //
 	
 	public List<Product> mandatoryScrubber(List<Product> l1, List<Product> l2);
 	
