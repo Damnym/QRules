@@ -39,8 +39,11 @@ import com.plastic305.web.app.services.ISufferingService;
 @SessionAttributes("order")
 public class OrderController {
 	private static final String changeLine = "\r\n" ;
-	private static final String orderClientHeader = "Client pre-order " ;
+	private static final String orderClientHeader = "Patient pre-order " ;
+	private static final String patientHeader = "Patient name: " ;
 	private static final String orderDetailsHeader = "Pre-order details" ;
+	private static final String summaryHeader = "Surgery's and items summary" ;
+	private static final String itemsheader = "Items summary" ;
 	private static final String recommendedItemsHeader = "Recommended items for: " ;
 	private static final String surgeriesHeader = "Choosed surgeries" ;
 	private static final String mandatoryItemsHeader = "Mandatory items for Dr. " ;
@@ -49,10 +52,9 @@ public class OrderController {
 											  "These items listed below are necessary in order to protect and enhance the outcome of your procedure, prevent the formation "
 											  + "of scar tissue, and aide the recovery process. Prepare in advance for a successful recovery by purchasing the necessary "
 											  + "post-surgical items in office at the time of pre-op: (See prices below and choose)" ;
-	private static final String questionnaireAnswerHeader = "Answers to the questionnaire" ;
 	private static final String personalDataHeader = "Personal information" ;
 	private static final String HealthConditionHeader = "Health condition" ;
-	private static final String opDecision = "Operation decision" ;
+	private static final String opDecision = "Surgery decision" ;
 	private static final String observationCellByWeightLoss = "Added mandatory Cell Saver item for presenting a history of weight loss surgery. " ;
 	private static final String observationCellByMoreOneLipo = "Added mandatory Cell saver due to having performed another similar surgery previously. " ;
 	
@@ -204,18 +206,36 @@ public class OrderController {
 			logger.info("ORDER<<<< Se tragó los elegidos");
 
 			cService.saveOrder(order);
-
-			String flashMsg = "Order for the client: \"" + order.getClient().getName() + "\" created successfully!!!";
-			flash.addFlashAttribute("success", flashMsg);
-			
 			st.setComplete();
-//			
-			return "redirect:/orders/view-order/" + order.getId(); // order.getClient().getId() + "/" +
+			
+			return "redirect:/orders/summary/" + order.getId(); // order.getClient().getId() + "/" +
 		}
 		
+	@GetMapping(value = "/summary/{orderid}")
+	public String summary(@PathVariable(value = "orderid") Long orderid, Model model, RedirectAttributes flash, SessionStatus st) {  
+		Order order = null ;
+		Client cliente = null;
+			
+		if (orderid > 0) {
+			order = cService.findOrderById(orderid);
+			cliente = cService.findOne(order.getClient().getId());
+		}
+
+		model.addAttribute("tittle", summaryHeader);
+		model.addAttribute("itemsheader", itemsheader);
+		model.addAttribute("orderClientHeader", patientHeader + cliente.getName());
+		model.addAttribute("opDecision", opDecision);
+			
+		model.addAttribute("client", cliente);
+		model.addAttribute("order", order);
+
+		return "/orders/summary";
+	}
 		
-		@GetMapping(value = "/view-order/{orderid}") // {clientid}/
+		
 		public String view(@PathVariable(value = "orderid") Long orderid, Model model, RedirectAttributes flash, SessionStatus st) { // @PathVariable(value = "clientid") Long clientid, 
+//			String flashMsg = "Order for the client: \"" + order.getClient().getName() + "\" created successfully!!!";
+//			flash.addFlashAttribute("success", flashMsg);
 			
 			logger.info("ORDER<<<< " + orderid);
 			
@@ -244,7 +264,6 @@ public class OrderController {
 			
 			model.addAttribute("tittle", orderDetailsHeader);
 			model.addAttribute("orderClientHeader", orderClientHeader + cliente.getName());
-			model.addAttribute("questionnaireAnswerHeader", questionnaireAnswerHeader);
 			model.addAttribute("personalDataHeader", personalDataHeader);
 			model.addAttribute("healthConditionHeader", HealthConditionHeader);
 			model.addAttribute("opDecision", opDecision);

@@ -175,27 +175,22 @@
 						}); // aquí tengo el cell
 				},
 				
-				totalProcedure: function (p1c, p1f, p2c, p2f, check){
+				totalProcedure: function (pc, pf, check){
 					var total = 0 ;
 					var observationStr = $(observation).html() ;
 					var observationM = "";
+					
 					if(check){  // es financiado
-						if (p2c!=null)
-	 						total = p1f + p2f ;
-						else 
-							total = p1f ;	
+	 					total = pf ;
 						observationStr = "Financed pay. "  +  observationStr;
 						$('#observation').html(observationStr);
 					}
 					else{   // cash        replace(substring_a_buscar,nuevoStr)
-						if (p2c!=null)
-							total = p1c + p2c ;
-						else 
-							total = p1c ;	
+						total = pc ;	
 						observationM = observationStr.replace("Financed pay. ","");
 						$('#observation').html(observationM);
 					}
-						
+					
 					$('#totalp').html(total);
 					$('#totalp_h').html(total);
 					
@@ -203,23 +198,14 @@
 			   	},				
 			   					
 			   	totalProcedureShow: function (){  
-			   		var total = 0.0 ;
-			   		if (parseFloat($(p2pc).html())>=0){
-		   				total =  parseFloat($(p1pc).html()) + parseFloat($(p2pc).html()) ;  
-					}
-					else {
-						total = parseFloat($(p1pc).html()) ;	
-					}
+			   		var total = parseFloat($(procedurep).html()) ;	
 					$('#totalp').html(total);
 					$('#totalp_h').html(total);
-				this.getTotal();
+					
+					this.getTotal();
 			   	}				
-				
 			   	
 			}
-		
-		
-		
 	</script>
 </body>
 </html>

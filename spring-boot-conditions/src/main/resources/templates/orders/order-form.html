@@ -9,6 +9,9 @@
 			<button type="button" class="btn fas fa-info-circle fa-3x" data-toggle="popover" th:title="${productTexth}"  data-placement="left"
 					th:data-content="${productText}" style="color: #0F3678;"></button>
 		</div>
+		<p hidden="true" th:text="${totalProcedureCashPrice}" id="procedurep"> </p>
+		
+		
 		<form th:id="f2" th:action="@{/orders/order-form}" th:object="${order}" method="post">
 		<div class="row pl-3 py-2">
 			<div class="col-6"> <!-- GroupBox de las productos en venta -->
@@ -255,13 +258,8 @@
                         </div>
                      </div>
                      <div class="row">   
-                        <div class="col-6 py-4">
-                           <a class="btn btn-lg btn-block btn-305"
-                              th:href="@{/doctor_or_procedure/}"
-                              th:text="'Add'"></a>  
-                        </div>
-                        <div class="col-6 py-4">
-                           <input type="submit" th:value="'View pre-order'" class="btn btn-lg btn-block btn-305" />
+                        <div class="col py-4">
+                           <input type="submit" th:value="'View summary'" class="btn btn-lg btn-block btn-305" />
                         </div>
                      </div>   
                   </div>
