@@ -14,11 +14,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "procedures")
-public class Procedure implements Serializable {
+public class Procedure implements Serializable { private static final long serialVersionUID = -2251354311478813324L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,15 +32,32 @@ public class Procedure implements Serializable {
 	private boolean requiredCellSaver;
 
 	private Boolean aditional;
+	
+	private Integer recoveryTime; // En meses
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "procedure_id")
 	private List<ProductRecommendedByProcedure> productRecommendedList;
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "procedure_id")
+	private List<ProcedureImage> imagesList;
+	
+	
+	@Transient
+	private List<Procedure> notComboList ;
+	@Transient
+	private List<Procedure> comboList ;
+	
 
 //  <<<<< IMPLEMENTATION >>>>>
 
 	public Procedure() {
 		productRecommendedList = new ArrayList<ProductRecommendedByProcedure>();
+		imagesList = new ArrayList<ProcedureImage>(4);
+		
+		notComboList = new ArrayList<Procedure>();
+		comboList = new ArrayList<Procedure>();
 	}
 
 	public List<ProductRecommendedByProcedure> getProductRecommendedList() {
@@ -62,30 +80,18 @@ public class Procedure implements Serializable {
 		productRecommendedList.add(item);
 	}
 
-	/**
-	 * @return the id
-	 */
 	public Long getId() {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the name
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param name the name to set
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -98,9 +104,55 @@ public class Procedure implements Serializable {
 		this.requiredCellSaver = cellSaver;
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2251354311478813324L;
+	public Integer getRecoveryTime() {
+		return recoveryTime;
+	}
+
+	public void setRecoveryTime(Integer recoveryTime) {
+		this.recoveryTime = recoveryTime;
+	}
+
+	public List<ProcedureImage> getImagesList() {
+		return imagesList;
+	}
+
+	public void setImagesList(List<ProcedureImage> imagesList) {
+		this.imagesList = imagesList;
+	}
+	
+	public void addImage(String imgPath, int pos) // Esta hecho para 4 imágenes
+	{
+		if (imagesList.size()>=pos)
+		{
+			if (imagesList.get(pos-1) != null) 
+				imagesList.get(pos-1).setPath(imgPath);
+		}
+		else
+		{
+			ProcedureImage img = new ProcedureImage();
+			img.setPath(imgPath);
+			imagesList.add(img);
+		}
+	}
+	
+	public ProductRecommendedByProcedure getProductRecommended(int pos) {
+		return productRecommendedList.get(pos-1);
+	}
+
+	public List<Procedure> getNotComboList() {
+		return notComboList;
+	}
+
+	public void setNotComboList(List<Procedure> notComboList) {
+		this.notComboList = notComboList;
+	}
+
+	public List<Procedure> getComboList() {
+		return comboList;
+	}
+
+	public void setComboList(List<Procedure> comboList) {
+		this.comboList = comboList;
+	}
 
 }

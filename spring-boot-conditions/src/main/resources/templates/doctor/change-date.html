@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-doctor :: head"></head>
+<body>
+	<header th:replace="layout/layout-doctor :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white card-border-diferent" style="width: 40%;" align="center">
+			<div class="card-header py-1 border-305 font-weight-bold text-white" th:text="${msg} + ${doctor.name}" align="center" style="background-color:#101F3A"></div>
+			<div class="card-body" align="center">
+				<form id="newuser" th:object="${doctor}" th:action="@{/doctor/change-date}" method="post">
+					<div class="form-group row" align="center">
+						<div class="col" align="center">
+							<div class="input-group mb-1 col" align="center">
+								<div class="input-group-prepend">
+							    	<span class="input-group-text" id="name">Availability date:</span>
+							  	</div>
+							  	<input type="date" id="date" th:field="*{date}" 
+							  		   aria-label="name" class="form-control" aria-describedby="name" placeholder="Name" 
+							  		   th:errorclass="'form-control alert-danger'" />
+									<small th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="form-text text-danger"></small>
+							</div>
+						</div>
+					</div>
+<!-- 					 SUBMIT   -->
+					<div class="row">
+	  					<div class="col" align="right">  
+	  						<input type="submit" th:value="${bAccept}" class="btn btn-block btn-305"/>
+	  					</div>
+	  				</div> 
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-procedure :: footer"></footer>
+      <script th:replace="procedure/js/util-js.html :: util"></script>
+</body>
+</html>

@@ -9,20 +9,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.plastic305.web.app.models.dao.ISufferingDAOPagNSortRepository;
+import com.plastic305.web.app.models.dao.ISufferingDAO;
 import com.plastic305.web.app.models.entities.Suffering;
 
 @Service
 public class SufferingService implements ISufferingService {
 	@Autowired
-	private ISufferingDAOPagNSortRepository sufferingDAO;
+	private ISufferingDAO sufferingDAO;
 	
-	
-	@Override
-	@Transactional(readOnly = true)
-	public Page<Suffering> findAll(Pageable page) {
-		return sufferingDAO.findAll(page);
-	}
+//	
+//	@Override
+//	@Transactional(readOnly = true)
+//	public Page<Suffering> findAll(Pageable page) {
+//		return sufferingDAO.findAll(page);
+//	}
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -81,6 +81,11 @@ public class SufferingService implements ISufferingService {
 	@Override
 	public int getDoctorCountsByConditionsId(Long id) {
 		return sufferingDAO.getDoctorCountsByConditionsId(id);
+	}
+
+	@Override
+	public List<Suffering> findSufferingsByName(String term) {
+		return sufferingDAO.findSufferingsByName(term);
 	}
 
 	

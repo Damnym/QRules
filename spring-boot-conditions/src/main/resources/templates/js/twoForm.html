@@ -3,22 +3,30 @@
 <body>
 	<script type="text/javascript" th:fragment="javascript2Form">
 	function actionForm(formid, act)
-	{
+	{	//alert(formid);
+// 	    alert(act);
 	    document.getElementById(formid).action=act;
 	    document.getElementById(formid).submit();
 	};
 	
 	function actionMethodForm(formid, act, p_g)
 	{
+		alert(formid);
+		alert(act);
+		alert(p_g);
 	    document.getElementById(formid).action=act;
 	    document.getElementById(formid).method=p_g;
 	    document.getElementById(formid).submit();
 	};
 	
-	function pintar(col)
+	function fillButton(namep)
 	{
-		document.getElementById('imgprocedure').setAttribute("src", "/imgs/spring.png"); 
-		//alert("/spring-boot-conditions/src/main/resources/static/imgs/logo.png");
+// 		alert(namep);
+		document.getElementById('viewimage').innerHTML='View images for ' + namep; 
+		document.getElementById('viewimage').hidden=false; 
+		var a = "http://localhost:8080/procedures-images/" + namep ;
+		document.getElementById('viewimage').href=a; 
+		return false;
 	}
 	</script>
 </body>

@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,7 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "orders")
-public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE PROCEDIMIENTOS COMO PARTE DE LA ORDEN O LOS DOS Q SON
+public class Order implements Serializable { private static final long serialVersionUID = -3804446708679469551L; 	// VALORAR QUE TENGA UNA LISTA DE PROCEDIMIENTOS COMO PARTE DE LA ORDEN O LOS DOS Q SON
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -34,18 +33,17 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date date;
-	
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date dateSurgery ;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Client client;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	private Client client;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	private SuperOrder superOrder;
+
 	private boolean financed;
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "order_id")
 	private List<OrderItem> itemList;
 	
@@ -92,18 +90,16 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 		this.procedureList = procedureList;
 	}
 
-	
-	@PrePersist
-	public void dateGenerate() {
-		this.date = new Date();
-	}
-	
 	public Double getTotalOrder() {
 		Double totalOrder = 0.0 ;
-		for (int i = 0; i < itemList.size(); i++) {
-			totalOrder+=itemList.get(i).getSubTotal();
+		for (int i = 0; i < itemList.size(); i++) 
+		{
+			if (itemList.get(i)!= null)
+				totalOrder+=itemList.get(i).getSubTotal();
 		}
-		for (int i = 0; i < procedureList.size(); i++) {
+		for (int i = 0; i < procedureList.size(); i++)
+		{
+			if (procedureList.get(i)!= null)
 			totalOrder+=procedureList.get(i).getSubTotal();
 		}
 		return totalOrder;
@@ -133,22 +129,6 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 		this.observation = observation;
 	}
 
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public Client getClient() {
-		return client;
-	}
-
-	public void setClient(Client client) {
-		this.client = client;
-	}
-
 	public List<OrderItem> getItemList() {
 		return itemList;
 	}
@@ -157,9 +137,20 @@ public class Order implements Serializable { 	// VALORAR QUE TENGA UNA LISTA DE 
 		this.itemList = itemList;
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3804446708679469551L;
+	public SuperOrder getSuperOrder() {
+		return superOrder;
+	}
+
+	public void setSuperOrder(SuperOrder superOrder) {
+		this.superOrder = superOrder;
+	}
+	
+	public Integer getOrderRecoveryTime() {
+		Integer result = 0 ;
+		for (OrderProcedure op : procedureList)
+			result = (op.getProcedure().getRecoveryTime() > result)? op.getProcedure().getRecoveryTime(): result ;
+
+		return result ;
+	}
 
 }

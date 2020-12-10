@@ -8,8 +8,6 @@
 		//  alert(1);
 		  $('#procedure-table-list').DataTable();
 		})
-	
-		
 		
 	$(document).ready(function () {
 		$("#find_item").autocomplete({
@@ -32,27 +30,65 @@
 			},
 		
 			select : function(event, ui) {
-				if (itemsHelper.hasProduct(ui.item.value)){  // hasProduct  
-					itemsHelper.incAmount(ui.item.value, ui.item.hasAmount);  // incAmount 
+				if (itemsHelper.hasProduct(ui.item.value)){ 
+					itemsHelper.incAmount(ui.item.value, ui.item.hasAmount);  
 					return false;
 				}
 			
-				var line = $("#procedureItemsLayout").html();  //#orderItemsLayout        
+				var line = $("#procedureItemsLayout").html();         
 				line = line.replace(/{ID}/g, ui.item.value);
 				line = line.replace(/{NAME}/g, ui.item.label);
+				$("#find_item").val("");
 				
-				$("#loadProcedureItems tbody").append(line); //#loadProductItems
+				$("#loadProcedureItems tbody").append(line); 
 				return false; 
 			}
 		});
-	    
+
+		// esto es para que muestre el camino de la imagen en el edit----------------------
+			$("input[type=file]").on('change', function() {   
+			    var fileName = $(this).val().split("\\").pop();
+			    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);        
+			})
+		// ---------------------------------------------------------------------------------
+		
+		
 		$("form").submit(function(){
 			$("#procedureItemsLayout").remove();
 			return;
 		})
 
 	});
+	
 	/////////////////////////
+	
+	function readURL(input, id) 
+	{ // alert(input + '    ' + id);
+		if (input && input[0]) 
+		{
+    		var reader = new FileReader();
+		    reader.onload = function(e) 
+		    {
+      			$("#"+id).attr('src', e.target.result);
+    		}
+    		reader.readAsDataURL(input[0]); // convert to base64 string
+  		}
+// 		if (input.files && input.files[0]) 
+// 		{
+//     		var reader = new FileReader();
+// 		    reader.onload = function(e) 
+// 		    {
+//       			$(id).attr('src', e.target.result);
+//     		}
+//     		reader.readAsDataURL(input.files[0]); // convert to base64 string
+//   		}
+	}
+	
+// 	$("#file_1").change(function() {
+// 		  readURL(this, "picture_1");
+// 		});
+
+	////////////////
 		
 	var itemsHelper = {
 			hasProduct: function(id){
@@ -76,6 +112,13 @@
 			$("#row_" + id).remove();
 			this.getTotal();
 		},
+
+		deleteLinePrev: function(id)
+						{
+// 							alert(id);
+							if (confirm('Do you want remove this item for this procedure?'))
+								$("#rowPrev_" + id).remove();
+						},
 	};
 	</script>
 </body>

@@ -11,13 +11,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "sufferings")
-public class Suffering implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2251354311478813324L;
-
+public class Suffering implements Serializable {private static final long serialVersionUID = -2251354311478813324L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,31 +27,50 @@ public class ProductController {
 	private static final String tittleList= "Items list" ;
 	private static final String errorNotZero= "Id 0 don't exist!!!" ;
 	private static final String tittleNewItem = "New item" ;
+	private static final String tittleViewItem = "View item" ;
 	private static final String bEditProduct = "Update item" ;
 	private static final String bAddProduct = "Add item" ;
 	private static final String msgNewItem = "New item form" ;
 	private static final String tittleEditProduct = "Edit item" ;
 	private static final String msgEditProduct = "Edit item form" ;
+	private static final String msgViewProduct = " item details" ;
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
 	@Autowired IProductService productService;
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping({"/form"})
 	public String create(Model model) {
-		logger.info(">>>>>>>>>>>>>>>>> pasaré por aquí?????????????");
+//		logger.info(">>>>>>>>>>>>>>>>> pasaré por aquí?????????????");
 		model.addAttribute("tittle", tittleNewItem);
 		model.addAttribute("msg", msgNewItem);
 		model.addAttribute("product", new Product());
 		model.addAttribute("buttonaction", bAddProduct);
+		
 		return "/product/form"; 
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@PostMapping("/form")      
 	public String guardar(@Valid Product product, BindingResult bResult, Model model, RedirectAttributes flash, SessionStatus st) {
 		if (bResult.hasErrors()) 
-			return create(model);
-		logger.info(">>>>>>>>>>>: " + product.getId());
+		{
+			if (product.getId() != null)
+			{
+				model.addAttribute("tittle", tittleEditProduct);
+				model.addAttribute("msg", msgEditProduct);
+				model.addAttribute("buttonaction", bEditProduct); 
+			}
+			else
+			{
+				model.addAttribute("tittle", tittleNewItem);
+				model.addAttribute("msg", msgNewItem);
+				model.addAttribute("buttonaction", bAddProduct);
+			}
+			return "/product/form";
+		}
+		
 		String flashMsg = (product.getId() != null) ? "Item \"" + product.getName() + "\" edit succesfully!!" : "Item \"" + product.getName() + "\" add succesfully!!";
 		productService.save(product);
 		st.setComplete();
@@ -58,6 +78,7 @@ public class ProductController {
 		return "redirect:/product/list-product";
 	}	
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("form/{idProduct}")     
 	public String editProduct(@PathVariable(value = "idProduct") Long id, Model model, RedirectAttributes flash) {
 		Product product = productService.findOne(id);
@@ -67,9 +88,11 @@ public class ProductController {
 		model.addAttribute("msg", msgEditProduct);
 		model.addAttribute("product", product);
 		model.addAttribute("buttonaction", bEditProduct); 
+		
 		return "/product/form";
 	}
 	
+	@Secured("ROLE_USER")
 	@GetMapping({"/list-product"})
 	public String list(Model model) {
 		model.addAttribute("tittle", tittleList);
@@ -78,6 +101,7 @@ public class ProductController {
 		return "/product/list-product";
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("delete/{id-product}")
 	public String eliminar(@PathVariable(value = "id-product") Long id, Model model, RedirectAttributes flash) {
 		if (id > 0) {
@@ -89,5 +113,19 @@ public class ProductController {
 		
 		return "redirect:/product/list-product";
 	}
+	
+	
+	@Secured("ROLE_USER")
+	@GetMapping({"/view/{idProduct}"})
+	public String view(@PathVariable(value = "idProduct") Long id,Model model) {
+		Product product = productService.findOne(id);
+		
+		model.addAttribute("tittle", tittleViewItem);
+		model.addAttribute("msg", product.getName() + msgViewProduct);
+		model.addAttribute("product", product);
+		
+		return "/product/view";
+	}
+	
 
 }

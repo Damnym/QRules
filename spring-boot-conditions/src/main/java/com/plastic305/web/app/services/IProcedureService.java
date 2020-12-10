@@ -11,7 +11,9 @@ public interface IProcedureService {
 	public void save(Procedure nProcedure);
 	
 	public List<Procedure> findAll();
+	public List<Procedure> findAllPrincipal();
 	public List<Procedure> findAllOrder();
+	public List<Procedure> findProceduresByName(String term);
 	public Procedure findOne(Long id);
 	
 	List<ProductRecommendedByProcedure> findProductsRecommended(Long idP); 

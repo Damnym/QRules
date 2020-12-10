@@ -60,6 +60,16 @@ public class ProcedureService implements IProcedureService {
 	public List<ProductRecommendedByProcedure> findProductsRecommended(Long idP) {
 		return iDAO.findProductsRecommendedByProcedure(idP);
 	}
+
+	@Override
+	public List<Procedure> findProceduresByName(String term) {
+		return pDAO.findProceduresByName(term);
+	}
+
+	@Override
+	public List<Procedure> findAllPrincipal() {
+		return pDAO.findPrincipalProcedures();
+	}
 	
 	
 

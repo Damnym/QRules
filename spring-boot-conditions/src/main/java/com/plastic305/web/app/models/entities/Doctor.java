@@ -19,13 +19,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "doctors")
-public class Doctor implements Serializable {
+public class Doctor implements Serializable { private static final long serialVersionUID = 6439305829659849320L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,22 +63,33 @@ public class Doctor implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "doctor_id")
 	private List<SufferingByDoctor> sufferingsList;
+	@Transient
+	private List<Suffering> sufferingsListPre;
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "doctor_id")
-	private List<ComboByDoctor> comboList;
+	private List<ComboByDoctor> comboList; 
+	@Transient
+	private List<Combo> comboListPre;
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true) //poner a eagger
 	@JoinColumn(name = "doctor_id")
 	private List<ProcByDoct> procList;
+	@Transient
+	private List<Procedure> procListPre;
 	
 	//  <<<<< IMPLEMENTATION >>>>>
 	
 	
 	public Doctor() {
 		sufferingsList = new ArrayList<SufferingByDoctor>(); 
-//		comboList = new ArrayList<ComboByDoctor>(); 
-//		procList = new ArrayList<ProcByDoct>(); 
+		sufferingsListPre = new ArrayList<Suffering>();
+		procListPre = new ArrayList<Procedure>();
+		comboListPre = new ArrayList<Combo>();
+		this.useBMI= true ;
+		
+		comboList = new ArrayList<ComboByDoctor>(); 
+		procList = new ArrayList<ProcByDoct>(); 
 	}
 
 	public Double getMinWeight() {
@@ -186,11 +198,16 @@ public class Doctor implements Serializable {
 		this.sufferingsList = sufferingsList;
 	}
 	
-	public void addSuffering(Suffering s ) {
-		SufferingByDoctor sByD = new SufferingByDoctor();
-		sByD.setSuffering(s);
-		sufferingsList.add(sByD);
+	public void addSuffering(Suffering s) {
+		sufferingsList.add(new SufferingByDoctor(s));
 	}
+	
+	public void addProcedure(ProcByDoct newProcedure)
+	{
+		procList.add(newProcedure);
+	}
+		
+	
 	
 	/**
 	 * @return the surname
@@ -229,8 +246,6 @@ public class Doctor implements Serializable {
 		this.procList = procList;
 	}
 
-
-
 	public boolean isRequiredCellSaver() {
 		return requiredCellSaver;
 	}
@@ -238,11 +253,46 @@ public class Doctor implements Serializable {
 		this.requiredCellSaver = requiredCellSaver;
 	}
 
+	
+	public void addSufferingPre(Suffering s) {
+		sufferingsListPre.add(s);
+	}
 
+	public List<Suffering> getSufferingsListPre() {
+		return sufferingsListPre;
+	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6439305829659849320L;
+	public void setSufferingsListPre(List<Suffering> sufferingsListPre) {
+		this.sufferingsListPre = sufferingsListPre;
+	}
+
+	public List<Procedure> getProcListPre() {
+		return procListPre;
+	}
+
+	public void setProcListPre(List<Procedure> procListPre) {
+		this.procListPre = procListPre;
+	}
+
+	public List<Combo> getComboListPre() {
+		return comboListPre;
+	}
+
+	public void setComboListPre(List<Combo> comboListPre) {
+		this.comboListPre = comboListPre;
+	}
+	
+	public void emptySufferingsListPre() 
+	{
+		this.sufferingsListPre.clear();
+	}
+	
+	public void addCombo(Combo combo)
+	{
+		ComboByDoctor comboByDoctor = new ComboByDoctor();
+		comboByDoctor.setCombo(combo);
+		comboList.add(comboByDoctor);
+	}
+	
 
 }

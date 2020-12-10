@@ -2,6 +2,7 @@ package com.plastic305.web.app.models.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,14 +14,14 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "products_recommended_by_procedure")
-public class ProductRecommendedByProcedure implements Serializable {
+public class ProductRecommendedByProcedure implements Serializable { private static final long serialVersionUID = 6847497332244992632L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private Long amountRecommended ;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER) //, cascade = CascadeType.ALL
 	@JoinColumn(name = "product_id")
 	private Product product;
 	
@@ -54,6 +55,6 @@ public class ProductRecommendedByProcedure implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6847497332244992632L;
+	
 
 }

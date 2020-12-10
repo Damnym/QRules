@@ -1,46 +1,52 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-       <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+   	<link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
    <head th:replace="layout/layout-procedure :: head"></head>
    <body>
       <header th:replace="layout/layout-procedure :: header"></header>
-      <div class="container py-1 mb-5">
+      <div class="container mb-4" style="margin-top: 5rem; width: 60%;">
          <div class="card bg-white border-305">
-            <div th:text="${tittle}" class="card-header border-305 text-white font-weight-bold" style="background-color: #0F3678" align="center"></div>
+            <div th:text="${tittle}" class="card-header py-1 border-305 text-white font-weight-bold" style="background-color:#101F3A" align="center"></div>
             <div class="card-body">
                <div class="row">
-                  <div class="col" align="right">
+                  <div sec:authorize="hasRole('ROLE_ADMIN')" class="col" align="right">
                       <a th:href="@{/procedure/form/}" data-toggle="tooltip" data-placement="top" title="New procedure" class="a a-305 fas fa-window-maximize fa-2x"></a>
                   </div>
                </div>
                <div class="row pt-2">
                   <div class="col">
-                     <table class="table table-striped hover compact"  id="procedure-table-list" style="font-size: 14px">
+                     <table class="table  table-striped hover compact"  id="procedure-table-list" style="font-size: 14px">
                      <!-- table-bordered -->
                         <thead align="center">
                            <tr>
-                              <th th:text="'Name'" scope="col"></th>
-                              <th th:text="'Cell saver required?'" scope="col"></th>
-                              <th th:text="'Items recomended'" scope="col"></th>
-                              <th th:text="Edit" scope="col"></th>
-                              <th th:text="Remove" scope="col"></th>
+                              <th width="36%" class="align-middle" th:text="'Name'"                 scope="col"></th>
+                              <th width="20%" class="align-middle" th:text="'Cell saver required?'" scope="col"></th>
+                              <th width="20%" class="align-middle" th:text="'Items recomended'"     scope="col"></th>
+                              <th width="8%"  class="align-middle" th:text="Details"                scope="col"></th>
+                              <th width="8%"  class="align-middle" th:text="Edit"                   scope="col" sec:authorize="hasRole('ROLE_ADMIN')"></th>
+                              <th width="8%"  class="align-middle" th:text="Remove"                 scope="col" sec:authorize="hasRole('ROLE_ADMIN')"></th>
                            </tr>
                         </thead>
                         <tbody >
                            <tr th:each="p: ${procedureList}">
-                              <td th:text="${p.name}" align="justify"></td>
-                              <td th:if ="${p.requiredCellSaver}" align="center"><span class="fas fa-check"></span></td>
-                              <td th:unless ="${p.requiredCellSaver}" align="center"><span></span></td>
+                              <td th:text="${p.name}" align="justify" class="align-middle"></td>
+                              <td th:if ="${p.requiredCellSaver}" align="center" class="align-middle"><span class="fas fa-check"></span></td>
+                              <td th:unless ="${p.requiredCellSaver}" align="center" class="align-middle"><span></span></td>
                            <!-- Ver items -->
-                              <td align="center">  
+                              <td align="center" class="align-middle" >  
                                  <a th:if="${not #lists.isEmpty(p.productRecommendedList)}"  th:href="@{/procedure/list-procedure/} + ${p.id}" class="a a-305 fas fa-tag" style="color: #000"></a>   
                               </td>
+                           <!-- Detalles procedure -->
+                              <td align="center" class="align-middle">
+                                 <a th:href="@{/procedure/view/} + ${p.id}" class="a a-305 fas fa-search" style="color: #000"></a>
+                              </td>
                            <!-- Editar procedure -->
-                              <td align="center">
+                              <td sec:authorize="hasRole('ROLE_ADMIN')" align="center" class="align-middle">
                                  <a th:href="@{/procedure/form/} + ${p.id}" class="a a-305 fas fa-pencil-alt" style="color: #000"></a>
                               </td>
                            <!-- Eliminar procedure -->
-                            <td align="center">
+                            <td sec:authorize="hasRole('ROLE_ADMIN')" align="center" class="align-middle">
                               <a th:href="'/procedure/delete/' + ${p.id}" onclick="return confirm('Do you want remove this procedure?');" type="button" class="btn fas fa-eraser"></a> 
                               </td>
                            </tr>
@@ -48,30 +54,49 @@
                      </table>
                   </div>
                </div> 
-               <div th:if="${prodsRecomended} and ${not #lists.isEmpty(prodsRecomended)}" class="row">
-                  <span th:text="' List of the ' + ${#lists.size(prodsRecomended)} + ' items that are recommended for &quot' + ${procedureName} + '&quot procedure, 
-                                 and the its recommended amount for each item.'" 
-                        style="color: #0F3678; font-weight: bold; text-decoration: underline;" class="mx-3"></span> 
-                  <div class="row my-2">
-                     <div class="col twoColumn305" align="right">
-                        <ul  class=" border-success">
-                           <li th:each="p: ${prodsRecomended}" th:text="${p.product.name} + ' --> ' + ${p.amountRecommended}" class="text-left border-success"></li>
-                        </ul>
+               <div th:if="${prodsRecomended} and ${not #lists.isEmpty(prodsRecomended)}" class="row mt-2">
+                  <div class="col">
+                     <div class="row my-2">
+                     	<div class="col">
+		                     <span th:text="' List of the ' + ${#lists.size(prodsRecomended)} + ' items that are recommended for &quot' + ${procedureName} + '&quot procedure.'" 
+		                           style="color: #101F3A; font-weight: bold; text-decoration: underline;" class="mx-3"></span> 
+                     	</div>
                      </div>
-                  </div>   
+                  	 <div class="row my-2 justify-content-center">
+                  	 	<div class="col-8">
+                    		<table class="table table-sm table-striped table-dark table-hover" style="font-size: 14px">
+                      			<thead align="center">
+                          			<tr>
+		                            	<th width="70%" th:text="'Name'"   scope="col" class="align-middle"></th>
+		                             	<th width="30%" th:text="'Amount'" scope="col" class="align-middle"></th>
+                          			</tr>
+                       			</thead>
+                       			<tbody>
+                       				<tr th:each="p: ${prodsRecomended}">
+                       					<td th:text="${p.product.name}"      align="justify"></td>
+                       					<td th:text="${p.amountRecommended}" align="center"></td>
+                       				</tr>
+                       			</tbody>
+                    		</table>
+                  		</div>
+                  	</div>
+                  </div>
                </div> 
-               <div th:if="${prodsRecomended} and ${#lists.isEmpty(prodsRecomended)}"  class="alert alert-dismissible fade show border-danger my-2" align="center" role="alert" style="background-color:#FFFFFF;">
-                  <span th:text="'The procedure &quot' + ${procedureName}  + '&quot has not recommended item.'" style="color: #0F3678; font-weight: bold; "></span>
-                  <a th:href="@{/#/}" title="Click to add a item" th:text="${'Add a item'}" style="color:#0F3678; text-decoration: underline;" 
-                     data-toggle="tooltip" data-placement="left" ></a>     
-                     <button type="button" class="close" style="color:#0F3678" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                     </button>
-               </div>
+<!--                <div th:if="${prodsRecomended} and ${#lists.isEmpty(prodsRecomended)}"  class="alert alert-dismissible fade show border-danger my-2" align="center" role="alert" style="background-color:#FFFFFF;"> -->
+<!--                   <span th:text="'The procedure &quot' + ${procedureName}  + '&quot has not recommended item.'" style="color: #101F3A; font-weight: bold; "></span> -->
+<!--                   <a th:href="@{/#/}" title="Click to add a item" th:text="${'Add a item'}" style="color:#101F3A; text-decoration: underline;"  -->
+<!--                      data-toggle="tooltip" data-placement="left" ></a>      -->
+<!--                      <button type="button" class="close" style="color:#101F3A" data-dismiss="alert" aria-label="Close"> -->
+<!--                         <span aria-hidden="true">&times;</span> -->
+<!--                      </button> -->
+<!--                </div> -->
             </div>
          </div>
       </div>
-        <div th:text="'Effective date: ' + ${update}" class="card-header font-weight-bold mb-5" style="background-color: ffffff; font-size: 14px; color: #101F3A"  align="center"></div>
+      <div th:text="'Effective date: ' + ${update}" class="card-header font-weight-bold" align="center"
+           style="background-color: #101F3A; font-size: 14px; color: #ffffff">
+      </div>
+      
       <footer th:replace="layout/layout-procedure :: footer"></footer>
       <script th:src="@{/js/jquery.dataTables.min.js}"></script>
       <script th:replace="procedure/js/util-js.html :: util"></script>

@@ -3,94 +3,99 @@
 <head th:replace="layout/layout-client :: head"></head>
 <body>
 	<header th:replace="layout/layout-client :: header"></header>
-	<div class="container py-4" align="center">
+	<div class="container" style="margin-top: 5rem" align="center">
 		<div class="card bg-white border-305" style="width: 70%;">
-			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#0F3678"></div>
+			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
 			<div class="card-body " align="left">
-				<form id="newclient"  th:object="${client}" enctype="multipart/form-data">
-					<!-- DNI 
-					<div class="form-group row">
-						<label for="dni" class="col-form-label col-sm-3">DNI:</label>
-						<div class="col-sm-8">
-							<input type="text" id="dni" th:field="*{dni}" class="form-control" th:errorclass="'form-control alert-danger'" />  
-							<small th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}" class="form-text text-danger"></small>  
+				<form id="newclient"  th:object="${client}" enctype="multipart/form-data" method="post">
+					<div class="row ">
+						<div class="col-6">
+							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>
 						</div>
-					</div>-->
-					
-				   <!-- NOMBRE -->
-					<div class="form-group row">
-						<label for="name" class="col-form-label col-sm-3">Name:</label>
-						<div class="col-sm-8">
-							<input type="text" id="name" th:field="*{name}" class="form-control" th:errorclass="'form-control alert-danger'" />  
-							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>  
+						<div class="col-6">
+							<small th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}" class="form-text text-danger"></small>
 						</div>
 					</div>
-					
-					<!-- APELLIDOS -->
-					<div class="form-group row">
-						<label for="surname" class="col-form-label col-sm-3">Surname:</label>
-						<div class="col-sm-8">
-							<input type="text" id="surname" th:field="*{surname}" class="form-control" th:errorclass="'form-control alert-danger'" />  
-							<small th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}" class="form-text text-danger"></small>  
+<!-- NOMBRE -->		<div class="form-group row">
+						<div class="input-group mb-1 col-6">
+							<div class="input-group-prepend ">
+						    	<span class="input-group-text" id="lname">Name:</span>
+						  	</div>
+						  	<input type="text" id="ename" th:field="*{name}" 
+						  		   aria-label="name" class="form-control col" aria-describedby="name"  
+						  		   th:errorclass="'form-control alert-danger'" />
+						</div>
+<!-- APELLIDOS -->		<div class="input-group mb-1 col">
+							<div class="input-group-prepend ">
+						    	<span class="input-group-text" id="lsurname">Surname:</span>
+						  	</div>
+						  	<input type="text" id="esurname" th:field="*{surname}" 
+						  		   aria-label="surname" class="form-control col" aria-describedby="surname"  
+						  		   th:errorclass="'form-control alert-danger'" />
 						</div>
 					</div>
-					
-					<!-- Gender -->
 					<div class="form-group row">
-						<label class="col-form-label col-sm-3">Gender:</label>
-						<div th:each="g: ${genderList}" class="row col-sm-3">
-							<input type="radio" th:field="*{gender}" th:value="${g}" class="form-control col-sm-3" th:errorclass="'form-control alert-danger'" />
-							<label th:for="${#ids.prev('gender')}" th:text="${g}" class="col-form-label col-sm-7"></label>
-						</div>
-						<small th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="form-text text-danger"></small>
-					</div>
-					
-					<!-- Age -->
-					<div class="form-group row">
-						<label for="age" class="col-form-label col-sm-3">Age:</label>
-						<div class="col-sm-8">
-							<input type="number" id="age" min="0" th:field="*{age}" class="form-control" th:errorclass="'form-control alert-danger'" />
-							<small th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="form-text text-danger"></small>
+<!-- Gender -->			<div class="col" align="right">
+							<div th:each="g: ${genderList}" class="row col-3" >
+								<input type="radio" th:field="*{gender}" th:value="${g}" class="form-control col-2" th:errorclass="'form-control alert-danger'" />
+								<label th:for="${#ids.prev('gender')}" th:text="${g}" class="col-form-label col-10" ></label>
+							</div>
+							<small th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="form-text text-danger"></small>
 						</div>
 					</div>
-					
-					<!-- CORREO -->
+					<div class="row ml-2">
+						<small th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="form-text text-danger"></small>
+					</div>
 					<div class="form-group row">
-						<label for="email" class="col-form-label col-sm-3">Email:</label>
-						<div class="col-sm-8">
-							<input type="email" id="email" th:field="*{email}" class="form-control" th:errorclass="'form-control alert-danger'"
-							placeholder="someone@example.com"/>  
-							<small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-text text-danger"></small> 
+<!-- AGE -->			<div class="input-group mb-1 col">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="lage">Age:</span>
+				  			</div>
+				  			<input type="number" id="eage" min="1" th:field="*{age}" aria-label="age" class="form-control" aria-describedby="age" 
+							   	   	   th:errorclass="'form-control alert-danger'" /> 
+							</div>
+						<div class="input-group mb-1 col-7">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="ldate">Subscription date:</span>
+					 		</div>
+							<input type="date" id="edate" min="date" th:field="*{createAt}" class="form-control"
+					  		     	   th:errorclass="'form-control alert-danger'" /> 
+						</div>
+							
+					</div>
+					<div class="row ">
+						<div class="col-7">
+							<small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-text text-danger"></small>
+						</div>
+						<div class="col-5">
+							<small th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}" class="form-text text-danger"></small>
 						</div>
 					</div>
-					
-					<!-- CEL NUMBER-->
 					<div class="form-group row">
-						<label for="mobile" class="col-form-label col-sm-3">Mobile number:</label>
-						<div class="col-sm-8">
-							<input type="tel" id="mobile" th:field="*{mobile}" class="form-control" th:errorclass="'form-control alert-danger'" />  
-							<small th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}" class="form-text text-danger"></small> 
+<!-- email -->			<div class="input-group mb-1 col-7">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="lemail">Email:</span>
+					  		</div>
+					  		<input type="email" id="eemail" min="1" th:field="*{email}" aria-label="email" class="form-control" aria-describedby="email" 
+							 	   th:errorclass="'form-control alert-danger'" /> 
+						</div>
+<!-- Mobile-->			<div class="input-group mb-1 col-5">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="lmobile">Mobile number:</span>
+					  		</div>
+					  		<input type="tel"  id="emobile" th:field="*{mobile}" aria-label="mobile" class="form-control" aria-describedby="mobile" 
+							 	   th:errorclass="'form-control alert-danger'"/> 
 						</div>
 					</div>
-
-					<!-- FECHA DE SUSCRIPCIÓN -->
-					<div class="form-group row">
-						<label for="createAt" class="col-form-label col-sm-3">Subscription date:</label>
-						<div class="col-sm-8">
-							<input type="date" id="createAt" th:field="*{createAt}" class="form-control" th:errorclass="'form-control alert-danger'"/>  
-							<small th:if="${#fields.hasErrors('createAt')}" th:errors="*{createAt}" class="form-text text-danger"></small>
-						</div>
-					</div>
-
 					<!--  SUBMIT   -->
 					<div class="row">
 						<div class="col-6">    <!--  NUEVO CLIENTE -->
-							<input type="button" th:value="${buttonClient}" class="btn btn-block btn-dark"
-					               onClick="actionMethodForm(this.form.id, '/clients/form', 'post'); return false;"/>
+							<input type="submit" th:value="${buttonClient}" class="btn btn-block btn-dark"
+					               onClick="actionForm(this.form.id, '/clients/form'); return false;"/>
 	  					</div>
 	  					<div class="col-6">     <!--  NUEVO CLIENTE Y "SEGUIR" EL PROCESO   -->
-	  						<input type="button" th:value="${buttonClientContinue}" class="btn  btn-block btn-305"
-						           onClick="actionMethodForm(this.form.id, '/clients/formcontinue', 'post'); return false;" />
+	  						<input type="submit" th:value="${buttonClientContinue}" class="btn  btn-block btn-305"
+						           onClick="actionForm(this.form.id, '/clients/formcontinue'); return false;" />
 	  					</div>
 	  				</div> 
 				</form>

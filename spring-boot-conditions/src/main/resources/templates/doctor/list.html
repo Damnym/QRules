@@ -1,137 +1,127 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
    <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
-   <head th:replace="layout/layout-doctor :: head"></head>
+   <head th:replace="layout/layout-doctor :: head">
+   
+   </head>
    <body>
       <header th:replace="layout/layout-doctor :: header"></header>
-      <div class="container py-4">
+      <div class="container mb-4" style="margin-top: 5rem">
          <div class="card bg-white border-305">
-            <div th:text="${tittle}" class="card-header border-305 text-white font-weight-bold" style="background-color: #0F3678" align="center"></div>
+            <div th:text="${tittle}" class="card-header py-2 border-305 text-white font-weight-bold" style="background-color: #101F3A" align="center"></div>
             <div class="card-body">
                <div class="row">
                   <div class="col" align="right">
-                      <a th:href="@{/doctor/form/}" data-toggle="tooltip" data-placement="left" title="New Doctor" class="a a-305 fas fa-user-md fa-3x">  </a>
+                      <a sec:authorize="hasRole('ROLE_ADMIN')"  class="a a-305 fas fa-user-md fa-3x" data-toggle="tooltip" data-placement="left" 
+                      	 th:href="@{/doctor/form/}" title="New Surgeon">  </a>
                   </div>
                </div>
                <div class="row py-3">
                   <div class="col">
-                     <table class="table table-striped hover display compact" style="font-size: 14px" id="doctor-table-list">
+                     <table class="table table-striped  hover display compact" style="font-size: 14px" id="doctor-table-list">
                      <!-- table-bordered -->
                         <thead align="center">
                            <tr>
-                              <th th:text="'Name'" scope="col"></th>
-                              <th th:text="'Surname'" scope="col"></th>
-                              <th th:text="'Available date'" scope="col"></th>
-                              <th th:text="'Procedures'" scope="col"></th>
-                              <th th:text="Edit" scope="col"></th>
-                              <th th:text="Remove" scope="col"></th>
+                              <th width="20%" th:text="'Name'" scope="col" class="align-middle" align="center"></th>
+                              <th width="12%" th:text="'Available date'" scope="col" class="align-middle" align="center"></th>
+<!--                          <th width="12%" th:text="'Procedures with combos'" scope="col" class="align-middle" align="center"></th>  -->
+                              <th width="12%" th:text="'Details'" scope="col" class="align-middle" align="center"></th> 
+                              <th width="12%" th:text="'Admin procedures'" sec:authorize="hasRole('ROLE_ADMIN')" scope="col" class="align-middle" align="center"></th> 
+                              <th width="12%" th:text="'Admin combos'" sec:authorize="hasRole('ROLE_ADMIN')" scope="col" class="align-middle" align="center"></th> 
+                              <th width="12%" th:text="'Admin conditions'" sec:authorize="hasRole('ROLE_ADMIN')" scope="col" class="align-middle" align="center"></th> 
+                              <th width="10%" th:text="Edit" sec:authorize="hasRole('ROLE_ADMIN')" scope="col" class="align-middle" align="center"></th>
+                              <th width="10%" th:text="Remove" sec:authorize="hasRole('ROLE_ADMIN')" scope="col" class="align-middle" align="center"></th>
                            </tr>
                         </thead>
-                        <tbody>
-                           <tr th:each="d: ${doctor_list}">
-                              <td th:text="${d.name}" align="justify"></td>
-                              <td th:text="${d.surName}" align="justify"></td>
-                              <td th:text="${d.date}" align="center"></td>
-                           <!-- Procedure doctor -->
-                              <td align="center">
-                                 <a th:href="@{/doctor/list/} + ${d.id}" class="fas fa-window-maximize" style="color: #000"></a>
-                              </td>
-                           <!-- Editar doctor -->
-                              <td align="center">
-                                 <a th:href="@{#} + ${d.id}" class="a a-305 fas fa-pencil-alt" style="color: #000"></a>
-                              </td>
-                           <!-- Eliminar doctor -->
-                              <td align="center">
-                                 <a th:href="'/doctor/delete/' + ${d.id}" onclick="return confirm('Do you want remove this Doctor?');" type="button" class="btn fas fa-eraser"></a> 
-                              <!-- Button modal 
-                                 <button type="button" class="btn fas fa-eraser" data-toggle="modal" data-target="#modalDelete" th:data-id="${d.id}" th:data-name="${d.name}">
-                                    </button>
-                                 <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="myModalDelete" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                       <div class="modal-content">
-                                          <div class="modal-header modal-danger-header-305">
-                                                <div class="col-1" align="center">
-                                                   <i class="fas fa-user-times fa-2x"></i>
-                                                </div> 
-                                                <div class="col-9 px-3">
-                                                   <h5 class="modal-title" id="modal-title"></h5>
-                                                </div>
-                                                <div class="col-1 px-3">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                      <span aria-hidden="true" style="color: #fff">&times;</span>
-                                                   </button>
-                                                </div>
-                                          </div>
-                                          <div class="modal-body">
-                                             <span id="modal-text" aria-hidden="true" style="color: #000"></span>
-                                          </div>
-                                          <div class="modal-footer">
-                                             <button th:text="'Cancel'" type="button" class="btn btn-dark" data-dismiss="modal"></button>
-                                             <a id="remove" th:href="'/doctor/delete/'"  th:text="'Remove'" class="btn btn-305"></a> 
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div> -->
-                              </td>
+						<tbody>
+                        	<tr th:each="d: ${doctor_list}">
+<!-- Name -->      				<td th:text="${d.name}" align="justify"></td>
+ <!-- Available date -->    	<td  align="center">
+ 									<a th:href="@{/doctor/change-date/} + ${d.id}" th:text="${d.date}" style="color: #000"></a>
+ 								</td>
+<!-- <!-- Procedures & combos   	<td align="center"> -->
+<!-- 									<a th:href="@{/doctor/list/} + ${d.id}" class="fas fa-window-restore" style="color: #000"></a>  -->
+<!-- 								</td> -->
+<!-- Details -->  				<td align="center"> 
+									<a th:href="@{/doctor/view/} + ${d.id}" class="a a-305 fas fa-search" style="color: #000"></a> 
+								</td>
+<!-- Admin procedures -->  		<td sec:authorize="hasRole('ROLE_ADMIN')" align="center"> 
+									<a th:href="@{/doctor/admin-procedure/} + ${d.id}" class="fas fa-window-maximize" style="color: #000"></a> 
+								</td>
+<!-- Admin Combos -->  		<td sec:authorize="hasRole('ROLE_ADMIN')" align="center"> 
+									<a th:href="@{/doctor/admin-combo/} + ${d.id}" class="fas fa-object-group" style="color: #000"></a> 
+								</td>
+<!-- Admin conditions -->  		<td sec:authorize="hasRole('ROLE_ADMIN')" align="center"> 
+									<a th:href="@{/doctor/admin-condition/} + ${d.id}" class="fas fa-notes-medical" style="color: #000"></a> 
+								</td>
+<!-- Edit -->					<td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
+                                	<a th:href="@{/doctor/edit/} + ${d.id}" class="a a-305 fas fa-pencil-alt" style="color: #000"></a>
+                              	</td>
+<!-- Remove -->					<td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
+                                	<a th:href="'/doctor/delete/' + ${d.id}" onclick="return confirm('Do you want remove this Surgeon?');" type="button" 
+                                	   class="btn fas fa-eraser"></a> 
+                              	</td>
                            </tr>
                         </tbody>
                      </table>
                   </div>
                </div>   
-               
-               
-               <div th:if="${proceduresCombos} and ${not #lists.isEmpty(proceduresCombos.keySet())}" class="container">
-                  <span th:text="' List of the ' + ${#lists.size(proceduresCombos.keySet())} + ' procedures that make the Dr. &quot' + ${doctor.name}  + '&quot with its combos.'" 
-                        style="color: #0F3678; font-weight: bold; text-decoration: underline;"></span> 
-                  <a th:href="@{/doctor/add-procedure/} + ${doctor.id}" title="Click to add procedure" th:text="${'Add other procedure'}" 
-                     style="color:#0F3678; text-decoration: underline;" data-toggle="tooltip" data-placement="left" ></a>       
-               <!-- INICIO DEL ACORDEON -->
-                  <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" align="center">
-                     <div class="col-10" align="right">
-                        <div class="col " align="right">
-                        <!-- Accordion card 1-->
-                           <div th:each="pc: ${proceduresCombos.keySet()}" class="card my-1" style="border-color: #0F3678; border-right-width: 3px">  
-                           <!-- Card header -->                                                          
-                              <div class="card-header" 
-                                   style="background-color:#fff; border-color: #0F3678; border-bottom-width: 3px" 
-                                   role="tab" th:id="'heading' + ${pc.id}">                                
-                                 <a data-toggle="collapse"  style="color:#0F3678;" data-parent="#accordionEx" aria-expanded="false" class=" fas fa-angle-down rotate-icon" 
-                                    th:href="'#collapse' + ${pc.id}" th:aria-controls="'collapse' + ${pc.id}" >
-                                       <span th:text="${pc.name}" class="text-center font-weight-bold" style="font-family:sans-serif; font-size: 14px; color:#0F3678;"></span>
-                                       <span th:text="' - Combo with: (' + ${proceduresCombos.get(pc).size()} + ')'"
-                                             style="font-family:sans-serif; font-size: 12px; font-weight:lighter; font-style:italic; color:#0F3678;"></span>
-                                 </a>
-                              </div>
-                           <!-- Card body -->  
-                              <div th:id="'collapse' + ${pc.id}" class="collapse" role="tabpanel" th:aria-labelledby="'heading' + ${pc.id}" data-parent="#accordionEx">
-                                 <div class="card-body">
-                                    <div class="row">
-                                       <div class="col combos" align="right">
-                                          <ul th:if="${proceduresCombos.get(pc)}" class=" border-success" >
-                                             <li th:each="c: ${proceduresCombos.get(pc)}" th:text="${c.name}" class="text-left border-success"></li>
-                                          </ul>
-                                       </div>
-                                    </div>   
-                                 </div>
-                              </div>
-                           </div><!-- Accordion card 1-->
-                        </div>
-                     </div>
-                  </div><!-- FIN DEL ACORDEON -->
-                  <div class="col" align="center">
-                     <a th:href="@{/doctor/add-procedure/} + ${doctor.id}" title="Click to add procedure" th:text="${'Add other procedure'}" style="color:#0F3678; text-decoration: underline;" 
-                     data-toggle="tooltip" data-placement="left"></a>
-                  </div>
-                                 
-               </div>
-               <div th:if="${proceduresCombos} and ${#lists.isEmpty(proceduresCombos.keySet())}"  class="alert alert-dismissible fade show border-danger my-2" align="center" role="alert" style="background-color:#FFFFFF;">
-                  <span th:text="'The Dr. &quot' + ${doctor.name} + '&quot has no procedures registered.'" style="color: #0F3678; font-weight: bold; "></span>
-                  <a th:href="@{/doctor/add-procedure/} + ${doctor.id}" title="Click to add a procedure" th:text="${'Add a procedure'}" style="color:#0F3678; text-decoration: underline;" 
-                     data-toggle="tooltip" data-placement="left" ></a>     
-                     <button type="button" class="close" style="color:#0F3678" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                     </button>
-               </div>
+               <!-- Lista de procedimientos del Doctor -->
+<!-- 				<div th:if="${proceduresCombos} and ${not #lists.isEmpty(proceduresCombos.keySet())}" class="container"> -->
+<!--                 	<span th:text="' List of the ' + ${#lists.size(proceduresCombos.keySet())} + ' procedures that make the Dr. &quot' + ${doctor.name}  + '&quot with its combos.'"  -->
+<!--                           style="color: #101F3A; font-weight: bold; text-decoration: underline;"> -->
+<!--                     </span>  -->
+<!--                   	<a sec:authorize="hasRole('ROLE_ADMIN')"  -->
+<!--                   	   th:href="@{/doctor/add-procedure/} + ${doctor.id}" th:text="${'Add other procedure'}"  -->
+<!--                   	   title="Click to add procedure" data-toggle="tooltip" data-placement="left" style="color:#101F3A; text-decoration: underline;">  -->
+<!--                     </a>        -->
+<!--                INICIO DEL ACORDEON -->
+<!--                 	<div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" align="center"> -->
+<!--                     	<div class="col-9" align="right"> -->
+<!--                         Accordion card 1 -->
+<!--                         	<div th:each="pc: ${proceduresCombos.keySet()}" class="card my-1" style="border-color: #101F3A; border-right-width: 3px">   -->
+<!--                             Card header                                                           -->
+<!--                             	<div class="card-header" style="background-color:#fff; border-color: #101F3A; border-bottom-width: 3px" role="tab" -->
+<!--                                      th:id="'heading' + ${pc.id}">                                 -->
+<!--                                  	<a data-toggle="collapse" style="color:#101F3A;" data-parent="#accordionEx" aria-expanded="false" class=" fas fa-angle-down rotate-icon"  -->
+<!--                                        th:href="'#collapse' + ${pc.id}" th:aria-controls="'collapse' + ${pc.id}" > -->
+<!--                                        <span th:text="${pc.name}" class="text-center font-weight-bold" style="font-family:sans-serif; font-size: 14px; color:#101F3A;"></span> -->
+<!--                                        <span th:text="' - Combo with: (' + ${proceduresCombos.get(pc).size()} + ')'" -->
+<!--                                              style="font-family:sans-serif; font-size: 12px; font-weight:lighter; font-style:italic; color:#101F3A;"></span> -->
+<!--                                  	</a> -->
+<!--                              	</div> -->
+<!--                            Card body   -->
+<!--                               <div th:id="'collapse' + ${pc.id}" class="collapse" role="tabpanel" th:aria-labelledby="'heading' + ${pc.id}" data-parent="#accordionEx"> -->
+<!--                                  <div class="card-body"> -->
+<!--                                     <div class="row"> -->
+<!--                                        <div class="col combos" align="right"> -->
+<!--                                           <ul th:if="${proceduresCombos.get(pc)}" class=" border-success" > -->
+<!--                                              <li th:each="c: ${proceduresCombos.get(pc)}" th:text="${c.name}" class="text-left border-success"></li> -->
+<!--                                           </ul> -->
+<!--                                        </div> -->
+<!--                                     </div>    -->
+<!--                                  </div> -->
+<!--                               </div> -->
+<!--                            </div>Accordion card 1 -->
+<!--                      </div> -->
+<!--                   	</div>FIN DEL ACORDEON -->
+<!--                   	<div sec:authorize="hasRole('ROLE_ADMIN')" class="col" align="center"> -->
+<!--                      	<a th:href="@{/doctor/add-procedure/} + ${doctor.id}"  -->
+<!--                      	   th:text="${'Add other procedure'}" style="color:#101F3A; text-decoration: underline;" -->
+<!--                      	   title="Click to add procedure" data-toggle="tooltip" data-placement="left"></a> -->
+<!--                   	</div> -->
+<!--                	</div> -->
+<!--                	<div th:if="${proceduresCombos} and ${#lists.isEmpty(proceduresCombos.keySet())}"  -->
+<!--                		 class="alert alert-dismissible fade show border-danger my-2" align="center" role="alert" style="background-color:#FFFFFF;"> -->
+<!--                		<span th:text="'The Dr. &quot' + ${doctor.name} + '&quot has no procedures registered.'" style="color: #101F3A; font-weight: bold; "></span> -->
+<!--                   	<a sec:authorize="hasRole('ROLE_ADMIN')"  -->
+<!--                   	   th:href="@{/doctor/add-procedure/} + ${doctor.id}" th:text="${'Add a procedure'}" style="color:#101F3A; text-decoration: underline;"  -->
+<!--                        title="Click to add a procedure" data-toggle="tooltip" data-placement="left"></a>      -->
+<!--                     <button type="button" class="close" style="color:#101F3A" data-dismiss="alert" aria-label="Close"> -->
+<!--                     	<span aria-hidden="true">&times;</span> -->
+<!--                     </button> -->
+<!--                	</div> -->
             </div>
          </div>
       </div>

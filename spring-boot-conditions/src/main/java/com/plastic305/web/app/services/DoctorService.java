@@ -13,11 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.plastic305.web.app.models.dao.IComboByDoctDAO;
 import com.plastic305.web.app.models.dao.IDoctorDAO;
+import com.plastic305.web.app.models.dao.IProcByDoctDAO;
+//import com.plastic305.web.app.models.dao.IProcedureDAO;
+import com.plastic305.web.app.models.dao.ISufferingByDoctDAO;
 import com.plastic305.web.app.models.entities.Combo;
 import com.plastic305.web.app.models.entities.ComboByDoctor;
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.ProcByCombo;
+import com.plastic305.web.app.models.entities.ProcByDoct;
 import com.plastic305.web.app.models.entities.Procedure;
 import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.models.entities.SufferingByDoctor;
@@ -25,6 +30,10 @@ import com.plastic305.web.app.models.entities.SufferingByDoctor;
 @Service
 public class DoctorService implements IDoctorService{ protected final Log logger = LogFactory.getLog(this.getClass());
 	@Autowired private IDoctorDAO doctorDAO;
+	@Autowired private IProcByDoctDAO procByDoctDAO;
+	//@Autowired private IProcedureDAO procDAO;
+	@Autowired private IComboByDoctDAO comboByDoctDAO;
+	@Autowired private ISufferingByDoctDAO condByDoctDAO;
 	
 	@Override
 	@Transactional
@@ -114,6 +123,13 @@ public class DoctorService implements IDoctorService{ protected final Log logger
 	public List<Procedure> findProceduresNotBelongToDoctorByName(Long idD, String term){
 		return doctorDAO.findProceduresNotBelongToDoctorByName(idD, term);
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Suffering> findConditionNotBelongToDoctorByName(Long idD, String term){
+		return doctorDAO.findConditionNotBelongToDoctorByName(idD, term);
+	}
+	
 
 	@Override  
 	@Transactional(readOnly = true)  // como es conjunto el orden me mata...hay q arreglar esto
@@ -193,14 +209,15 @@ public class DoctorService implements IDoctorService{ protected final Log logger
 	@Transactional(readOnly = true) 
 	public List<Procedure> findAllAditionalProcedurebyDoctorIdbyCombo(Long idD, Long idP1, Long idP2) 
 	{
-		ArrayList<Procedure> procedureList = new ArrayList<Procedure>();
-		
-		for (Procedure procedure: doctorDAO.findAProceduresByDoctorId(idD)) 
-			if (this.findAllProcedurebyDoctorIdbyFirstProcedure(idD, idP1).contains(procedure) && 
-				(idP2==null || this.findAllProcedurebyDoctorIdbyFirstProcedure(idD, idP2).contains(procedure)) )
-				procedureList.add(procedure);
+//		ArrayList<Procedure> procedureList = new ArrayList<Procedure>();
+//		
+//		for (Procedure procedure: doctorDAO.findAProceduresByDoctorId(idD)) 
+//			if (this.findAllProcedurebyDoctorIdbyFirstProcedure(idD, idP1).contains(procedure) && 
+//				(idP2==null || this.findAllProcedurebyDoctorIdbyFirstProcedure(idD, idP2).contains(procedure)) )
+//				procedureList.add(procedure);
 
-		return procedureList;
+//		return procedureList;
+		return doctorDAO.findAProceduresByDoctorId(idD);
 	}
 	////////////////////
 	
@@ -282,6 +299,107 @@ public class DoctorService implements IDoctorService{ protected final Log logger
 			return doctorDAO.getPriceFinanced(idD, idP);
 		else 
 			return doctorDAO.getPriceCash(idD, idP);
+	}
+
+	@Override @Transactional(readOnly = true)
+	public ProcByDoct getProcByDoct(Long idD, Long idP) 
+	{
+		return doctorDAO.findProcByDoct(idD, idP);
+	}
+
+	@Override @Transactional
+	public void unlinkProcedure(Long id) {
+		procByDoctDAO.deleteById(id);
+	}
+
+	@Override @Transactional(readOnly = true)
+	public List<Suffering> findConditionNotBelongToDoctor(Long id) {
+		return findConditionNotBelongToDoctor(id);
+	}
+
+	@Override @Transactional(readOnly = true)
+	public List<Combo> findUnlinkedCombo(Long idD) 
+	{
+		List<Combo> unlinkedCombos = new ArrayList<Combo>() ;
+		List<Combo> unlinkedCombosAll = doctorDAO.findCombosNotBelongToDoctor(idD) ;
+		
+		for (Combo combo : unlinkedCombosAll) 
+		{
+			int count = 0 ;
+			for (ProcByCombo procedureByCombo : combo.getProcedureList()) 
+				if (doctorDAO.findPProceduresByDoctorId(idD).contains(procedureByCombo.getProcedure()))
+					count++;
+				else 
+					break;
+			if (count == combo.getProcedureList().size())
+				unlinkedCombos.add(combo);
+		}
+		return unlinkedCombos;
+	}
+
+	@Override @Transactional(readOnly = true)
+	public List<Procedure> findAllP1OfUnlinkedCombos(Long idD) 
+	{
+		List<Combo> unlinkedCombos = this.findUnlinkedCombo(idD); 
+		List<Procedure> p1List = new ArrayList<Procedure>();
+		
+		for (Combo combo : unlinkedCombos) 
+			for (ProcByCombo procedureByCombo : combo.getProcedureList()) 
+				if (!p1List.contains(procedureByCombo.getProcedure()))
+					p1List.add(procedureByCombo.getProcedure());
+			
+		return p1List;
+	}
+
+	@Override @Transactional(readOnly = true)
+	public List<Combo> findLinkedCombo(Long idD) {
+		return doctorDAO.findCombosBelongToDoctor(idD);
+	}
+
+	@Override @Transactional(readOnly = true)
+	public List<Combo> findUnlinkedComboWithP1(Long idD, Long idP) 
+	{
+		List<Combo> unlinkedCombos = new ArrayList<Combo>() ;
+		List<Combo> unlinkedCombosAll = this.findUnlinkedCombo(idD) ;
+		for (Combo combo : unlinkedCombosAll) 
+			for (ProcByCombo procedureByCombo : combo.getProcedureList()) 
+				if (procedureByCombo.getProcedure().getId() == idP) 
+				{
+					unlinkedCombos.add(combo);
+					break;
+				}
+		return unlinkedCombos;
+	}
+
+	@Override @Transactional(readOnly = true)
+	public List<Procedure> findProceduresBelongToDoctorByName(Long id, String term) 
+	{
+		return doctorDAO.findProceduresBelongToDoctorByName(id, term);
+	}
+
+	@Override @Transactional(readOnly = true)
+	public Long findComboByProcedures(Long idD, Long idP1, Long idP2) 
+	{
+		for (ComboByDoctor comboOfDoctor: this.findOne(idD).getComboList())
+			if ((comboOfDoctor.getCombo().getProcedureList().get(0).getProcedure().getId()==idP1 
+					|| comboOfDoctor.getCombo().getProcedureList().get(0).getProcedure().getId()==idP2)
+				&&	(comboOfDoctor.getCombo().getProcedureList().get(1).getProcedure().getId()==idP1 
+					|| comboOfDoctor.getCombo().getProcedureList().get(1).getProcedure().getId()==idP2))
+				return comboOfDoctor.getId();
+
+		return (long) 0;
+	}
+
+	@Override @Transactional
+	public void unlinkCombo(Long id)
+	{
+		comboByDoctDAO.deleteById(id);
+	}
+
+	@Override @Transactional
+	public void unlinkCondition(Long id) 
+	{
+		condByDoctDAO.deleteById(id);
 	}
 	
 }

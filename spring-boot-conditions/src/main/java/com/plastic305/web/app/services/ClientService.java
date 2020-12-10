@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.plastic305.web.app.models.dao.IClientDAO;
 import com.plastic305.web.app.models.dao.IOrderDAO;
 import com.plastic305.web.app.models.dao.IProductsDAO;
-import com.plastic305.web.app.models.dao.ISufferingDAOPagNSortRepository;
+import com.plastic305.web.app.models.dao.ISufferingDAO;
+import com.plastic305.web.app.models.dao.ISuperOrderDAO;
 import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.models.entities.Order;
 import com.plastic305.web.app.models.entities.OrderProcedure;
@@ -23,13 +24,16 @@ import com.plastic305.web.app.models.entities.Product;
 import com.plastic305.web.app.models.entities.ProductByDoctAndProc;
 import com.plastic305.web.app.models.entities.ProductRecommendedByProcedure;
 import com.plastic305.web.app.models.entities.Suffering;
+import com.plastic305.web.app.models.entities.SuperOrder;
+import com.plastic305.web.app.models.entities.SuperOrderStatus;
 
 @Service
 public class ClientService implements IClientService {
 	@Autowired IClientDAO cDAO;
 	@Autowired IOrderDAO iODAO;
+	@Autowired ISuperOrderDAO sOrderDAO;
 	@Autowired IProductsDAO iPDAO;
-	@Autowired ISufferingDAOPagNSortRepository sDAO;
+	@Autowired ISufferingDAO sDAO;
 	@Autowired IDoctorService dService;
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
@@ -146,28 +150,35 @@ public class ClientService implements IClientService {
 	public List<Product> findProductsMandatoryByDoctorByProcedure(Long idD, List<OrderProcedure> procedureList, int loss)  // Llamar solo al ByProcedure
 	{ 
 		List<Product> mandatoryItemsList = new ArrayList<Product>();
+		
 		for (OrderProcedure procedure: procedureList) 
 			mandatoryItemsList.addAll(iPDAO.findProductsMandatoryByDoctorByProcedure(idD, procedure.getProcedure().getId()));
+		
+		Product cellSaver = iPDAO.findOneByName("cell");
 		if (loss==1) 
-			mandatoryItemsList.add(iPDAO.findOneByName("cell"));
+			mandatoryItemsList.add(cellSaver);
+		else
+			for (int i=0; i<mandatoryItemsList.size(); i++)
+				if (mandatoryItemsList.get(i).getId() == cellSaver.getId())
+					mandatoryItemsList.remove(i);
 		
 		for (int i=0; i<mandatoryItemsList.size(); i++)
 		{
 			int j = i+1 ;
 			while (j<mandatoryItemsList.size())
-			{
 				if (mandatoryItemsList.get(i).getId().equals(mandatoryItemsList.get(j).getId())) 
 					mandatoryItemsList.remove(j);
 				else
 					j++;
-			}
 		}
+		
 		return mandatoryItemsList;
 	}
 	
 	@Override @Transactional(readOnly = true)
 	public List<Product> findProductsMandatoryAndIncludedByDoctorByProcedure(Long idD, List<OrderProcedure> procedureList) 
-	{
+	{//		logger.info("AQUI!!!!!! <<<<>>>>>> ");
+
 		List<Product> mandatoryAndIncludedItemsList = new ArrayList<Product>();
 		for (OrderProcedure procedure: procedureList) 
 			mandatoryAndIncludedItemsList.addAll(iPDAO.findProductsMandatoryAndIncludedByDoctorByProcedure(idD, procedure.getProcedure().getId()));
@@ -210,26 +221,26 @@ public class ClientService implements IClientService {
 	
 	
 	@Override @Transactional(readOnly = true)
-	public List<Product> findProductsNotMandatoryAndNotRecommended(List<OrderProcedure> procedureList, Long idD) 
-	{
-		List<Product> productsNotMandatoryAndNotRecommended = new ArrayList<Product>();
-		for (OrderProcedure procedure: procedureList) 
-			productsNotMandatoryAndNotRecommended.addAll(iPDAO.findProductsNotMandatoryAndNotRecommended(procedure.getProcedure().getId(), idD));
+	public List<Product> findProductsNotMandatoryAndNotRecommended(List<OrderProcedure> procedureList, Long idD, int loss) 
+	{ //logger.info("CService Producto >>>>> " + product1.getName() + "(" + product1.getId() + ")");
+		List<Product> productsNotMandatoryAndNotRecommended = (List<Product>) iPDAO.findAll();
 		
-		for (int i=0; i<productsNotMandatoryAndNotRecommended.size(); i++)
+		List<Product> prevProducts= this.findProductsMandatoryByDoctorByProcedure(idD, procedureList, loss);
+		prevProducts.addAll(this.findProductsMandatoryAndIncludedByDoctorByProcedure(idD, procedureList));
+		for(ProductRecommendedByProcedure pRecomended:  this.findProductsRecommendedByProcedure(idD, procedureList))
+			prevProducts.add(pRecomended.getProduct());
+		
+		for (int i=0; i<prevProducts.size(); i++)
 		{
-			int j = i+1 ;
-			while (j<productsNotMandatoryAndNotRecommended.size())
-			{
-				if (productsNotMandatoryAndNotRecommended.get(i).getId().equals(productsNotMandatoryAndNotRecommended.get(j).getId())) 
-					productsNotMandatoryAndNotRecommended.remove(j);
-				else
-					j++;
-			}
+			int j = 0 ;
+			while (j<productsNotMandatoryAndNotRecommended.size() && !productsNotMandatoryAndNotRecommended.get(j).getId().equals(prevProducts.get(i).getId()))
+				j++;
+			if(j<productsNotMandatoryAndNotRecommended.size())
+				productsNotMandatoryAndNotRecommended.remove(j);
 		}
+		
 		return productsNotMandatoryAndNotRecommended;
 	}
-
 	
 	
 	@Override @Transactional(readOnly = true)
@@ -340,9 +351,9 @@ public class ClientService implements IClientService {
 	public String getConditionsListCSV4Save(Client client) {
 		String conditions = "";
 		for (Suffering c: client.getConditionsList()) 
-			conditions += (c.getWarning()+ ",");   // estaba Name() idem al de arriba
+			conditions += (c.getName()+ ",");   // estaba Name() idem al de arriba
  		if (conditions.equals(""))
-			return "No";
+			return "No health condition";
 		else
 			return conditions.substring(0, conditions.lastIndexOf(","));
 	}
@@ -371,6 +382,18 @@ public class ClientService implements IClientService {
 													  client.getWeight()/Math.pow(client.getHeightFeetOrCentimeters()/100, 2);
 		return bmi;
 	}
+	
+	
+	private List <Suffering> conditionToStr(Client cliente)
+	{
+		List <Suffering> sList = new ArrayList<Suffering>();
+		if (cliente.getConditionsName()!=null && !cliente.getConditionsName().isBlank()) {
+			String[] conditions = cliente.getConditionsName().split(",");
+			for (String condition: conditions) 
+				sList.add(sDAO.findByName(condition));
+		}
+		return sList;
+	}
 
 	@Override
 	public void prepare(Client cliente) {  
@@ -382,22 +405,48 @@ public class ClientService implements IClientService {
 		cliente.setP2(null);
 		cliente.setWeight(null);
 		
-		List <Suffering> sList = new ArrayList<Suffering>();
-		if (cliente.getConditionsName()!=null && !cliente.getConditionsName().isBlank()) {
-			String[] conditions = cliente.getConditionsName().split(",");
-			for (String condition: conditions) 
-				sList.add(sDAO.findByName(condition));
-		}
-		cliente.setConditionsList(sList);
+		cliente.setConditionsList(conditionToStr(cliente));
+		cliente.getAditionalProcedures().clear();
+	}
+	
+	@Override
+	public void reOrder(Client cliente) 
+	{  
+		cliente.setDoctor(null);     
+		cliente.setP1(null);
+		cliente.setP2(null);
+		
+		cliente.setConditionsList(conditionToStr(cliente));
+		cliente.getAditionalProcedures().clear();
 	}
 
 	@Override
-	public List<Product> mandatoryScrubber(List<Product> l1, List<Product> l2) {
-		
+	public List<Product> mandatoryScrubber(List<Product> l1, List<Product> l2) 
+	{
 		for (int i=0; i<l2.size(); i++)
 			if ( l1.indexOf(l2.get(i))!=-1 )
 				l1.add(l2.get(i));
 		return l1 ;
+	}
+
+	@Override @Transactional
+	public void saveSuperOrder(SuperOrder sOrder) {
+		sOrderDAO.save(sOrder);
+	}
+
+	@Override @Transactional
+	public void deleteSuperOrder(Long id) {
+		sOrderDAO.deleteById(id);
+	}
+
+	@Override @Transactional(readOnly = true)
+	public SuperOrder getSuperOrderById(Long id) {
+		return sOrderDAO.findById(id).orElse(null);
+	}
+
+	@Override @Transactional(readOnly = true)
+	public SuperOrder getSuperOrderWithSpecificStatusByClient(Long idC, SuperOrderStatus st) {
+		return cDAO.getSuperOrderWithSpecificStatusByClient(idC, st);
 	}
 
 }

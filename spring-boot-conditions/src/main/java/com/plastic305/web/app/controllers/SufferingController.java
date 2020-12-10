@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,7 +31,7 @@ import com.plastic305.web.app.services.ISufferingService;
 @SessionAttributes("suffering")
 public class SufferingController {
 	private static final String tittleList= "Conditions list" ;
-	private static final String errorNotZero= "Id 0 don't exist!!!" ;
+//	private static final String errorNotZero= "Id 0 don't exist!!!" ;
 	private static final String tittleNewCondition = "New Condition" ;
 	private static final String bEditCondition = "Update Condition" ;
 	private static final String bAddCondition = "Add Condition" ;
@@ -43,6 +44,7 @@ public class SufferingController {
 	@Autowired ISufferingService sufferingService ;
 	@Autowired IDoctorService doctorService ;
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping({"/form"})
 	public String create(Model model) {
 		model.addAttribute("tittle", tittleNewCondition);
@@ -52,7 +54,7 @@ public class SufferingController {
 		return "/suffering/form"; 
 	}
 	
-	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("form/{idSuffering}")     
 	public String editSuffering(@PathVariable(value = "idSuffering") Long id, Model model, RedirectAttributes flash) {
 		Suffering suffering = sufferingService.findOne(id);
@@ -64,18 +66,35 @@ public class SufferingController {
 		return "/suffering/form";
 	}
 	
-	
+	@Secured("ROLE_ADMIN")
 	@PostMapping("/form")      
 	public String save(@Valid Suffering suffering, BindingResult bResult, Model model, RedirectAttributes flash, SessionStatus st) {
 		if (bResult.hasErrors()) 
-			return create(model);
-		String flashMsg = (suffering.getId() != null) ? "Condition \"" + suffering.getName() + "\" edit succesfully!!" : "Condition \"" + suffering.getName() + "\" add succesfully!!";
+		{
+			if (suffering.getId() != null)
+			{
+				model.addAttribute("tittle", tittleEditCondition);
+				model.addAttribute("msg", msgEditCondition);
+				model.addAttribute("buttonaction", bEditCondition); 
+			}
+			else
+			{
+				model.addAttribute("tittle", tittleNewCondition);
+				model.addAttribute("msg", msgNewCondition);
+				model.addAttribute("buttonaction", bAddCondition);
+			}
+			
+			return "/suffering/form";
+		}
+//		String flashMsg = (suffering.getId() != null) ? "Condition \"" + suffering.getName() + "\" edit succesfully!!" : "Condition \"" + suffering.getName() + "\" add succesfully!!";
 		sufferingService.save(suffering);
 		st.setComplete();
-		flash.addFlashAttribute("success", flashMsg);
+//		flash.addFlashAttribute("success", flashMsg);
+		
 		return "redirect:/suffering/list";
 	}
 	
+	@Secured("ROLE_USER")
 	@GetMapping({"/list"})
 	public String list(Model model) {
 		List<Suffering> sufferingList = sufferingService.findAll();
@@ -86,14 +105,14 @@ public class SufferingController {
 		});
  	   
 		String doctors = null;
- 	    for (Suffering s: sufferingList) {
+ 	    for (Suffering s: sufferingList) 
+ 	    {
  	    	doctors = " ";
  	    	List<Doctor> doctorList = doctorService.findAllbyCondition(s.getId());
  	    	for (Doctor d: doctorList) 
  	    		doctors = doctors.concat(d.getName()).concat(", ").concat("\n");
- 	    	if (doctors.length()>2) {
+ 	    	if (doctors.length()>2) 
  	    		doctors = doctors.substring(0, doctors.lastIndexOf(","));
- 	    	logger.info(">>>>>>>>>>>>>>: " + doctors); }
  	    	conditionDoctor.put(s, doctors);
  	    }
 		
@@ -103,19 +122,23 @@ public class SufferingController {
 		return "/suffering/list";
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@GetMapping("delete/{idSuffering}")
 	public String delete(@PathVariable(value = "idSuffering") Long id, Model model, RedirectAttributes flash) {
-		if (id > 0) {
-			Suffering s = sufferingService.findOne(id);
+//		String flashMsg;
+		if (id > 0) 
+		{
+//			Suffering s = sufferingService.findOne(id);
 			sufferingService.delete(id);
-			flash.addFlashAttribute("success", "Suffering: \"" + s.getName() + "\" delete successfully");
-		} else 
-			flash.addFlashAttribute("error", errorNotZero);
+//			flashMsg = "Condition: \"" + s.getName() + "\" delete successfully";
+		} 
+//		else 
+//			flashMsg = errorNotZero;
+		
+//		model.addAttribute("condListChangeMsg", flashMsg);
 		
 		return "redirect:/suffering/list";
 	}
-	
-	
 	
 	
 }

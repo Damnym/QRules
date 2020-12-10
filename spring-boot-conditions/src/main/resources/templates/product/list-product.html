@@ -4,12 +4,12 @@
    <head th:replace="layout/layout-item :: head"></head>
    <body>
       <header th:replace="layout/layout-item :: header"></header>
-      <div class="container py-4">
+      <div class="container mb-4" style="margin-top: 5rem">
          <div class="card bg-white border-305">
-            <div th:text="${tittle}" class="card-header border-305 text-white font-weight-bold" style="background-color: #0F3678" align="center"></div>
+            <div th:text="${tittle}" class="card-header border-305 text-white font-weight-bold" style="background-color: #101F3A" align="center"></div>
             <div class="card-body">
                <div class="row">
-                  <div class="col" align="right">
+                  <div sec:authorize="hasRole('ROLE_ADMIN')" class="col" align="right">
                       <a th:href="@{/product/form/}" data-toggle="tooltip" data-placement="left" title="New item" class="a a-305 fas fa-tag fa-2x">  </a>
                   </div>
                </div>
@@ -17,14 +17,15 @@
                   <div class="col">
                      <table class="table table-striped hover display compact" style="font-size: 14px" id="product-table-list">
                      <!-- table-bordered -->
-                        <thead align="center">
+                        <thead align="center" >
                            <tr>
-                              <th th:text="'Name'" scope="col"></th>
-                              <th th:text="'Price'" scope="col"></th>
-                              <th th:text="'Has amount?'" scope="col"></th>
-                              <th th:text="'Remark'" scope="col"></th>
-                              <th th:text="Edit" scope="col"></th>
-                              <th th:text="Remove" scope="col"></th>
+                              <th class="align-middle" th:text="'Name'"        scope="col"></th>
+                              <th class="align-middle" th:text="'Price'"       scope="col"></th>
+                              <th class="align-middle" th:text="'Has amount?'" scope="col"></th>
+                              <th class="align-middle" th:text="'Remark'"      scope="col"></th>
+                              <th class="align-middle" th:text="Details"       scope="col"></th>
+                              <th class="align-middle" th:text="Edit" 		   scope="col" sec:authorize="hasRole('ROLE_ADMIN')" ></th>
+                              <th class="align-middle" th:text="Remove" 	   scope="col" sec:authorize="hasRole('ROLE_ADMIN')" ></th>
                            </tr>
                         </thead>
                         <tbody>
@@ -38,43 +39,17 @@
                                  <span></span> 
                               </td>
                               <td th:text="${p.tips}" align="justify"></td>
-                           <!-- Editar product -->
+                           <!-- Detalles product -->
                               <td align="center">
+                                 <a th:href="@{/product/view/} + ${p.id}" class="a a-305 fas fa-search" style="color: #000"></a>
+                              </td>
+                           <!-- Editar product -->
+                              <td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
                                  <a th:href="@{/product/form/} + ${p.id}" class="a a-305 fas fa-pencil-alt" style="color: #000"></a>
                               </td>
                            <!-- Eliminar product -->
-                            <td align="center">
+                            <td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
                               <a th:href="'/product/delete/' + ${p.id}" onclick="return confirm('Do you want remove this item?');" type="button" class="btn fas fa-eraser"></a> 
-                              <!-- Button modal
-                                 <button onClick="showModal(this)" type="button" class="btn fas fa-eraser" data-toggle="modal" data-target="#modalDelete" 
-                                         th:data-id="${p.id}" th:data-name="${p.name}">
-                                 </button>
-                                 <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="myModalDelete" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                       <div class="modal-content">
-                                          <div class="modal-header modal-danger-header-305">
-                                                <div class="col-1" align="center">
-                                                   <i class="fas fa-user-times fa-2x"></i>
-                                                </div> 
-                                                <div class="col-9 px-3">
-                                                   <h5 class="modal-title" id="modal-titlep"></h5>
-                                                </div>
-                                                <div class="col-1 px-3">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                      <span aria-hidden="true" style="color: #fff">&times;</span>
-                                                   </button>
-                                                </div>
-                                          </div>
-                                          <div class="modal-body">
-                                             <span id="modal-textp" aria-hidden="true" style="color: #000"></span>
-                                          </div>
-                                          <div class="modal-footer">
-                                             <button th:text="'Cancel'" type="button" class="btn btn-dark" data-dismiss="modal"></button>
-                                             <a th:id="'removep' + ${p.id}" th:href="'/product/delete/'"  th:text="'Remove'" class="btn btn-305"></a>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>  -->
                               </td>
                            </tr>
                         </tbody>

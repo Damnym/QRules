@@ -5,8 +5,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:etiquetas.properties")
+@PropertySources({ @PropertySource("classpath:messages.properties")
                   /* Separados por , pueden ir otros ficheros */})
-public class FilesPropiertiesConfig {
+public class FilesPropertiesConfig {
 
 }

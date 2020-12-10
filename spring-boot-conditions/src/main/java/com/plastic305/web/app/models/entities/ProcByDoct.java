@@ -24,10 +24,13 @@ public class ProcByDoct implements Serializable {
 	private Long id;
 	
 	private Double priceCash ;
-	
 	private Double priceFinanced ;
+	private Boolean hasDrains ; 
+	private Integer postSurgeryMinStayTime;
+	private Integer postSurgeryMaxStayTime;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	
+	@ManyToOne(fetch = FetchType.LAZY) // , cascade = CascadeType.ALL
 	@JoinColumn(name = "procedure_id")
 	private Procedure procedure;
 	
@@ -107,5 +110,36 @@ public class ProcByDoct implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -2570548228895528159L;
+
+	public Boolean getHasDrains() {
+		return hasDrains;
+	}
+
+
+	public void setHasDrains(Boolean hasDrains) {
+		this.hasDrains = hasDrains;
+	}
+
+
+	public Integer getPostSurgeryMinStayTime() {
+		return postSurgeryMinStayTime;
+	}
+
+
+	public void setPostSurgeryMinStayTime(Integer postSurgeryMinStayTime) {
+		this.postSurgeryMinStayTime = postSurgeryMinStayTime;
+	}
+
+
+	public Integer getPostSurgeryMaxStayTime() {
+		return postSurgeryMaxStayTime;
+	}
+
+
+	public void setPostSurgeryMaxStayTime(Integer postSurgeryMaxStayTime) {
+		this.postSurgeryMaxStayTime = postSurgeryMaxStayTime;
+	}
+
+
 
 }

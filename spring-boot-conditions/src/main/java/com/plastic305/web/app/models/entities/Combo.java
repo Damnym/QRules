@@ -23,7 +23,7 @@ public class Combo implements Serializable {
 	
 	private int number ;
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "combo_id")
 	private List<ProcByCombo> procedureList;
 	
@@ -74,6 +74,7 @@ public class Combo implements Serializable {
 		this.procedureList = procedureList;
 	}
 
+	
 
 	private static final long serialVersionUID = 6439305829659849320L;
 

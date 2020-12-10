@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.plastic305.web.app.models.entities;
 
 import java.io.Serializable;
@@ -17,13 +14,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-/**
- * @author damny
- *
- */
 @Entity
 @Table(name = "products")
 public class Product implements Serializable {
@@ -41,9 +35,12 @@ public class Product implements Serializable {
 	@Column(name="has_amount")
 	private boolean hasAmount;
 	
+	@Min(1)
+	@NotNull
 	private int min;
 	
 	private String tips;  //Remark
+	private String observations ;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "id_product")
@@ -53,6 +50,7 @@ public class Product implements Serializable {
 	
 	public Product() {
 		ofertList  = new ArrayList<OfertByAmount>(); 
+	    this.hasAmount= true;
 	}
 
 	public int getMin() {
@@ -133,4 +131,12 @@ public class Product implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -8784328357735351659L;
+
+	public String getObservations() {
+		return observations;
+	}
+
+	public void setObservations(String observations) {
+		this.observations = observations;
+	}
 }

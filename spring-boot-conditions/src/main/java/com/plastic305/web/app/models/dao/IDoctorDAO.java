@@ -5,8 +5,12 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import com.plastic305.web.app.models.entities.Combo;
+import com.plastic305.web.app.models.entities.ComboByDoctor;
 import com.plastic305.web.app.models.entities.Doctor;
+import com.plastic305.web.app.models.entities.ProcByDoct;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.Suffering;
 
 public interface IDoctorDAO extends CrudRepository<Doctor, Long> {
 	
@@ -85,6 +89,27 @@ public interface IDoctorDAO extends CrudRepository<Doctor, Long> {
 	public List<Procedure> findProceduresNotBelongToDoctorByName(Long id, String term);
 	
 	
+	@Query("SELECT s FROM Suffering s "
+			+ "WHERE (s.name like %?2%) "
+			+ "   AND s NOT IN (SELECT c FROM Doctor d "
+			+ 				 	     "join d.sufferingsList sl "
+			+ 				 	     "join sl.suffering c "
+			+ 				   "WHERE d.id=?1) "
+			+ "ORDER BY s.name")
+	public List<Suffering> findConditionNotBelongToDoctorByName(Long id, String term);
+	
+	
+//	+ "WHERE s NOT IN (SELECT c FROM Doctor d "
+//	+ 				 	 "join d.sufferingsList sl "
+//	+ 				 	 "join sl.suffering c "
+//	+ 				   "WHERE d.id=?1) "
+
+	@Query("SELECT s FROM Suffering s "
+			
+			+ "ORDER BY s.name")
+	public List<Suffering> findConditionNotBelongToDoctor(Long id);
+	
+	
 	@Query("SELECT p FROM Doctor d "
 			+ "join d.sufferingsList sl "
 			+ "join sl.suffering s "
@@ -92,5 +117,47 @@ public interface IDoctorDAO extends CrudRepository<Doctor, Long> {
 			+ "join pl.procedure p "
 			+ "WHERE s.id=?1")
 	public List<Procedure> fetchProceduresByAllDoctorBySufferingId(Long id);
+	
+	@Query("SELECT pbyd FROM Doctor d "
+			+ "join d.procList pbyd "
+			+ "join pbyd.procedure p "
+			+ "WHERE d.id=?1 and p.id=?2")
+	public ProcByDoct findProcByDoct(Long idD, Long idP);
+	
+	@Query("DELETE FROM ProcByDoct p "
+			+ "WHERE p.id=?1")
+	public void deleteProcByDoct(Long idPbD);
+	
+	
+	@Query("SELECT combo FROM Combo combo "
+		    + "WHERE combo NOT IN (SELECT c FROM Doctor d "
+			+ 				 	    "join d.comboList cl "
+			+ 				 	    "join cl.combo c "
+			+ 					  "WHERE d.id=?1)")
+	public List<Combo> findCombosNotBelongToDoctor(Long id);
 
+	
+	@Query("SELECT combo FROM Combo combo "
+		    + "WHERE combo IN (SELECT c FROM Doctor d "
+			+ 				 	    "join d.comboList cl "
+			+ 				 	    "join cl.combo c "
+			+ 				   "WHERE d.id=?1)")
+	public List<Combo> findCombosBelongToDoctor(Long id);
+	
+	
+	@Query("SELECT proc FROM Procedure proc "
+			+ "WHERE (proc.name like %?2%) "
+			+ "   AND proc IN (SELECT p FROM Doctor d "
+			+ 				 	     "join d.procList pl "
+			+ 				 	     "join pl.procedure p "
+			+ 					   "WHERE d.id=?1) "
+			+ "ORDER BY proc.name")
+	public List<Procedure> findProceduresBelongToDoctorByName(Long id, String term);
+
+//	
+//	@Query("SELECT combos FROM Doctor d "
+//		+ 			        "join d.comboList cl "
+//		+ "WHERE d.id=?1")
+//	public List<ComboByDoctor> findCombosByDoctorId(Long idD);
+	
 }

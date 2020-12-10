@@ -3,16 +3,16 @@
 <head th:replace="layout/layout-client :: head"></head>
 <body>
 	<header th:replace="layout/layout-client :: header"></header>
-	<div class="container">
-		<div class="row px-4 py-4">
+	<div class="container" style="margin-top: 5rem">
+		<div class="row" >
  	 		<div class="col-4" align="right">  <!-- GroupBox de las elecciones -->
 				<ul th:if="${choices}" class="list-group border-success">
-					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
-					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left border-success"></li>
+					<li th:text="${choice_h}" class="list-group-item list-group-item-success card-bordergreen-diferent text-center font-weight-bold"></li>
+					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left card-bordergreen-diferent"></li>
 				</ul>
 		 	</div> 
    			<div class="col-8">
-				<div class="card bg-light border-danger" >
+				<div class="card bg-light card-borderred-diferent" >
 					<div th:text="${msg}" class="card-header bg-danger font-weight-bold text-white" align="center"></div>
 					<div class="card-body bg-white" align="left">
 						<form th:action="@{/clients/client-list}" th:object="${client}" method="get" class="form-inline">
@@ -25,7 +25,7 @@
 										<hr />
 										<div class="row">
 											<div class="col">   
-												<input type="submit" value="Next client" class="btn btn-lg btn-block btn-305wr"> 
+												<input type="submit" value="Next patient" class="btn btn-lg btn-block btn-305wr"> 
 				  							</div>
 				  						</div>
 									</div>

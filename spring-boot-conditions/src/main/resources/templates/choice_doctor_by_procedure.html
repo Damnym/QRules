@@ -3,26 +3,26 @@
 <head th:replace="layout/layout-client :: head"></head>
 <body style="font-size: 15px">
 	<header th:replace="layout/layout-client :: header"></header>
-      <div class="container py-1" >
-		<div class="row py-4">
+      <div class="container" style="margin-top: 5rem">
+		<div class="row">
 	   		<div class="col-3"> <!-- GroupBox de las elecciones -->
 				<ul th:if="${choices}" class="list-group border-success">
-					<li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
-					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left border-success"></li>
+					<li th:text="${choice_h}" class="list-group-item py-2 list-group-item-success card-bordergreen-diferent text-center font-weight-bold"></li>
+					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left card-bordergreen-diferent"></li>
 				</ul>
 		 	</div> 
-		 	<div class="col-9"> <!-- GroupBox para las listas de medicos y procedimientos -->
-				<div class="card bg-white border-305">
+		 	<div class="col-9 mb-3"> <!-- GroupBox para las listas de medicos y procedimientos -->
+				<div class="card bg-white card-border-diferent">
 					<form id="f1"  th:object="${client}" method="get">
-						<div th:text="${cardHeader}" class="card-header font-weight-bold text-white" align="center" style="background-color:#0F3678"></div>
+						<div th:text="${cardHeader}" class="card-header py-2 font-weight-bold text-white" align="center" style="background-color:#101F3A"></div>
 						<div class="card-body" align="justify">
 							<div class="row">
 								<div class="col-9"> <!-- GroupBox para los botones con los procedimientos -->
 									<div class="card bg-white text-305 border-305">
-										<div th:text="${procedurelisth}" class="text-white card-header font-weight-bold" style="background-color:#0F3678" align="center"></div>
+										<div th:text="${procedurelisth}" class="text-white card-header py-2 font-weight-bold" style="background-color:#101F3A" align="center"></div>
 										<div class="card-body" align="right">
-											<div class="container proceduresb">
-												<a th:each="p: ${procedurelist}" class="btn btn-block btn-305"
+											<div class="container proceduresb2">
+												<a th:each="p: ${procedurelist}" class="btn btn-block btn-305 py-2"
   										  		   th:href="@{/choice_doctor_by_procedure/} + ${p.getId()}"
 				   				  			       th:text="${p.getName()}"></a>	
 											</div>
@@ -31,7 +31,7 @@
 								</div>
 								<div class="col-3"> <!-- GroupBox para las listas de medicos -->
 									<div class="card text-305 bg-white border-305">
-										<div th:text="${doctorlisth}" class="card-header border-305 font-weight-bold" align="center" ></div>
+										<div th:text="${doctorlisth}" class="card-header py-2 card-border-diferent font-weight-bold" align="center" ></div>
 										<div class="card-body" align="left">
 											<div class="container">
 										   		<h4 th:unless="${doctorlist}" th:text="${doctorlistempty}" align="center" 
@@ -52,7 +52,7 @@
 							<hr/>
 							<div class="row">
 								<div class="col-6">   
-									<input type="button" value="Choice procedure for combo" class="btn btn-block text-white" style="background-color:#0F3678;"
+									<input type="button" value="Choice procedure for combo" class="btn btn-block text-white" style="background-color:#101F3A;"
 								           onClick="actionForm(this.form.id, '/choice-combo-by-p1-by-doctor'); return false;"/>
 	  							</div>
 	  							<div class="col-6">

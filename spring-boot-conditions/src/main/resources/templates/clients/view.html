@@ -4,10 +4,11 @@
 <head th:replace="layout/layout-client :: head"></head>
 <body>
 	<header th:replace="layout/layout-client :: header"></header>
-	<div class="row px-4 py-4">
+<!-- 	style="margin-top: 5rem" -->
+	<div class="row px-4 py-4">   
 		<div class="col-12">
 			<div class="card bg-white border-305">
-				<div th:text="${msg}" class="card-header text-white font-weight-bold"  style="background-color:#0F3678" align="center"></div>
+				<div th:text="${msg}" class="card-header text-white font-weight-bold"  style="background-color:#101F3A" align="center"></div>
 				<div class="card-body">
 					<div class="row">
 						<div class="col-11">
@@ -34,7 +35,7 @@
 											<span th:text="'Email: '" class="font-weight-bold" ></span>
 											<span th:text="${client.email}"></span> 
 										</li>
-										<li class="list-group-item borderlr305" style="border-bottom-width:1px; border-bottom-color: #0F3678;">
+										<li class="list-group-item borderlr305" style="border-bottom-width:1px; border-bottom-color: #101F3A;">
 											<span th:text="'Subscription date: '" class="font-weight-bold" ></span>
 											<span th:text="${client.createAt}"></span>  
 										</li>
@@ -44,15 +45,15 @@
 									<div th:if="${#lists.isEmpty(client.orderList)}" class="alert alert-dismissible fade show border-danger my-2" align="center" role="alert"
 										style="background-color:#FFFFFF; ">
   										<span th:text="'The client &quot' + ${client.name} + ' ' + ${client.surname} + '&quot has no orders registered in his name.'" 
-  											  style="color: #0F3678 "></span>
-  										<a th:href="@{/r1/} + ${client.id}" style="color:#0F3678; text-decoration: underline;" th:text="${'Begin a process'}" data-toggle="tooltip" data-placement="left" title="New process"></a>	  
-  										<button type="button" class="close" style="color:#0F3678" data-dismiss="alert" aria-label="Close">
+  											  style="color: #101F3A "></span>
+  										<a th:href="@{/r1/} + ${client.id}" style="color:#101F3A; text-decoration: underline;" th:text="${'Begin a process'}" data-toggle="tooltip" data-placement="left" title="New process"></a>	  
+  										<button type="button" class="close" style="color:#101F3A" data-dismiss="alert" aria-label="Close">
   											<span aria-hidden="true">&times;</span>
  										</button>
 									</div>
 									<table th:if="${not #lists.isEmpty(client.orderList)}" class="table table-striped table-hover display my-2" 
 										   style="font-size: 14px;">
-										<thead align="center" style="background-color: #0F3678; color: #FFFFFF" >
+										<thead align="center" style="background-color: #101F3A; color: #FFFFFF" >
 											<tr>
 												<th hidden="true" scope="col">No. Order</th>
 												<th scope="col">Doctor</th>

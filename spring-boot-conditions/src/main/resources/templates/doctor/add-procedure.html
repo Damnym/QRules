@@ -3,67 +3,125 @@
 <head th:replace="layout/layout-doctor :: head"></head>
 <body>
 	<header th:replace="layout/layout-doctor :: header"></header>
-	<div class="container py-4" align="center">
-		<div class="card bg-white border-305" style="width: 70%;">
-			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg} + ${doctor.name}" align="center" style="background-color:#0F3678"></div>
-			<div class="card-body " align="left">
-            
-				<form id="addprocedure" th:object="${doctor}" th:action="@{/doctor/add-procedure}" method="post" enctype="multipart/form-data">
-				<!-- NOMBRE -->
-<!--					<div class="form-group row">
-						<label for="name" class="col-form-label col-sm-3">Procedure:</label>
-						<div class="col-sm-8">
-							<input type="text" id="name" th:field="*{name}" class="form-control" th:errorclass="'form-control alert-danger'" />  
-							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>  
-						</div>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="row">
+			<div class="col-3"> <!-- GroupBox de las elecciones -->
+				<div class="row">
+					<div class="col">
+						<ul class="list-group border-success"> <!--  -->
+							<li th:text="'Procedures of ' + ${doctor.name}" 
+							    class="list-group-item py-1 list-group-item-success card-bordergreen-diferent text-center font-weight-bold"></li>
+						</ul>
 					</div>
-					
-				<!-- Cell Saver? -->
-<!--					<div class="form-group row">
-						<input type="checkbox" th:field="*{requiredCellSaver}" th:value="False" class="form-control col-1" th:errorclass="'form-control alert-danger'" />
-						<label th:for="${#ids.prev('requiredCellSaver')}" th:text="'Need Cell Saver?'" class="col-form-label col-sm-3"></label>
-						<small th:if="${#fields.hasErrors('requiredCellSaver')}" th:errors="*{requiredCellSaver}" class="form-text text-danger"></small>
+				</div>
+				<div class="row">
+					<div class="col">
+						<ul class="list-group border-success listWrapper"> <!--  -->
+							<li th:each="procedure: ${doctor.procList}" th:text="${procedure.procedure.name}" 
+								class="list-group-item text-left card-bordergreen-diferent py-1" style="font-size: 14px"></li>
+						</ul>
 					</div>
-                     -->
-                    <span hidden="true" th:id="idDoctor" th:text="${doctor.id}" class="form-control"> </span>
-					<div class="form-group row mx-3">
-						<div class="form-group input-group">
-							<div class="input-group-prepend">
-								<label class="input-group-text" for="find_procedure">Type procedure name</label>
-							</div> 
-							<input type="text" name="find_procedure" id="find_procedure" class="form-control" />
-						</div>
-					</div>
-					<div class="form-group row">
-                       <div class="col">
-                          <h5 class="col-form" align="left" th:id="choosedP" style="text-decoration: underline;"></h5>
-                       </div>
-                    </div>
-					
+				</div>
+		 	</div> 
+			<div class="col-9">
+				<div class="card bg-white border-305" style="width: 90%;">
+					<div class="card-header py-2 border-305 font-weight-bold text-white" th:text="${msg} + ${doctor.name}" align="center" style="background-color:#101F3A"></div>
+					<div class="card-body " align="left">
+        	    
+						<form id="addprocedure" th:object="${procedureByDoct}" th:action="@{/doctor/add-procedure}" method="post" enctype="multipart/form-data">
+    		                <span hidden="true" th:id="idDoctor" th:text="${doctor.id}" class="form-control"> </span>
                     
-                    
- <!--               <table th:replace="procedure/items-layout :: procedureItems"></table>  
-                    <table id="loadProcedureItems" class="table table-sm table-striped table-hover">
-                       <thead>
-                          <tr>
-                             <th width="70%" th:text="'Description'"></th>
-                             <th width="10%" th:text="'Amount'"></th>
-                             <th width="20%" th:text="'Delete'" class="align-middle" align="center"></th>
-                          </tr>
-                       </thead>
-                       <tbody></tbody>
-                    </table>
+							<div class="form-group row">
+								<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend">
+										<span class="input-group-text">Procedure name</span>
+									</div> 
+									<input type="text" name="find_procedure" id="find_procedure" class="form-control" tabindex=1/>
+									
+<!-- 									<input th:if="${procedureByDoct.id==null}" type="text" name="find_procedure" id="find_procedure" class="for-m-control" tabindex=1/> -->
+<!-- 									<input th:if="${procedureByDoct.id!=null}" type="text" th:text="'Hola'"  class="form-control" tabindex=1/> -->
+									
+								</div>
+								<div class="col-6" align="center">
+	    		                	<h5  hidden="true" th:id="choosedP" style="text-decoration: underline;" th:text="'Type procedure name'"></h5>
+	            		            <input hidden="true" th:id="procID" type="number"  name="procID" class="form-control" />
+								</div>
+							</div>
+            		        <div class="form-group row">
+<!-- priceCash -->
+								<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="sPriceCash">Cash price:</span>
+							  		</div>
+					  				<input type="number" min="0" step="0.1" id="iPriceCash" th:field="*{priceCash}"  tabindex=2
+					  		    		   class="form-control" th:errorclass="'form-control alert-danger'" aria-label="priceCash" aria-describedby="priceCash"/> 
+									<small th:if="${#fields.hasErrors('priceCash')}" th:errors="*{priceCash}" class="form-text text-danger"></small>
+								</div>
+<!-- postSurgeryMinStayTime -->
+								<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="sPostSurgeryMinStayTime">Minimal recovery time:</span>
+							  		</div>
+							  		<input type="number" min="0" id="iPostSurgeryMinStayTime" th:field="*{postSurgeryMinStayTime}" 
+							  		       class="form-control" th:errorclass="'form-control alert-danger'"  tabindex=4
+							  		       aria-label="postSurgeryMinStayTime" aria-describedby="postSurgeryMinStayTime"/> 
+									<small th:if="${#fields.hasErrors('postSurgeryMinStayTime')}" th:errors="*{postSurgeryMinStayTime}" 
+										   class="form-text text-danger"></small>
+								</div>
+							</div>
+ 		                    <div class="form-group row">
+                    	<!-- priceFinanced -->
+								<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="sPriceFinanced">Financed price:</span>
+							  		</div>
+							  		<input type="number" min="0" step="0.1" id="iPriceFinanced" th:field="*{priceFinanced}" tabindex=3
+							  			   class="form-control" th:errorclass="'form-control alert-danger'"aria-label="priceFinanced"  aria-describedby="priceFinanced" />
+									<small th:if="${#fields.hasErrors('priceFinanced')}" th:errors="*{priceFinanced}" class="form-text text-danger"></small>
+								</div>
+<!-- postSurgeryMaxStayTime -->
+								<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="sPostSurgeryMaxStayTime">Maximum recovery time:</span>
+							  		</div>
+							  		<input type="number" min="0" id="iPostSurgeryMaxStayTime" th:field="*{postSurgeryMaxStayTime}"
+					  			   		   class="form-control" th:errorclass="'form-control alert-danger'" tabindex=5
+					  			   		   aria-label="postSurgeryMaxStayTime" aria-describedby="postSurgeryMaxStayTime"/>
+									<small th:if="${#fields.hasErrors('postSurgeryMaxStayTime')}" th:errors="*{postSurgeryMaxStayTime}" 
+										   class="form-text text-danger"></small>
+								</div>
+							</div>
+							<div class="col" align="right">
+        		            	<div class="row form-check pr-3">
+	            		        	<input type="checkbox" th:field="*{hasDrains}" th:value="True" class="form-check-input" checked="checked"/>
+			                       	<label th:for="${#ids.prev('hasDrains')}" th:text="'Need drain?'" class="form-check-label"></label>
+        		            	</div>
+                		   	</div>
 					<!--  SUBMIT   -->
-					<div class="row">
-	  					<div class="col-12" align="right">  
-	  						<input type="submit" th:value="${buttonaction}" class="btn  btn-block btn-305"/>
-	  					</div>
-	  				</div> 
-				</form>
+							<div class="row">
+			  					<div class="col mt-3" align="right">  
+	  								<input type="submit" th:value="${bSave}" class="btn btn-block btn-305"/>
+	  							</div>
+			  				</div> 
+							<div class="row mt-4">
+								<div class="col-3">
+									<a th:href="@{/doctor/add-combo/} + ${doctor.id}" th:text="${bAddCombo}" class="btn  btn-block btn-secondary"></a>	
+								</div>
+								<div class="col-3">
+									<a th:href="@{/doctor/add-condition/} + ${doctor.id}" th:text="${bAddCondition}" class="btn  btn-block btn-secondary"></a>	
+								</div>
+								<div class="col-6">
+									<a th:href="@{/doctor/list}" th:text="${bContinue}" class="btn  btn-block btn-dark"></a>		
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 	<footer th:replace="layout/layout-doctor :: footer"></footer>
     <script th:replace="doctor/js/utils-js.html :: utils"></script>
+    <script th:replace="js/twoForm :: javascript2Form"></script>
 </body>
 </html>

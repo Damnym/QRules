@@ -1,8 +1,8 @@
 #sidenav-305 a {
-  position: absolute;
+  position: fixed;
   left: -80px;
   transition: 0.4s;
-  box-shadow: 3px 3px #0F3678;
+  box-shadow: 3px 3px #101F3A;
   padding: 8px;
   width: 116px;
   text-decoration: none;
@@ -10,14 +10,14 @@
   font-size: 16px;
   color: #ffffff;
   border-radius: 0 15px 15px 0;
-  border-top-color: #0F3678;
+  border-top-color: #101F3A;
   border-top-width: 5px;
 }
 #sidenav-305 a:hover {
   left: 0;
-  background-color: #0F3678;
+  background-color: #101F3A;
   color: #ffffff;
-/*  box-shadow: 0px 0px #0F3678;" */
+/*  box-shadow: 0px 0px #101F3A;" */
 }
 
 #sidenav-305 i:hover {
@@ -30,7 +30,7 @@
 }
 #conditions-active {
   top: 10%;
-  background-color: #0F3678;
+  background-color: #101F3A;
 }
 
 
@@ -40,7 +40,7 @@
 }
 #doctor-active {
   top: 18%;
-  background-color: #0F3678;
+  background-color: #101F3A;
 }
 
 
@@ -50,7 +50,7 @@
 }
 #client-active {
   top: 26%;
-  background-color: #0F3678;
+  background-color: #101F3A;
 }
 
 
@@ -60,7 +60,7 @@
 }
 #item-active {
   top: 34%;
-  background-color: #0F3678
+  background-color: #101F3A
 }
 
 
@@ -70,7 +70,7 @@
 }
 #procedure-active {
   top: 42%;
-  background-color: #0F3678
+  background-color: #101F3A
 }
 
 
@@ -80,5 +80,5 @@
 }
 #combo-active {
   top: 50%;
-  background-color: #0F3678
+  background-color: #101F3A
 }

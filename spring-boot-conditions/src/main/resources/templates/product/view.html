@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-item :: head"></head>
+<body>
+	<header th:replace="layout/layout-item :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305" style="width: 70%;">
+			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
+			<div class="card-body" align="left">
+            
+				<form th:object="${product}" th:action="@{/product/form}" method="get">
+				 <fieldset disabled="disabled">
+				<!-- NOMBRE -->
+					<div class="form-group row">
+						<div class="input-group mb-1 col">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="name">Product:</span>
+					  		</div>
+					  		<input type="text" id="name" th:field="*{name}" aria-label="name" class="form-control" aria-describedby="name" placeholder="Product name" 
+							 	  th:errorclass="'form-control alert-danger'" /> 
+							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>
+						</div>
+					</div>
+							<!-- Por cantidades? -->
+					<div class="form-check row px-3" align="right">
+						<input type="checkbox" th:field="*{hasAmount}" th:value="True" class="form-check-input ml-1" name="f"
+							   th:onchange="'itemsHelper.activeAmount(' + this.checked + ');'"/>
+						<label th:for="${#ids.prev('hasAmount')}" th:text="'Has amount?'" class="form-check-label ml-4"></label>
+					</div>
+					<div class="form-group row">
+						<!-- PRECIO -->
+						<div class="input-group mb-1 col-6">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="price">Price:</span>
+					  		</div>
+					  		<input type="number" id="price" th:field="*{price}" aria-label="price" class="form-control" aria-describedby="price" placeholder="Product price" 
+							 	   th:errorclass="'form-control alert-danger'" /> 
+							<small th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="form-text text-danger"></small>
+						</div>
+						<!-- Mínimo -->
+						<div class="input-group mb-1 col-6">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="min_span">Min amount:</span>
+					  		</div>
+					  		<input type="number"  id="min_input" th:field="*{min}" aria-label="min" class="form-control" aria-describedby="min" placeholder="Min amount to use" 
+							 	   th:errorclass="'form-control alert-danger'"/> 
+							<small th:if="${#fields.hasErrors('min')}" th:errors="*{min}" class="form-text text-danger"></small>
+						</div>
+					</div>
+					<!-- tips -->
+					<div class="form-group row">
+						<div class="input-group mb-1 col">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="tips">Remarks:</span>
+					  		</div>
+					  		<textarea id="tips" th:field="*{tips}" aria-label="tips" class="form-control" aria-describedby="tips" th:errorclass="'form-control alert-danger'"
+					  				  placeholder="Tips like if mandatory, recommended amount, etc"></textarea>
+							<small th:if="${#fields.hasErrors('tips')}" th:errors="*{tips}" class="form-text text-danger"></small>
+						</div>	
+					</div>
+					<!-- tips -->
+					<div class="form-group row">
+						<div class="input-group mb-1 col">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="observations">Observations:</span>
+					  		</div>
+					  		<textarea id="observations" th:field="*{observations}" aria-label="observations" class="form-control" aria-describedby="observations" 
+					  				  th:errorclass="'form-control alert-danger'" placeholder="Important information such as how often it should be changed for a new one, etc.">
+					  		</textarea>
+							<small th:if="${#fields.hasErrors('observations')}" th:errors="*{observations}" class="form-text text-danger"></small>
+						</div>	
+					</div>
+	  				</fieldset>
+					<!--  SUBMIT   -->
+					<a class="btn btn-block btn-305"
+					   th:href="@{/product/list-product}"
+				   	   th:text="'Back to items list'"></a>
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-item :: footer"></footer>
+	<script th:replace="product/js/util-i-js.html :: util"></script>
+</body>
+</html>

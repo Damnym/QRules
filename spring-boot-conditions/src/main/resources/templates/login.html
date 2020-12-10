@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layoutLog :: head"></head>
+</head>
+<body style="background-color: #101F3A">
+	<header th:replace="layout/layoutLog :: header"></header>
+	<div class="container py-4" align="center" >
+	<div class="row" style="position: relative;">
+		<div class="col-3" >
+			<img th:src="@{/imgs/305R.png}" alt="Spring-logo" class="rounded mx-auto d-block" style="width: 120%; position: absolute;">
+		</div>
+	<div class="col-9 pt-5">
+			<div class="card bg-white" style="width: 50%; position: relative; "
+			>
+				<div class="card-header text-white font-weight-bold"  style="background-color:#101F3A;"
+				     th:text="${msg}" 
+				     align="center">
+				</div>
+				<div class="card-body " align="left">
+					<form th:action="@{/login}" method="post">
+						<!-- Nombre usuario -->
+						<div class="form-group"> 
+							<label for="username" class="col-form-label">Username:</label>
+							<input type="text" 
+							       name="username" 
+							       id="username" 
+							       class="form-control" 
+							       placeholder="Username" 
+							       required
+							       autofocus/>
+						</div>
+						
+						<!-- Contraseña -->
+						<div class="form-group"> 
+							<label for="password" class="col-form-label">Password:</label>
+							<input type="password" 
+								   name="password" 
+								   id="password" 
+								   class="form-control"
+								   placeholder="Password" 
+							       required />
+						</div>
+						
+						<!-- Botón -->
+						<div class="form-group"> <!-- col-sm-6 -->
+							<input type="submit" 
+							       value="Login" 
+								   class="btn btn-lg btn-305 btn-block" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+		
+	</div>
+	<footer th:replace="layout/layoutLog :: footer"></footer>
+</body>
+</html>

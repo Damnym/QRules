@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,15 +25,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.services.IClientService;
 
+@Secured("ROLE_USER")
 @Controller
 @RequestMapping("/clients")
 @SessionAttributes("client")
 public class ClientController {
-	private static final String tittleNewClient = "New client" ;
-	private static final String tittleListClient = "Client list" ;
-	private static final String tittleEditClient = "Edit client" ;
-	private static final String msgNewClient = "New client form" ;
-	private static final String msgEditClient = "Edit client form" ;
+	private static final String tittleNewClient = "New patient" ;
+	private static final String tittleListClient = "Patient list" ;
+	private static final String tittleEditClient = "Edit Patient" ;
+	private static final String msgNewClient = "New patient form" ;
+	private static final String msgEditClient = "Edit patient form" ;
+	private static final String addNewClientB = "Add new patient" ;
+	private static final String addNewClientAndContB = "Add new patient and continue" ;
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
@@ -45,13 +49,14 @@ public class ClientController {
 	
 	//   <<<<<<   IMPLEMENTATION    >>>>>>
 	
-	@GetMapping({"/form", "/index"})
+	@GetMapping({"/form"})
 	public String create(Model model) {
 		Client cliente = new Client();
 		model.addAttribute("tittle", tittleNewClient);
 		model.addAttribute("msg", msgNewClient);
-		model.addAttribute("buttonClient", "Add new client");
-		model.addAttribute("buttonClientContinue", "Add new client and continue");
+		model.addAttribute("buttonClient", addNewClientB);
+		model.addAttribute("buttonClientContinue", addNewClientAndContB);
+		
 		model.addAttribute("client", cliente);
 		return "/clients/form"; 
 	}
@@ -61,11 +66,11 @@ public class ClientController {
 		if (bResult.hasErrors()) {
 			model.addAttribute("tittle", tittleNewClient);
 			model.addAttribute("msg", msgNewClient);
-			model.addAttribute("buttonClient", "Add new client");
-			model.addAttribute("buttonClientContinue", "Add new client and continue");
+			model.addAttribute("buttonClient", addNewClientB);
+			model.addAttribute("buttonClientContinue", addNewClientAndContB);
 			return "/clients/form";
 		}
-		String flashMsg = (cliente.getId() != null) ? "Client \"" + cliente.getName() + "\" edit succesfully!!" : "Client \"" + cliente.getName() + "\" add succesfully!!";
+		String flashMsg = (cliente.getId() != null) ? "Patient \"" + cliente.getName() + "\" edit succesfully!!" : "Patient \"" + cliente.getName() + "\" add succesfully!!";
 		cService.save(cliente);
 		st.setComplete();
 		flash.addFlashAttribute("success", flashMsg);
@@ -77,12 +82,12 @@ public class ClientController {
 		if (bResult.hasErrors()) {
 			model.addAttribute("tittle", tittleNewClient);
 			model.addAttribute("msg", msgNewClient);
-			model.addAttribute("buttonClient", "Add new client");
-			model.addAttribute("buttonClientContinue", "Add new client and continue");
+			model.addAttribute("buttonClient", addNewClientB);
+			model.addAttribute("buttonClientContinue", addNewClientAndContB);
 			return "/clients/form";
 		}
 		
-		String flashMsg = (cliente.getId() != null) ? "Client \"" + cliente.getName() + "\" edit succesfully!!" : "Client \"" + cliente.getName() + "\" add succesfully!!";
+		String flashMsg = (cliente.getId() != null) ? "Patient \"" + cliente.getName() + "\" edit succesfully!!" : "Patient \"" + cliente.getName() + "\" add succesfully!!";
 		cService.save(cliente);
 		st.setComplete();
 		flash.addFlashAttribute("success", flashMsg);
@@ -105,7 +110,7 @@ public class ClientController {
 		if (id > 0) {
 			client = cService.findOne(id);
 			if (client == null) {
-				flash.addFlashAttribute("error", "Don't exist Client with this ID");
+				flash.addFlashAttribute("error", "Don't exist Patient with this ID");
 				return "/clients/client-list";
 			}
 		} else {
@@ -114,8 +119,8 @@ public class ClientController {
 		}
 		model.addAttribute("tittle", tittleEditClient);
 		model.addAttribute("msg", msgEditClient);
-		model.addAttribute("buttonClient", "Update client");
-		model.addAttribute("buttonClientContinue", "Update client and continue");
+		model.addAttribute("buttonClient", "Update patient");
+		model.addAttribute("buttonClientContinue", "Update patient and continue");
 		model.addAttribute("client", client);
 		return "/clients/form";
 	}
@@ -125,7 +130,7 @@ public class ClientController {
 		if (id > 0) {
 			Client c = cService.findOne(id);
 			cService.delete(id);
-			flash.addFlashAttribute("success", "\"" + c.getName() + "\" client has been removed from the system successfully");
+			flash.addFlashAttribute("success", "\"" + c.getName() + "\" patient has been removed from the system successfully");
 		} else 
 			flash.addFlashAttribute("error", "Cliente no puede <= 0");    // cambiar mensajes
 		
@@ -138,15 +143,15 @@ public class ClientController {
 		if (idclient > 0) {
 			client = cService.findOne(idclient);
 			if (client == null) {
-				flash.addFlashAttribute("error", "Cliente no existe con ese Id"); // cambiar mensajes
+				flash.addFlashAttribute("error", "Patient no existe con ese Id"); // cambiar mensajes
 				return "redirect:/clients/client-list";
 			}
 		} else {
 			flash.addFlashAttribute("error", "Cliente no puede <= 0"); // cambiar mensajes
 			return "redirect:/clients/client-list";
 		}
-		model.addAttribute("tittle", "Client details");
-		model.addAttribute("msg", "'" + client.getName() + "' client details");
+		model.addAttribute("tittle", "Patient details");
+		model.addAttribute("msg", "'" + client.getName() + "' patient details");
 		model.addAttribute("client", client);
 		return "/clients/view"; 
 	}	

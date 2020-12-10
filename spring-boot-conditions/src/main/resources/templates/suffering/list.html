@@ -4,13 +4,14 @@
    <head th:replace="layout/layout-conditions :: head"></head>
    <body>
       <header th:replace="layout/layout-conditions :: header"></header>
-      <div class="container py-1">
+      <div class="container mb-4" style="margin-top: 5rem">
          <div class="card bg-white border-305">
-            <div th:text="${tittle}" class="card-header border-305 text-white font-weight-bold" style="background-color: #0F3678" align="center"></div>
+            <div th:text="${tittle}" class="card-header  py-2 border-305 text-white font-weight-bold" style="background-color: #101F3A" align="center"></div>
             <div class="card-body">
                <div class="row">
-                  <div class="col" align="right"> 
-                      <a th:href="@{/suffering/form/}" data-toggle="tooltip" data-placement="left" title="New condition" class="a a-305 fas fa-notes-medical fa-2x"></a>
+                  <div sec:authorize="hasRole('ROLE_ADMIN')"class="col" align="right"> 
+                      <a th:href="@{/suffering/form/}" data-toggle="tooltip" data-placement="left" title="New condition" 
+                         class="a a-305 fas fa-notes-medical fa-2x"></a>
                   </div>
                </div>
                <div class="row mt-2">
@@ -22,8 +23,8 @@
                               <th th:text="'Name'" scope="col" width="22%"></th>
                               <th th:text="'Can apply?'" scope="col" width="12%" ></th>
                               <th th:text="'Remark'" scope="col" width="54%" ></th>
-                              <th th:text="'Edit'" scope="col" width="10%" ></th>
-                              <th th:text="'Remove'" scope="col" width="6%" ></th>
+                              <th sec:authorize="hasRole('ROLE_ADMIN')" th:text="'Edit'" scope="col" width="10%" ></th>
+                              <th sec:authorize="hasRole('ROLE_ADMIN')" th:text="'Remove'" scope="col" width="6%" ></th>
                            </tr>
                         </thead>
                         <tbody>
@@ -34,20 +35,15 @@
                                  <span th:if ="${conditionList.get(conditionWithDoctor).isBlank()}" th:text="'No'"></span>
                                  <span th:unless ="${conditionList.get(conditionWithDoctor).isBlank()}" th:text="'Yes'" role="button" data-toggle="popover" 
                                        data-trigger="hover" th:title="'Surgeons'" th:data-content="${conditionList.get(conditionWithDoctor)}"></span>
-                          <!--        <span th:if ="${conditionWithDoctor.accepted == 0}" th:text="'No'"></span>
-                                 <span th:if ="${conditionWithDoctor.accepted == 1}" th:text="'Yes'"></span>
-                                 <span th:if ="${conditionWithDoctor.accepted == 2}" th:text="'Some surgeons'" role="button"  data-toggle="popover"  data-trigger="hover" 
-                                       th:title="'Surgeons'" th:data-content="${conditionList.get(conditionWithDoctor)}"></span>
-                                 <span th:if ="${conditionWithDoctor.accepted == 3}" th:text="'Yes*'" align="center"></span> -->
                               </td>
                            <!-- ********************* -->
                               <td th:text="${conditionWithDoctor.warning}" align="justify" class="align-middle"></td>   
                            <!-- Editar condition -->
-                              <td align="center" class="align-middle">
+                              <td sec:authorize="hasRole('ROLE_ADMIN')" align="center" class="align-middle"> 
                                  <a th:href="@{/suffering/form/} + ${conditionWithDoctor.id}" class="a a-305 fas fa-pencil-alt" style="color: #000"></a>
                               </td>
                            <!-- Eliminar condition -->
-                            <td align="center" class="align-middle">
+                            <td sec:authorize="hasRole('ROLE_ADMIN')" align="center" class="align-middle">
                               <a th:href="'/suffering/delete/' + ${conditionWithDoctor.id}" onclick="return confirm('Do you want remove this Condition?');" type="button" 
                                  class="btn fas fa-eraser"></a> 
                               </td>

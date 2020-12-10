@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	
+	<script type="text/javascript" th:fragment="utils">
+	
+	
+	$(function () {
+		  $('[data-toggle="tooltip"]').tooltip();
+		  $('[data-toggle="popover"]').popover();
+		})
+	
+	$('.popover-dismiss').popover({
+  		trigger: 'focus'
+	})	
+		
+	$(document).ready( function () {
+// 		alert("a");
+		
+// 		select : function(event, ui) {
+// 				var href = $("#choosedP1").attr('href');
+// 			$("#choosedP1").html("View availables combos for " + ui.item.label);
+// 			$("#choosedP1").attr('href', href+ui.item.value);
+// 			$("#procForComboID").val(ui.item.value);
+			
+// 			$("#find_procedure_for_combo").val("");
+			
+// 			return false; 
+// 		}
+	    
+	} );
+
+	var itemsHelper = {
+				choseProcedure: function(value){
+					
+	 			var href = $("#linkprocedure").attr('href');
+// 	 			$("#choosedP1").html("View availables combos for " + ui.item.label);
+	 			$("#linkprocedure").attr('href', href+value);
+// 	 			$("#procForComboID").val(ui.item.value);
+				
+// 	 			$("#find_procedure_for_combo").val("");
+					
+				},
+	}
+		
+	</script>
+</body>
+</html>

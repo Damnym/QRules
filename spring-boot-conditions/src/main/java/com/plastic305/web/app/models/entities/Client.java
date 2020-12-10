@@ -29,7 +29,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "clients")
-public class Client implements Serializable {
+public class Client implements Serializable { private static final long serialVersionUID = 6439305829659849320L;
 // DB
 //****
 	@Id
@@ -40,7 +40,9 @@ public class Client implements Serializable {
 	private String conditionsName;
 	
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Order> orderList;
+	private List<SuperOrder> superOrderList;
+//	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//	private List<Order> orderList;
 	
 
 // GENERAL
@@ -48,7 +50,7 @@ public class Client implements Serializable {
 	@NotEmpty
 	private String name;
 	
-	@NotEmpty
+	//@NotEmpty
 	private String dni;
 	
 	@NotEmpty
@@ -335,21 +337,6 @@ public class Client implements Serializable {
 	}
 
 	/**
-	 * @return the surName
-	 */
-/*	public String getSurName() {
-		return surname;
-	}
-
-	/**
-	 * @param surName the surName to set
-	 */
-	/*	public void setSurName(String surName) {
-		this.surname = surName;
-	}
-	*/
-	
-	/**
 	 * @return the conditionsList
 	 */
 	public List<Suffering> getConditionsList() {
@@ -365,7 +352,7 @@ public class Client implements Serializable {
 
 	public Client() {
 		conditionsList = new ArrayList<Suffering>(); 
-		orderList  = new ArrayList<Order>(); 
+		superOrderList  = new ArrayList<SuperOrder>();  // aqui era order 
 		aditionalProcedures = new ArrayList<Procedure>();
 	}
 
@@ -377,18 +364,20 @@ public class Client implements Serializable {
 		this.makeCellSaver = makeCellSaver;
 	}
 
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6439305829659849320L;
-
-	public List<Order> getOrderList() {
-		return orderList;
+	public List<SuperOrder> getSuperOrderList() {
+		return superOrderList;
 	}
 
-	public void setOrderList(List<Order> orderList) {
-		this.orderList = orderList;
+	public void setSuperOrderList(List<SuperOrder> superOrderList) {
+		this.superOrderList = superOrderList;
 	}
+
+//	public List<Order> getOrderList() {
+//		return orderList;
+//	}
+//	
+//	public void setOrderList(List<Order> orderList) {
+//		this.orderList = orderList;
+//	}
 
 }

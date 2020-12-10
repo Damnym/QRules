@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <body>
+	
 	<script type="text/javascript" th:fragment="utils">
+	
 	
 	$(function () {
 		  $('[data-toggle="tooltip"]').tooltip();
@@ -35,16 +38,80 @@
 			select : function(event, ui) {
 //				var line = $("#procedureItemsLayout").html();  //#orderItemsLayout
 				$("#choosedP").html(ui.item.label);
-//				$("#find_procedure").html(ui.item.label);
+				$("#procID").val(ui.item.value);
+				$("#find_procedure").val(ui.item.label);
 				
-//				line = line.replace(/{ID}/g, ui.item.value);
-//				line = line.replace(/{NAME}/g, ui.item.label);
-				
-//				$("#loadProcedureItems tbody").append(line); //#loadProductItems
 				return false; 
 			}
 		});
+	       
+	       $("#find_condition").autocomplete({ //parseInt($(idDoctor).html())
+				
+				source : function(request, response) {
+					
+					$.ajax({
+						url : "/doctor/load-condition/" + parseInt($(idDoctor).html()) + "/" + request.term, 
+						dataType : "json",
+						data : { term : request.term },
+						success : function(data) {
+							response($.map(data, function(item) {
+								return {
+									value : item.id,
+									label : item.name,
+								};
+							}));
+						},
+					});
+				},
+			
+				select : function(event, ui) {
+//					var line = $("#procedureItemsLayout").html();  //#orderItemsLayout
+					$("#choosedC").html(ui.item.label);
+					$("#condID").val(ui.item.value);
+					
+					$("#find_condition").val(ui.item.label);
+					
+					return false; 
+				},
+				
+				
+			});
 	    
+	       $("#find_procedure_for_combo").autocomplete({ //parseInt($(idDoctor).html())
+				
+				source : function(request, response) {
+					
+					$.ajax({
+						url : "/doctor/load-procedure1/" + parseInt($(idDoctor).html()) + "/" + request.term, 
+						dataType : "json",
+						data : { term : request.term },
+						success : function(data) {
+							response($.map(data, function(item) {
+								return {
+									value : item.id,
+									label : item.name,
+								};
+							}));
+						},
+					});
+				},
+			
+				select : function(event, ui) {
+ 					var href = $("#choosedP1").attr('href');
+					$("#choosedP1").html("View availables combos for " + ui.item.label);
+					$("#choosedP1").attr('href', href+ui.item.value);
+					$("#procForComboID").val(ui.item.value);
+					
+					$("#find_procedure_for_combo").val("");
+					
+					return false; 
+				}
+			});
+	       
+	       
+	       
+	       
+	       
 	    
 		    $('#doctor-table-list').DataTable();
 	    
@@ -63,6 +130,23 @@
 		  modal.find('.modal-body span').text('Do you want to remove Dr. ' + name + ' from the system? This operation is irreversible.')
 		  $('#remove').attr('href', href+id);
 		});*/
+		
+		var itemsHelper = {
+				activeAmount: function(ischeck){
+					if(ischeck){
+						document.getElementById("minBMI").disabled = false;
+						document.getElementById("maxBMI").disabled = false;
+						document.getElementById("minWeight").disabled = true;
+						document.getElementById("maxWeight").disabled = true;
+					}
+					else {
+						document.getElementById("minBMI").disabled = true;
+						document.getElementById("maxBMI").disabled = true;
+						document.getElementById("minWeight").disabled = false;
+						document.getElementById("maxWeight").disabled = false;
+					}
+				},
+	}
 		
 	</script>
 </body>

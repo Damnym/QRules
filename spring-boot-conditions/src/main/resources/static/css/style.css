@@ -1,3 +1,58 @@
+	.ui-autocomplete {
+		max-height: 300px;
+		overflow-y: auto;
+		/* prevent horizontal scrollbar */
+		overflow-x: hidden;
+	}
+	/* IE 6 doesn't support max-height
+	 * we use height instead, but this forces the menu to always be this tall
+	 */
+	* html .ui-autocomplete {
+		height: 300px;
+	}
+
+ul, li {
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+.listWrapper {
+    max-height:400px;
+    overflow-y:auto;
+     border:1px solid #000;
+}
+
+.vertical-center-305 {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.card-border-diferent {
+	border-color: #101F3A; 
+	border-bottom-width: 3px; 
+	border-right-width: 3px;
+}
+
+.card-border-light-diferent {
+	border-color: #101F3A; 
+	border-bottom-width: 1px; 
+	border-right-width: 3px;
+}
+
+.card-borderred-diferent {
+	border-color: #DC3545; 
+	border-bottom-width: 3px; 
+	border-right-width: 3px;
+}
+
+.card-bordergreen-diferent {
+	border-color: #28A745; 
+	border-right-width: 3px;
+}
+
 h1.color-rojo {
 	color: red ;
 }
@@ -17,6 +72,12 @@ h2.color-azul {
 }
 
 .proceduresb {
+	column-count: 3;
+	column-gap: 1.5%;
+	column-width: auto; 
+}
+
+.proceduresb2 {
 	column-count: 3;
 	column-gap: 1.5%;
 	column-width: auto; 
@@ -57,13 +118,18 @@ btn.btn-outline-damny:hover {
 
 .borderlr305 {
 	border-bottom-width:0px; 
-	border-left-color: #0F3678; 
-	border-right-color: #0F3678;
+	border-left-color: #101F3A; 
+	border-right-color: #101F3A;
 }
 
 .a.a-305 {
 	color:#808080;
 }
+
+.a.a-noline {
+	text-decoration: none;
+}
+
 
 .modal-danger-header-305 {
     color:#fff;
@@ -86,12 +152,12 @@ btn.btn-outline-damny:hover {
 	text-decoration:underline;
 	text-align:center;
 	background-color: #fff;
-	border-color:#0F3678;
-	color:#0F3678;
-	border-top: 1px solid  #0F3678;
-	border-left: 1px solid  #0F3678;
+	border-color:#101F3A;
+	color:#101F3A;
+	border-top: 1px solid  #101F3A;
+	border-left: 1px solid  #101F3A;
 	border-bottom: 1px transparent ;
-	border-right: 3px solid  #0F3678;
+	border-right: 3px solid  #101F3A;
 	border-top-left-radius:calc(.3rem - 1px);
 	border-top-right-radius:calc(.3rem - 3px)
 }
@@ -105,11 +171,131 @@ btn.btn-outline-damny:hover {
 .popover-body{
 	font-size:1rem;
 	padding:.5rem .75rem;
-	color:#0F3678;
-	border-right: 3px solid  #0F3678;
-	border-left: 1px solid  #0F3678;
-	border-bottom: 3px solid  #0F3678;
+	color:#101F3A;
+	border-right: 3px solid  #101F3A;
+	border-left: 1px solid  #101F3A;
+	border-bottom: 3px solid  #101F3A;
 	}
 
-.bs-popover-auto[x-placement^=right]>.arrow::before,.bs-popover-right>.arrow::before{left:0;border-width:.5rem .5rem .5rem 0;border-right-color:#0F3678}
+
+/***** DAMNY   ******/
+.text-305 {
+	color: #101F3A !important
+}
+
+.border-305 {
+	border-color: #101F3A !important
+}
+
+.header-305 {
+	background-color: #101F3A;
+	color: #FFFFFF;
+	text-align: center !important;
+	font-weight: 700 !important;
+}
+
+.btn-305 {
+	color: #101F3A;
+	background-color: #FFFFFF;
+	border-color: #101F3A;
+}
+
+.btn-305:hover, .btn-305:focus, .btn-305:active, .btn-305.active, .open .dropdown-toggle.btn-305
+	{
+	color: #FFFFFF;
+	background-color: #101F3A;
+	border-color: #101F3A;
+}
+
+.btn-305:active, .btn-305.active, .open .dropdown-toggle.btn-305 {
+	background-image: none;
+}
+
+.btn-305.disabled, .btn-305[disabled], fieldset[disabled] .btn-305,
+	.btn-305.disabled:hover, .btn-305[disabled]:hover, fieldset[disabled] .btn-305:hover,
+	.btn-305.disabled:focus, .btn-305[disabled]:focus, fieldset[disabled] .btn-305:focus,
+	.btn-305.disabled:active, .btn-305[disabled]:active, fieldset[disabled] .btn-305:active,
+	.btn-305.disabled.active, .btn-305[disabled].active, fieldset[disabled] .btn-305.active
+	{
+	background-color: #FFFFFF;
+	border-color: #101F3A;
+}
+
+.btn-305 .badge {
+	color: #FFFFFF;
+	background-color: #101F3A;
+}
+
+.btn-305bw {
+	color: #FFFFFF;
+	background-color: #101F3A;
+	border-color: #101F3A;
+}
+
+.btn-305bw:hover, .btn-305bw:focus, .btn-305bw:active, .btn-305bw.active,
+	.open .dropdown-toggle.btn-305bw {
+	color: #101F3A;
+	background-color: #FFFFFF;
+	border-color: #101F3A;
+}
+
+.btn-305bw:active, .btn-305bw.active, .open .dropdown-toggle.btn-305bw {
+	background-image: none;
+}
+
+.btn-305bw.disabled, .btn-305bw[disabled], fieldset[disabled] .btn-305bw,
+	.btn-305bw.disabled:hover, .btn-305bw[disabled]:hover, fieldset[disabled] .btn-305bw:hover,
+	.btn-305bw.disabled:focus, .btn-305bw[disabled]:focus, fieldset[disabled] .btn-305bw:focus,
+	.btn-305bw.disabled:active, .btn-305bw[disabled]:active, fieldset[disabled] .btn-305bw:active,
+	.btn-305bw.disabled.active, .btn-305bw[disabled].active, fieldset[disabled] .btn-305bw.active
+	{
+	background-color: #101F3A;
+	border-color: #101F3A;
+}
+
+.btn-305bw .badge {
+	color: #101F3A;
+	background-color: #FFFFFF;
+}
+
+/******************/
+.btn-305wr {
+	color: #FF0000;
+	background-color: #FFFFFF;
+	border-color: #FF0000;
+}
+
+.btn-305wr:hover, .btn-305wr:focus, .btn-305wr:active, .btn-305wr.active,
+	.open .dropdown-toggle.btn-305wr {
+	color: #FFFFFF;
+	background-color: #DC3545;
+	border-color: #DC3545;
+}
+
+.btn-305wr:active, .btn-305wr.active, .open .dropdown-toggle.btn-305wr {
+	background-image: none;
+}
+
+.btn-305wr.disabled, .btn-305wr[disabled], fieldset[disabled] .btn-305wr,
+	.btn-305wr.disabled:hover, .btn-305wr[disabled]:hover, fieldset[disabled] .btn-305wr:hover,
+	.btn-305wr.disabled:focus, .btn-305wr[disabled]:focus, fieldset[disabled] .btn-305wr:focus,
+	.btn-305wr.disabled:active, .btn-305wr[disabled]:active, fieldset[disabled] .btn-305wr:active,
+	.btn-305wr.disabled.active, .btn-305wr[disabled].active, fieldset[disabled] .btn-305wr.active
+	{
+	background-color: #FFFFFF;
+	border-color: #101F3A;
+}
+
+.btn-305wr .badge {
+	color: #FFFFFF;
+	background-color: #101F3A;
+}
+
+img:hover {
+   box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5); 
+ } 
+
+
+
+.bs-popover-auto[x-placement^=right]>.arrow::before,.bs-popover-right>.arrow::before{left:0;border-width:.5rem .5rem .5rem 0;border-right-color:#101F3A}
 .bs-popover-auto[x-placement^=right]>.arrow::after,.bs-popover-right>.arrow::after{left:1px;border-width:.5rem .5rem .5rem 0;border-right-color:#f7f7f7}

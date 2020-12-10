@@ -17,7 +17,7 @@ public interface ISufferingService {
 	public void save(Suffering nSuffering);
 	
 	public List<Suffering> findAll();
-	public Page<Suffering> findAll(Pageable page);
+	//public Page<Suffering> findAll(Pageable page);
 	public Suffering findOne(Long id);
 	
 	public List<Suffering> findAllRefusedOrWarning();
@@ -27,5 +27,8 @@ public interface ISufferingService {
 //	public List<String> findByDoctorID(Long idD, Long idS);
 	
 	public void delete(Long id);
+	
+	public List<Suffering> findSufferingsByName(String term);
+	
 
 }
