@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      
+<head th:replace="layout/meta-layout :: head"></head>
+
+<body>
+	<header th:replace="layout/meta-layout :: header"></header>
+	<header>
+      <div id="sidenavi-305" class="sidenav fixed-top">
+      	 <a th:href="@{/doctor/calendar}"  id="calendar"> 
+            <span class="active-305">Regular / VIP schedule</span> 
+            <i class="far fa-calendar-alt" style="color: #ffffff"></i>
+         </a>
+         <a th:href="@{/procedure/procedure-decide}" id="help"> 
+            <span>Help deciding surgery</span> 
+            <i class="fas fa-hands-helping" style="color: #ffffff"></i>
+         </a> 
+         <a th:href="@{'/documents/' + '1.pdf'}" target="_blank" id="financed" > 
+            <span>Financing options</span> 
+            <i class="fas fa-money-check-alt"  style="color: #ffffff"></i>
+         </a> 
+       </div>  
+       <div id=sidenavinside-305 class="sidenav fixed-top">
+         <a th:href="@{#}" id="evaluation-active"> 
+            <span>Evaluation system</span> 
+            <i class="fas fa-procedures " style="color: #14233E"></i>
+         </a> 
+      </div>
+      
+      <div class="alert alert-success" th:if="${success != null}"
+         th:text="${success}"></div>
+      <div class="alert alert-danger" th:if="${error != null}"
+         th:text="${error}"></div>
+      <div class="alert alert-warning" th:if="${warning != null}"
+         th:text="${warning}"></div>
+      <div class="alert alert-info" th:if="${info != null}"
+         th:text="${info}"></div>
+   </header>
+   
+  <footer th:replace="layout/meta-layout :: footer"></footer>
+</body>
+</html>

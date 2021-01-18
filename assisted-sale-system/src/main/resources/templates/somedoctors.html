@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-evaluation :: head"></head>
+<body>
+	<header th:replace="layout/layout-evaluation :: header"></header>
+	<div class="container py-1" style="font-size: 15px; background-color: #888F9D">
+      <div class="row">    <!-- FILA PARA EL ALERTA -->
+         <div class="col">
+            <div th:if="${hbgOutsideRange}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                  <span th:text="${hbgOutsideRange}"></span>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+            </div>
+         </div>
+      </div>   
+      <div class="row py-4">
+ 	 		<div class="col-3">
+				<ul th:if="${choices}" class="list-group border-success" >
+				  <li th:text="${choice_h}" class="list-group-item list-group-item-success border-success text-center font-weight-bold"></li>
+                  <li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left border-success"></li>
+				</ul>
+		 	</div> 
+   			<div class="col-9">
+				<div class="card bg-white border-305">
+					<div th:text="${msg}" class="card-header font-weight-bold text-white" align="center" style="background-color:#101F3A"></div>
+					<div class="card-body" align="justify">
+					<div class="row">
+						<ul class="list-group">  
+							<li th:text="${explanationb}" class="list-group-item border-white"></li>
+							<li th:each="d: ${doctors}" class="list-group-item  border-white">
+								<a th:href="@{/choice_procedure_by_doctor/} + ${d.getId()}"
+				   				   th:text="${d.getName()}" class="btn btn-lg btn-block btn-305"></a>	
+							</li>
+							<li th:text="${explanationc}" class="list-group-item border-white"></li>
+						</ul>
+						</div>
+						<hr />
+						<div class="row">
+	  						<div class="col-6">   <!-- choice-doctor-by-procedure-by-condition -->
+	  							<form th:action="@{/choice_doctor_by_procedure}" th:object="${client}" method="get" class="form-inline">
+									<input type="submit" value="Choice procedure" class="btn btn-block text-white" style="background-color:#101F3A;"> 
+	  							</form>
+	  						</div>
+	  						<div class="col-6">
+	  							<form th:action="@{/result}" method="get" class="form-inline">
+									<input type="submit" value="Abort" class="btn btn-block btn-305wr"> 
+		 	    				</form>
+	  						</div>
+	  					</div>
+					</div>
+				</div>
+	  		</div>
+         </div>
+	  	</div>
+	<footer th:replace="layout/layout-evaluation :: footer"></footer>
+</body>
+</html>

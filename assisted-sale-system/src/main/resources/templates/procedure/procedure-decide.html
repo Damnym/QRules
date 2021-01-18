@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-help :: head">
+</head>
+<body style="background-color: #888F9D">
+	<header th:replace="layout/layout-help :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="row">
+			<div class="col">
+				<div class="card bg-white border-305" style="width: 100%;">
+					<div class="card-header border-305 py-1 font-weight-bold text-white" th:text="'Tips to choose the procedure'" align="center" 
+					     style="background-color:#101F3A"></div>
+					<div class="card-body " align="left">
+						<form id="suggestform" th:action="@{/procedure/procedure-decide}" method="post" th:object="${tipschosen}">
+							<div class="row">
+								<div class="col-4">
+									<ul class="list-group border-success">
+										<li th:text="'Face area'" class="list-group-item py-1 card-borderbg-diferent text-center font-weight-bold"
+										 	style="background-color: #888F9D; color: #ffffff"></li>
+										<li class="list-group-item text-left card-borderbg-diferent">
+									      <div th:each="t,state : ${tips}" th:if="${t.area.getDescription()=='Face area'}" class="row">
+										     <div class="mx-1"> 
+											    <input type="checkbox" th:field="*{chosen}" th:value="${t.id}" th:checked="${#lists.contains(tipschosen.chosen, t)}"> 
+											 </div>
+											 <div class="mx-2"> 
+											    <label th:for="${#ids.prev('chosen')}" th:text="${t.description}"></label>
+									 		 </div>
+									      </div>
+										</li>
+									</ul>
+								</div>
+								<div class="col-4">
+									<ul class="list-group border-success">
+										<li th:text="'Breast area'" class="list-group-item py-1 card-borderbg-diferent text-center font-weight-bold"
+										 	style="background-color: #888F9D; color: #ffffff"></li>
+										<li class="list-group-item text-left card-borderbg-diferent">
+									    	<div th:each="t,state : ${tips}" th:if="${t.area.getDescription()=='Breast area'}" class="row">
+										    	<div class="mx-1"> 
+											    	<input type="checkbox" th:field="*{chosen}" th:value="${t.id}" th:checked="${#lists.contains(tipschosen.chosen, t)}"> 
+											 	</div>
+											 	<div class="mx-2"> 
+											    	<label th:for="${#ids.prev('chosen')}" th:text="${t.description}"></label>
+									 		 	</div>
+									      	</div>
+								      	</li>
+									</ul>
+								</div>  
+								<div class="col-4">
+									<ul class="list-group border-success">
+										<li th:text="'Lipos'" class="list-group-item py-1 card-borderbg-diferent text-center font-weight-bold"
+										 	style="background-color: #888F9D; color: #ffffff"></li>
+										<li class="list-group-item text-left card-borderbg-diferent">
+									      <div th:each="t,state : ${tips}" th:if="${t.area.getDescription()=='Lipos'}" class="row">
+										     <div class="mx-1"> 
+											    <input type="checkbox" th:field="*{chosen}" th:value="${t.id}" th:checked="${#lists.contains(tipschosen.chosen, t)}"> 
+											 </div>
+											 <div class="mx-2"> 
+											    <label th:for="${#ids.prev('chosen')}" th:text="${t.description}"></label>
+									 		 </div>
+									      </div>
+								       </li>
+									</ul>
+								   </div>
+								</div>  
+					<!--  SUBMIT   -->
+							<div class="row">
+		  						<div class="col mt-3" align="right">  
+	  								<input type="submit" th:value="'View suggestion'" class="btn btn-block btn-305"/>
+	  							</div>
+	  						</div>
+	  						 
+						</form>
+					</div>
+				</div>
+				<div th:if="${procedures} != null" class="card my-2 bg-white border-305" style="width: 100%;">
+					<div class="card-header border-305 py-1 font-weight-bold text-white" th:text="'Suggested procedures'" align="center" 
+						 style="background-color:#101F3A"></div>
+					<div class="card-body " align="left">
+						<div class="container newspaper1">
+							<div th:each="procWithDoct : ${procedures.keySet()}" class="row">
+							     <div class=""> 
+									<h5 th:text="${procWithDoct.name}" role="button" data-toggle="popover"  
+                                        data-trigger="hover" th:title="'Surgeons'" th:data-content="${procedures.get(procWithDoct)}"></h5>
+								 </div>
+						      </div>
+						</div>
+					</div>
+				</div>
+				<div th:if="${combos} != null" class="card my-2 bg-white border-305" style="width: 100%;">
+					<div class="card-header border-305 py-1 font-weight-bold text-white" th:text="'Suggested combos'" align="center" 
+						 style="background-color:#101F3A"></div>
+					<div class="card-body " align="left">
+						<div class="container newspaper1">
+							<div th:each="combo : ${combos}" class="row">
+							     <div class=""> 
+									<h5 th:text="${combo.procedureList.get(0).getProcedure().name} + '/' + ${combo.procedureList.get(1).getProcedure().name}" 
+									></h5>
+								 </div>
+						      </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-help :: footer"></footer>
+    <script th:replace="procedure/js/util-js.html :: util"></script>
+    <script th:replace="js/twoForm :: javascript2Form"></script>
+</body>
+</html>

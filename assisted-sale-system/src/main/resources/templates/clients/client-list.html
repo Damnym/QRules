@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
+	   <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+<head th:replace="layout/layout-evaluation :: head"></head>
+<body style="background-color: #4C576C">
+	<header th:replace="layout/layout-evaluation :: header"></header>
+	<div class="container mb-4" style="margin-top: 5rem">
+		<div class="card bg-white border-305">
+			<div th:text="${tittle}" class="card-header py-2  border-305 text-white font-weight-bold"  style="background-color:#101F3A" align="center"></div>
+			<div class="card-body">
+				<div class="col" align="right">
+					<a th:href="@{/clients/form}" data-toggle="tooltip" data-placement="left" title="New Patient" }
+					   class="a a-305 far fa-address-card fa-2x"> 
+					</a>
+				</div>
+				<p></p>
+				<table class="table table-striped hover display compact" id="client-table-list">
+				<!-- table-bordered --> 
+					<thead align="center">
+						<tr>
+							<th hidden="true" scope="col">ID</th>
+							<th hidden="true" th:text="'DNI'" scope="col"></th>
+							<th width="20%" th:text="'Full name'" 		  scope="col" align="justify"></th>
+							<th width="10%" th:text="'Mobile'" 			  scope="col" align="justify"></th>
+							<th width="25%" th:text="'Email'" 			  scope="col" align="justify"></th>
+							<th width="20%" th:text="'Subscription date'" scope="col" align="center"></th>
+							<th width="15%" th:text="'Operations'"        scope="col" align="center"></th>
+							<th width="10%" th:text="'Begin'" 			  scope="col" align="center"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="cl: ${clients_list}">
+							<th hidden="true" scope="row" th:text="${cl?.id}"></th>
+							<td hidden="true" th:text="${cl?.dni}" align="right"></td>
+							
+							<td th:text="${cl?.name} + ' ' + ${cl?.surname}"></td>
+							<td th:text="${cl?.mobile}" align="center"></td>
+							<td th:text="${cl?.email}"></td>
+							<td th:text="${cl?.createAt}" align="center"></td>
+							
+							<td align="center">
+								<!-- Editar usuario -->
+								<a th:href="@{/clients/form/} + ${cl.id}" class="btn fas fa-pencil-alt"></a>
+								<!-- Eliminar usuario -->
+								<a th:href="@{/clients/delete/} + ${cl.id}" 
+								   onclick="return confirm('Do you want to delete the client?');" class="btn fas fa-eraser"></a>
+								<!-- Detalles CLIENTE -->
+								<a th:href="@{/clients/view/} + ${cl.id}" class="btn fas fa-search"></a>
+							</td>
+							 
+							<!-- Iniciar proceso   -->
+							<td align="center">
+								<a th:href="@{/r1/} + ${cl.id}" class="btn fas fa-calendar-week"></a>
+							</td>
+							
+						</tr>
+					</tbody>
+				</table>
+			<!--  <nav th:replace="layout/paginator-nav :: paginator"></nav> -->	
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-evaluation :: footer"></footer>
+	<script th:src="@{/js/jquery.dataTables.min.js}"></script>
+	<script th:replace="clients/js/clients-js.html :: clientsUtils"></script>
+</body>
+</html>

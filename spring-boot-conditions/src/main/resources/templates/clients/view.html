@@ -1,96 +1,88 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	  <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
 <head th:replace="layout/layout-client :: head"></head>
 <body>
 	<header th:replace="layout/layout-client :: header"></header>
-<!-- 	style="margin-top: 5rem" -->
-	<div class="row px-4 py-4">   
-		<div class="col-12">
-			<div class="card bg-white border-305">
-				<div th:text="${msg}" class="card-header text-white font-weight-bold"  style="background-color:#101F3A" align="center"></div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-11">
-							<div class="row">
-								<div class="col-3 py-2">
-									<ul class="list-group">
-										<li class="list-group-item list-group-item-dark border-305">
-											<span th:text="'DNI: '" class="font-weight-bold"></span>
-											<span th:text="${client.dni}"></span> 
-										</li>
-										<li class="list-group-item borderlr305" > 
-											<span th:text="'Name: '" class="font-weight-bold"></span>
-											<span th:text="${client.name}"></span> 
-										</li>
-										<li class="list-group-item borderlr305">
-											<span th:text="'Surname: '" class="font-weight-bold" ></span>
-											<span th:text="${client.surname}"></span> 
-										</li>
-										<li class="list-group-item borderlr305">
-											<span th:text="'Mobile phone number: '" class="font-weight-bold" ></span>
-											<span th:text="${client.mobile}"></span> 
-										</li>
-										<li class="list-group-item borderlr305">
-											<span th:text="'Email: '" class="font-weight-bold" ></span>
-											<span th:text="${client.email}"></span> 
-										</li>
-										<li class="list-group-item borderlr305" style="border-bottom-width:1px; border-bottom-color: #101F3A;">
-											<span th:text="'Subscription date: '" class="font-weight-bold" ></span>
-											<span th:text="${client.createAt}"></span>  
-										</li>
-									</ul>
-								</div>
-								<div class="col-9">
-									<div th:if="${#lists.isEmpty(client.orderList)}" class="alert alert-dismissible fade show border-danger my-2" align="center" role="alert"
-										style="background-color:#FFFFFF; ">
-  										<span th:text="'The client &quot' + ${client.name} + ' ' + ${client.surname} + '&quot has no orders registered in his name.'" 
-  											  style="color: #101F3A "></span>
-  										<a th:href="@{/r1/} + ${client.id}" style="color:#101F3A; text-decoration: underline;" th:text="${'Begin a process'}" data-toggle="tooltip" data-placement="left" title="New process"></a>	  
-  										<button type="button" class="close" style="color:#101F3A" data-dismiss="alert" aria-label="Close">
-  											<span aria-hidden="true">&times;</span>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305">
+			<div th:text="${msg}" class="card-header text-white font-weight-bold" style="background-color:#101F3A" align="center"></div>
+			<div class="card-body" align="left">
+				<div class="row">
+					<div class="col-11">
+						<div class="row">
+							<div class="col-3">
+								<ul class="list-group">
+									<li class="list-group-item list-group-item-dark border-305 py-1">
+										<span th:text="'Fullname: '" class="font-weight-bold"></span>
+										<span th:text="${client.name} + ' ' + ${client.surname}" ></span> 
+									</li>
+									<li class="list-group-item borderlr305 py-1">
+										<span th:text="'Age: '" class="font-weight-bold" ></span>
+										<span th:text="${client.age}"></span> 
+										<span th:text="'Gender: '" class="font-weight-bold" ></span>
+										<span th:text="${client.gender}"></span> 
+									</li>
+									<li class="list-group-item borderlr305 py-1">
+										<span th:text="'Mobile phone number: '" class="font-weight-bold" ></span>
+										<span th:text="${client.mobile}"></span> 
+									</li>
+									<li class="list-group-item borderlr305 py-1">
+										<span th:text="'Email: '" class="font-weight-bold" ></span>
+										<span th:text="${client.email}"></span> 
+									</li>
+									<li class="list-group-item borderlr305 py-1" style="border-bottom-width:1px; border-bottom-color: #101F3A;">
+										<span th:text="'Subscription date: '" class="font-weight-bold" ></span>
+										<span th:text="${client.createAt}"></span>  
+									</li>
+								</ul>
+							</div>
+							<div class="col-9">
+								<div th:if="${#lists.isEmpty(client.superOrderList)}" class="alert alert-dismissible fade show border-danger my-2" align="center" 
+								     role="alert" style="background-color:#FFFFFF;">
+  									<span th:text="'The client &quot' + ${client.name} + ' ' + ${client.surname} + '&quot has no orders registered in his name.'" 
+  											 style="color: #101F3A "></span>
+  										<a th:href="@{/r1/} + ${client.id}" style="color:#101F3A; text-decoration: underline;" th:text="${'Begin a process'}" 
+  										   data-toggle="tooltip" data-placement="left" title="New process"></a>	  
+  									 	<button type="button" class="close" style="color:#101F3A" data-dismiss="alert" aria-label="Close">
+  									 		<span aria-hidden="true">&times;</span>
  										</button>
 									</div>
-									<table th:if="${not #lists.isEmpty(client.orderList)}" class="table table-striped table-hover display my-2" 
-										   style="font-size: 14px;">
-										<thead align="center" style="background-color: #101F3A; color: #FFFFFF" >
+									<table th:if="${not #lists.isEmpty(client.superOrderList)}" class="table table-striped hover display compact" id="client-table-list" 
+											style="font-size: 14px;"> 
+										<thead align="center" style="background-color: #101F3A; color: #FFFFFF">
 											<tr>
-												<th hidden="true" scope="col">No. Order</th>
-												<th scope="col">Doctor</th>
-												<th scope="col">Principal procedure</th>
-												<th scope="col">Combo</th>
-												<th scope="col">Surgery date</th>
-												<th scope="col">Is financed</th>
+												<th hidden="true" scope="col">Id</th>
+												<th scope="col">Date</th>
+												<th scope="col">Procedures</th>
 												<th scope="col">Total price</th>
-												<th th:text="'Delete'" sec:authorize="hasRole('ROLE_ADMIN')" scope="col"></th>
-												<th th:text="'Details'" sec:authorize="hasRole('ROLE_ADMIN')" scope="col"></th>
+												<th scope="col">Suborder amount</th>
+												<th th:text="'Actions'" sec:authorize="hasRole('ROLE_USER')" scope="col"></th> <!-- DELETE DETAILS -->
 											</tr>
 										</thead>
 										<tbody>
-											<tr th:each="ol: ${client.orderList}">
-												<td hidden="true" th:text="${ol.id}" align="center" class="font-weight-bold"></td>
-												<td th:text="${ol.doctorName}"></td>
-												<td th:text="${ol.procedureList.get(0).getProcedure().name}" style="border-bottom-color: #000000"></td>
-												<td th:if="${#lists.size(ol.procedureList)>1}" th:text="${ol.procedureList.get(1).getProcedure().name}"></td>
-												<td th:unless="${#lists.size(ol.procedureList)>1}" th:text="'Not Combo'"></td>
-												<td th:text="${ol.dateSurgery}" align="center"></td>
-												<td th:text="${ol.financed}" align="center"></td>
-												<td th:text="${ol.totalOrder}" align="center"></td>
-										<!-- Eliminar factura -->
-												<td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
-													<a th:href="@{/clients/delete/} + ${ol.id}" onclick="return confirm('Desea eliminar la factura??');">
-												    	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 16" width="12" height="16">
-															<path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path>
-														</svg>
-												    </a>
+											<tr th:each="sOrder: ${client.superOrderList}">
+												<td th:text="${sOrder.id}" hidden="true" align="center" class="font-weight-bold"></td>
+												<td th:text="${sOrder.date}" align="center" class="font-weight-bold align-middle"></td>
+												<td>
+													<ul th:each="orders: ${sOrder.orderList}"class="list-group">
+														<li th:each="procedure: ${orders.procedureList}" class="list-group-item py-1" 
+															style="border-width: 0px; background-color: transparent;">
+															<span th:text="${procedure.procedure.name}"></span>
+														</li>
+													</ul>
 												</td>
-										<!-- Detalles factura -->
-												<td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
-													<a th:href="@{'/orders/view-order/' + ${ol.getId()}}"> 
-														<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-															<path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0013 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 000-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path>
-														</svg>
-									   				</a>
+												<td th:text="${sOrder.getTotalSOrder()}" align="right" class="align-middle"></td>
+												<td th:text="${sOrder.orderList.size()}" align="center" class="align-middle" 
+													style="border-right-width: 1px; border-right-style: solid;"></td>
+												<td sec:authorize="hasRole('ROLE_ADMIN')" align="center" class="align-middle">
+<!-- 										Eliminar factura -->
+													<a th:href="@{/clients/deleteSOrder/} + ${sOrder.id} + '/' + ${client.id}" 
+													   onclick="return confirm('Delete this Order??');" class="btn fas fa-eraser" sec:authorize="hasRole('ROLE_ADMIN')"></a>
+<!-- 										Detalles factura -->
+													<a th:href="@{'/orders/view-order/'} + ${sOrder.getId()}" 
+													class="btn fas fa-search"></a>
 												</td>
 											</tr>
 										</tbody>
@@ -98,39 +90,26 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-1" align="right" >
-							<div class="row px-5 py-2" align="right">
-								<a th:href="@{/r1/} + ${client.id}" data-toggle="tooltip" data-placement="left" title="New process"> 
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-										<path fill-rule="evenodd" d="M0 4.75C0 3.784.784 3 1.75 3h20.5c.966 0 1.75.784 1.75 1.75v14.5A1.75 1.75 0 0122.25 21H1.75A1.75 1.75 0 010 19.25V4.75zm1.75-.25a.25.25 0 00-.25.25v14.5c0 .138.112.25.25.25h20.5a.25.25 0 00.25-.25V4.75a.25.25 0 00-.25-.25H1.75z"></path>
-										<path fill-rule="evenodd" d="M5 8.75A.75.75 0 015.75 8h11.5a.75.75 0 010 1.5H5.75A.75.75 0 015 8.75zm0 4a.75.75 0 01.75-.75h5.5a.75.75 0 010 1.5h-5.5a.75.75 0 01-.75-.75z"></path>
-									</svg>
+						<div class="col-1">
+							<div class="row mx-4 py-3" >
+								<a th:href="@{/r1/} + ${client.id}" data-toggle="tooltip" data-placement="left" title="New process" class="btn fas fa-calendar-week fa-2x">
 								</a>
 							</div>
-							<div class="row py-4 px-5">
-								<a th:href="@{/clients/form/} + ${client.id}" data-toggle="tooltip" data-placement="left" th:title="'Edit client  ' + ${client.name}"> 
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16" width="24" height="24"> 
-										<path fill-rule="evenodd" d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 011.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"></path>
-									</svg>
-								</a>
+							<div class="row mx-4 py-4">
+								<a th:href="@{/clients/form/} + ${client.id}" data-toggle="tooltip" data-placement="left" th:title="'Edit client ' + ${client.name}"
+									class="btn fas fa-pencil-alt  fa-2x"></a>
 							</div>
-							<div class="row py-3 px-5">
+							<div class="row mx-4 py-3">
 								<a th:href="@{/clients/delete/} + ${client.id}" onclick="return confirm('Do you want to delete the client?');"
-								   data-toggle="tooltip" data-placement="left" th:title="'Delete client  ' + ${client.name}">
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="24" height="24">
-										<path fill-rule="evenodd" d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path>
-									</svg>
-								</a>
+								   data-toggle="tooltip" data-placement="left" th:title="'Delete client ' + ${client.name}" class="btn fas fa-eraser fa-2x"></a>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 	</div>
 	<footer th:replace="layout/layout-client :: footer"></footer>
-	<script
-		th:replace="clients/js/clients-js.html :: clientsUtils">
-	</script>
+	<script th:replace="clients/js/clients-js.html :: clientsUtils"></script>
+	<script th:src="@{/js/jquery.dataTables.min.js}"></script>
 </body>
 </html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-conditions :: head"></head>
+<body>
+	<header th:replace="layout/layout-conditions :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305" style="width: 50%;">
+			<div class="card-header py-2 border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
+			<div class="card-body " align="left">
+				<form th:object="${suffering}" th:action="@{/suffering/form}" method="post" enctype="multipart/form-data" >
+					<!-- NOMBRE -->
+					<div class="form-group row">
+						<div class="input-group col">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="name">Condition:</span>
+					  		</div>
+					  		<input type="text" id="name" th:field="*{name}" aria-label="name" class="form-control" aria-describedby="name" placeholder="Condition name" 
+							 	  th:errorclass="'form-control alert-danger'" />
+						</div>
+					</div>
+					<div class="row mb-4">
+						<div class="col">
+							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>
+						</div>
+					</div> 	  
+					
+					<!-- tips placeholder="Tips like if mandatory, recommended amount, etc" -->
+					<div class="form-group row">
+						<div class="input-group mb-1 col">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="warning">Remarks:</span>
+					  		</div>
+					  		<textarea id="warning" th:field="*{warning}" aria-label="warning" class="form-control" aria-describedby="warning" 
+					  		          th:errorclass="'form-control alert-danger'">
+					  		 </textarea>
+						</div>	
+					</div>
+					<div class="row">
+						<div class="col">
+							<small th:if="${#fields.hasErrors('warning')}" th:errors="*{warning}" class="form-text text-danger"></small>
+						</div>
+					</div> 
+					<!--  SUBMIT   -->
+					<div class="row">
+						<div class="col-6">  
+							<input type="reset" th:value="'Clear'" class="btn btn-block btn-dark" />
+	  					</div>
+	  					<div class="col-6">  
+	  						<input type="submit" th:value="${buttonaction}" class="btn btn-block btn-305"/>
+	  					</div>
+	  				</div> 
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-conditions :: footer"></footer>
+</body>
+</html>

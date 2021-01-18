@@ -17,13 +17,13 @@
 		<div class="row" style="font-size: 15px"> <!-- GENERAL -->    <!-- FILA PARA EL RESTO DEL CONTENIDO -->
  	 		<div class="col-3"> <!-- COLUMNA CON LA TRAZA -->
 				<ul th:if="${choice}" class="list-group card-bordergreen-diferent " >
-                  <li th:text="${choice_h}" class="list-group-item list-group-item-success card-bordergreen-diferent text-center font-weight-bold"></li>
+                  <li th:text="${choice_h}" class="list-group-item list-group-item-success py-1 card-bordergreen-diferent text-center font-weight-bold"></li>
                   <li th:each="c: ${choice}" th:text="${c}" class="list-group-item text-left card-bordergreen-diferent"></li>
                 </ul>
 		 	</div> 
    			<div class="col-9">   <!-- COLUMNA CON LAS OPCIONES -->
 				<div class="card bg-white card-border-diferent" >
-					<div th:text="${msg}" class="card-header font-weight-bold text-white" align="center" style="background-color:#101F3A"></div>
+					<div th:text="${msg}" class="card-header font-weight-bold py-1 text-white" align="center" style="background-color:#101F3A"></div>
 					<div class="card-body" align="left">
 						<div class="container my-2">
 							<div class="row">

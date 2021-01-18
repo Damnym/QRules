@@ -8,7 +8,7 @@
 	 		<div class="row">  <!-- Fila Principal  -->
 	 			<div class="col-9"> <!-- Columna Der. Condiciones  -->
 					<div class="card bg-white card-border-diferent" >
-						<div th:text="${conditionHeader}" class="card-header font-weight-bold text-white  py-2" align="center" style="background-color:#101F3A"></div>
+						<div th:text="${conditionHeader}" class="card-header font-weight-bold text-white  py-1" align="center" style="background-color:#101F3A"></div>
 						<div class="card-body" align="left" style="font-size: 13px;">
 						   <div class="container newspaper1">
 						      <div th:each="s: ${sList}" class="row">
@@ -25,7 +25,7 @@
 				</div>
 	      		<div class="col-3" >    <!-- Columna Iz. con el cálculo de BMI y Hemoglobina -->
 					<div class="card bg-white card-border-diferent">
-						<div th:text="${bmiHeader}" class="card-header font-weight-bold bg-dark text-white py-2" align="center"></div>
+						<div th:text="${bmiHeader}" class="card-header font-weight-bold bg-dark text-white py-1" align="center"></div>
 						<div class="card-body">
 							<!-- Método English -->
 							<div th:if="${bmiEnglish}" class="row px-2"> 
@@ -76,7 +76,7 @@
 					</div>
 					<p></p>
 					<div class="card bg-white card-border-diferent">
-						<div th:text="'Hemoglobin'" class="card-header font-weight-bold bg-dark text-white py-2" align="center"></div>
+						<div th:text="'Hemoglobin'" class="card-header font-weight-bold bg-dark text-white py-1" align="center"></div>
 						<div class="card-body">
 							<div class="form-group col">
 								<label for="hbg" class="col-form-label col-4">Value:</label>

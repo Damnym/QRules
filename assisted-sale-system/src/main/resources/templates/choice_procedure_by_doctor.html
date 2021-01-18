@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-evaluation :: head"></head>
+<body style="font-size: 15px; background-color: #4C576C">
+	<header th:replace="layout/layout-evaluation :: header"></header>
+      <div class="container mb-3" style="margin-top: 5rem">
+		<div class="row">
+	   		<div class="col-3"> <!-- GroupBox de las elecciones -->
+               <div class="row">
+      			  <div class="col">
+                  <ul th:if="${choices}" class="list-group border-success">
+      					<li th:text="${choice_h}" 
+      						class="list-group-item py-1 card-borderchoice-diferent text-center text-white font-weight-bold"
+      						style="background-color: #614C6C"> <!-- list-group-item-success -->
+      					</li>
+      					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left card-borderchoice-diferent"></li> <!-- card-bordergreen-diferent -->
+      				</ul>
+                  </div>
+               </div>
+               <div class="row mt-2">
+                  <div class="col">
+                     <a id="viewimage" style="font-size: 16px" class="btn btn-lg btn-block btn-305" hidden="true" 
+                     	onclick="window.open(this.href, 'newwindow', 'width=700, height=610, resizable=0, location=0'); 
+       							 return false;"></a>
+                  </div>
+               </div>
+              
+		 	</div> 
+		 	<div class="col-9"> <!-- GroupBox para las listas de medicos y procedimientos class="btn btn-lg btn-block btn-305" -->
+				<div class="card bg-white card-border-diferent" >
+			 		<form id="f1"  th:object="${client}" method="get">
+						<div th:text="${cardHeader}" class="card-header py-1 font-weight-bold text-white " align="center" 
+							 style="background-color:#101F3A"></div>
+						<div class="card-body" align="justify">
+							<div class="row">
+								<div class="col-3" > <!-- GroupBox para las botones con los medicos -->
+									<div class="card text-305 bg-white border-305">
+										<div th:text="${doctorlisth}" class="card-header py-1 card-border-diferent font-weight-bold" 
+											 align="center"></div>
+										<div class="card-body" align="left" >
+											<a th:each="d: ${doctorlist}" class="btn btn-lg btn-block btn-305"
+											   th:href="@{/choice_procedure_by_doctor/} + ${d.getId()}"
+				   				  			   th:text="${d.getName()} + ${d.getShortDate()}"  style="font-size: 15px"></a>	
+										</div>
+									</div>
+								</div>
+								<div class="col-9"> <!-- GroupBox para las listas de procedimientos -->
+									<div class="card bg-white text-305 border-305">
+										<div th:text="${procedurelisth}" class="text-white py-1 card-header font-weight-bold" 
+											 style="background-color:#101F3A" align="center"></div>
+										<div class="card-body" align="right">
+											<div class="container">
+										    	<h4 th:unless="${procedurelist}" th:text="${procedurelistempty}" align="center" style="font-size: 18px"></h4>
+										   	</div>
+										   	<div class="container procedures">
+												<div th:each="p: ${procedurelist}" class="row">
+													<div class="mx-3"> 
+														<input type="radio" th:field="*{p1}" th:value="${p.getId()}" >
+													</div>
+													<div class="mx-1">
+														<label th:for="${#ids.prev('p1')}" th:text="${p.getName()}" onclick="fillButton(this.innerText)"></label>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									 <!-- aqui poner si hay promos para ese doctor -->
+									<div th:if="${promo}" class="alert alert-dismissible fade show border-305 font-weight-bold my-2" align="center" role="alert" 
+								         style="background-color:#FFFFFF; border-width: 2px">
+								    	<a id="viewpromo" style="font-size: 16px;" class="text-305"
+					               			 	th:text="'View actives deals for ' + ${doctorName}" 
+					               			 	th:href="@{/view-active-promo/} + ${doctorId}"
+					                     		onclick="window.open(this.href, 'newwindow', 'width=800, height=770, resizable=0, location=0'); return false;">
+					       					 </a>
+								            <button type="button" class="close" style="color:#ff0000" data-dismiss="alert" aria-label="Close">
+								           		<span class="fas fa-gifts"  style="color:#ff0000" aria-hidden="true"></span>
+								            </button>
+								    </div>
+					               <!-- aqui poner si hay promos para ese doctor -->
+<!-- 									<div class="alert alert-dismissible fade show border-danger font-weight-bold my-2" align="center" role="alert"  -->
+<!-- 								         style="background-color:#FFFFFF; border-width: 2px"> -->
+<!-- 								    	<span id="remark" style="font-size: 16px;" class="text-305" th:text="''"></span> -->
+<!-- 								            <button type="button" class="close" style="color:#ff0000" data-dismiss="alert" aria-label="Close"> -->
+<!-- 								           		<span  style="color:#ff0000" aria-hidden="true">X</span> -->
+<!-- 								            </button> -->
+<!-- 								    </div> -->
+								</div>
+		 					</div>
+							<hr/>
+							<div class="row">
+								<div class="col-4">
+								   <input type="button" value="Choice procedure for combo" class="btn btn-block text-white" style="background-color:#101F3A;"
+								          onClick="actionForm(this.form.id, '/choice-combo-by-doctor-by-p1'); return false;" />
+	  							</div>
+								<div class="col-4">
+								   <a type="button" th:text="'Back to condition evaluation'" class="btn btn-block text-white" style="background-color:#101F3A;"
+								          th:href="@{/r1} +'/'+ ${client.id}"> </a>
+	  							</div>
+	  							<div class="col-4">
+									<input type="button" value="Go to summary" class="btn btn-block btn-305"
+								   		   onClick="actionForm(this.form.id, '/result'); return false;" />
+	  							</div>
+	  						</div>
+						</div>
+					</form>
+				</div>
+	  	   </div>
+	   </div>
+      </div>
+	<footer th:replace="layout/layout-evaluation :: footer"></footer>
+	<script
+		th:replace="js/twoForm :: javascript2Form">
+	</script>
+</body>
+</html>

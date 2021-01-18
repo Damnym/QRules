@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	  <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+<head th:replace="layout/layout-evaluation :: head"></head>
+<body style="background-color: #4C576C">
+	<header th:replace="layout/layout-evaluation :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305">
+			<div th:text="${msg}" class="card-header text-white font-weight-bold" style="background-color:#101F3A" align="center"></div>
+			<div class="card-body" align="left">
+				<div class="row">
+					<div class="col-11">
+						<div class="row">
+							<div class="col-3">
+								<ul class="list-group">
+									<li class="list-group-item list-group-item-dark border-305 py-1">
+										<span th:text="'Fullname: '" class="font-weight-bold"></span>
+										<span th:text="${client.name} + ' ' + ${client.surname}" ></span> 
+									</li>
+									<li class="list-group-item borderlr305 py-1">
+										<span th:text="'Age: '" class="font-weight-bold" ></span>
+										<span th:text="${client.age}"></span> 
+										<span th:text="'Gender: '" class="font-weight-bold" ></span>
+										<span th:text="${client.gender}"></span> 
+									</li>
+									<li class="list-group-item borderlr305 py-1">
+										<span th:text="'Mobile phone number: '" class="font-weight-bold" ></span>
+										<span th:text="${client.mobile}"></span> 
+									</li>
+									<li class="list-group-item borderlr305 py-1">
+										<span th:text="'Email: '" class="font-weight-bold" ></span>
+										<span th:text="${client.email}"></span> 
+									</li>
+									<li class="list-group-item borderlr305 py-1" style="border-bottom-width:1px; border-bottom-color: #101F3A;">
+										<span th:text="'Subscription date: '" class="font-weight-bold" ></span>
+										<span th:text="${client.createAt}"></span>  
+									</li>
+								</ul>
+							</div>
+							<div class="col-9">
+								<div th:if="${#lists.isEmpty(client.superOrderList)}" class="alert alert-dismissible fade show border-danger my-2" align="center" 
+								     role="alert" style="background-color:#FFFFFF;">
+  									<span th:text="'The client &quot' + ${client.name} + ' ' + ${client.surname} + '&quot has no orders registered in his name.'" 
+  											 style="color: #101F3A "></span>
+  										<a th:href="@{/r1/} + ${client.id}" style="color:#101F3A; text-decoration: underline;" th:text="${'Begin a process'}" 
+  										   data-toggle="tooltip" data-placement="left" title="New process"></a>	  
+  									 	<button type="button" class="close" style="color:#101F3A" data-dismiss="alert" aria-label="Close">
+  									 		<span aria-hidden="true">&times;</span>
+ 										</button>
+									</div>
+									<table th:if="${not #lists.isEmpty(client.superOrderList)}" class="table table-striped hover display compact" id="client-table-list" 
+											style="font-size: 14px;"> 
+										<thead align="center" style="background-color: #101F3A; color: #FFFFFF">
+											<tr>
+												<th hidden="true" scope="col">Id</th>
+												<th scope="col">Date</th>
+												<th scope="col">Procedures</th>
+												<th scope="col">Total price</th>
+												<th scope="col">Suborder amount</th>
+												<th th:text="'Actions'" sec:authorize="hasRole('ROLE_USER')" scope="col"></th> <!-- DELETE DETAILS -->
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="sOrder: ${client.superOrderList}">
+												<td th:text="${sOrder.id}" hidden="true" align="center" class="font-weight-bold"></td>
+												<td th:text="${sOrder.date}" align="center" class="font-weight-bold align-middle"></td>
+												<td>
+													<ul th:each="orders: ${sOrder.orderList}"class="list-group">
+														<li th:each="procedure: ${orders.procedureList}" class="list-group-item py-1" 
+															style="border-width: 0px; background-color: transparent;">
+															<span th:text="${procedure.procedure.name}"></span>
+														</li>
+													</ul>
+												</td>
+<!-- 												<td th:text="300" align="right" class="align-middle"></td> -->
+												<td th:text="${sOrder.getTotalOrder()}" align="right" class="align-middle"></td>
+												<td th:text="${sOrder.orderList.size()}" align="center" class="align-middle" 
+													style="border-right-width: 1px; border-right-style: solid;"></td>
+												<td sec:authorize="hasRole('ROLE_ADMIN')" align="center" class="align-middle">
+<!-- 										Eliminar factura -->
+													<a th:href="@{/clients/deleteSOrder/} + ${sOrder.id} + '/' + ${client.id}" 
+													   onclick="return confirm('Delete this Order??');" class="btn fas fa-eraser" sec:authorize="hasRole('ROLE_ADMIN')"></a>
+<!-- 										Detalles factura -->
+													<a th:href="@{'/orders/view-order/'} + ${sOrder.getId()}" 
+													class="btn fas fa-search"></a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="col-1">
+							<div class="row mx-4 py-3" >
+								<a th:href="@{/r1/} + ${client.id}" data-toggle="tooltip" data-placement="left" title="New process" class="btn fas fa-calendar-week fa-2x">
+								</a>
+							</div>
+							<div class="row mx-4 py-4">
+								<a th:href="@{/clients/form/} + ${client.id}" data-toggle="tooltip" data-placement="left" th:title="'Edit client ' + ${client.name}"
+									class="btn fas fa-pencil-alt  fa-2x"></a>
+							</div>
+							<div class="row mx-4 py-3">
+								<a th:href="@{/clients/delete/} + ${client.id}" onclick="return confirm('Do you want to delete the client?');"
+								   data-toggle="tooltip" data-placement="left" th:title="'Delete client ' + ${client.name}" class="btn fas fa-eraser fa-2x"></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+	<footer th:replace="layout/layout-evaluation :: footer"></footer>
+	<script th:replace="clients/js/clients-js.html :: clientsUtils"></script>
+	<script th:src="@{/js/jquery.dataTables.min.js}"></script>
+</body>
+</html>

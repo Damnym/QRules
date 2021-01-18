@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/layout-combo :: head">
+</head>
+<body>
+	<header th:replace="layout/layout-combo :: header"></header>
+	<div class="container mb-4" style="margin-top: 5rem; font-size: 14px" align="center">
+		<div class="row">
+			<div class="col">
+				<div class="card bg-white border-305" style="width: 100%;">
+					<div th:if="${procedure}" class="card-header py-1 border-305 font-weight-bold text-white" th:text="${msg} + ${procedure.name}" 
+						 align="center" style="background-color:#101F3A"></div>
+					<div th:unless="${procedure}"class="card-header py-1 border-305 font-weight-bold text-white" th:text="${msg}" 
+						 align="center" style="background-color:#101F3A"></div>
+					<div class="card-body">
+                      
+						<form id="admincombos" th:object="${procedure}" method="post" th:action="@{/combo/list-combo}"> <!--  th:object="${doctor}"  -->
+							<div class="row" align="center">
+								<div class="mb-1 col-3">
+									<div class="row">
+										<div class="col">
+											<span class="input-group-text font-weight-bold py-1" id="labelP1">Choose a procedure:</span>
+										</div>
+							  		</div>
+							  		<div class="row">
+										<div class="col">
+											<a id="linkprocedure" th:href="@{/combo/list-combo/}" class="a a-noline">
+											<select id="comboP1" name="comboP1" class="form-control" size="10em" aria-label="labelP1" aria-describedby="labelP1"> <!-- th:field="*{country}" -->
+												<option th:each="procedure: ${proceduresAll}" 
+															th:text="${procedure.name}"
+															th:value="${procedure.id}"
+															onclick="itemsHelper.choseProcedure(this.value);">
+												</option>
+											</select>
+											</a>
+										</div>	
+							  		</div>
+								</div>
+								
+								<div th:if="${procedure} != null"  class="col-9">
+									<div class="row">
+										<div class="col">
+											<div class="card bg-white border-305" style="width: 100%;">
+												<div class="card-header py-1 border-305 font-weight-bold text-white" th:text="${msg} + ${procedure.name}" 
+												     align="center" style="background-color:#101F3A"></div>
+												<div class="card-body ">
+													<div class="container combos">
+													      <div  th:each="proc: ${procedures}" class="row">
+														     <div class=""> 
+															    <input type="checkbox" th:value="${proc.id}"  th:field="*{comboList}" 
+															    	   th:checked="${#lists.contains(procedure.comboList, proc)}">  
+															 </div>
+															 <div class="mx-2"> 
+															    <label  th:text="${proc.name}" th:for="${#ids.prev('comboList')}"></label>
+													 		 </div>
+													      </div>
+													</div>
+													
+												</div>
+											</div>
+										</div>
+									</div>
+<!-- 									<div class="row mt-1"> -->
+<!-- 										<div class="col"> -->
+<!-- 											<div class="card bg-white border-305" style="width: 100%;"> -->
+<!-- 												<div class="card-header py-1 border-305 font-weight-bold text-white" th:text="${msgNot} + ${procedure.name}"  -->
+<!-- 												     align="center" style="background-color:#101F3A"></div> -->
+<!-- 												<div class="card-body "> -->
+<!-- 													<div class="container combos"> -->
+<!-- 													      <div th:unless="${#lists.isEmpty(proceduresNotComboWithP1)}" th:each="procedure: ${proceduresNotComboWithP1}"  -->
+<!-- 													      	   class="row"> -->
+<!-- 														     <div class=""> th:field="*{sufferingsListPre}" th:checked="${#lists.contains(doctor.sufferingsListPre, s)}" -->
+<!-- 															    <input type="checkbox"  th:value="${procedure.id}" >  -->
+<!-- 															 </div> -->
+<!-- 															 <div class="mx-2"> th:for="${#ids.prev('sufferingsListPre')}" -->
+<!-- 															    <label  th:text="${procedure.name}"></label> -->
+<!-- 													 		 </div> -->
+<!-- 													      </div> -->
+<!-- 													</div> -->
+<!-- 													<div th:if="${#lists.isEmpty(proceduresNotComboWithP1)}" class="row"> -->
+<!-- 									                  	<div class="col" align="center"> -->
+<!-- 															<span class="far fa-folder-open fa-6x"></span> -->
+<!-- 									                   	</div> -->
+<!-- 									                </div> -->
+<!-- 												</div> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+<!-- 									</div> -->
+								</div>
+								
+							</div>
+						
+<!--     	                	<span hidden="true" th:id="idDoctor" th:text="${doctor.id}" class="form-control"> </span> -->
+        	            
+<!-- 							<div class="container newspaper1"> -->
+<!-- 						      <div th:each="s,state : ${suffering}" class="row"> -->
+<!-- 							     <div class="">  -->
+<!-- 								    <input type="checkbox" th:field="*{sufferingsListPre}" th:value="${s.id}" th:checked="${#lists.contains(doctor.sufferingsListPre, s)}">  -->
+<!-- 								 </div> -->
+<!-- 								 <div class="mx-2">  -->
+<!-- 								    <label th:for="${#ids.prev('sufferingsListPre')}" th:text="${s.name}"></label> -->
+<!-- 						 		 </div> -->
+<!-- 						      </div> -->
+<!-- 						   </div> -->
+<!-- 					 SUBMIT   -->
+							<div class="row">
+		  						<div sec:authorize="hasRole('ROLE_ADMIN')" class="col mt-3" align="right">  
+	  								<input type="submit" th:value="'Update'" class="btn btn-block btn-305"/>
+	  							</div>
+	  						</div> 
+<!-- 							<div class="row mt-4"> -->
+<!-- 								<div class="col-3"> -->
+<!-- 									<a th:href="@{/doctor/add-procedure/} + ${doctor.id}" th:text="${bAddProcedure}" class="btn btn-block btn-secondary"></a>	 -->
+<!-- 								</div> -->
+<!-- 								<div class="col-3"> -->
+<!-- 									<a th:href="@{/doctor/add-combo/} + ${doctor.id}" th:text="${bAddCombo}" class="btn  btn-block btn-secondary"></a>	 -->
+<!-- 								</div> -->
+<!-- 								<div class="col-6"> -->
+<!-- 									<a th:href="@{/doctor/list}" th:text="${bContinue}" class="btn  btn-block btn-dark"></a>		 -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-doctor :: footer"></footer>
+    <script th:replace="doctor/js/utils-js.html :: utils"></script>
+    <script th:replace="js/twoForm :: javascript2Form"></script>
+     <script th:replace="combo/js/utils-js.html :: utils"></script>
+</body>
+</html>

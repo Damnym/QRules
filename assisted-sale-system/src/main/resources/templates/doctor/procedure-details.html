@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-doctor :: head"></head>
+<body>
+	<header th:replace="layout/layout-doctor :: header"></header>
+	<div class="container mb-4" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305" style="width: 90%;">
+			<div class="card-header py-2 border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
+			<div class="card-body " align="left">
+				<form th:object="${doctor}" th:action="@{/doctor/form}" method="post" enctype="multipart/form-data" >
+					<div class="row">
+						<div class="col-9"> <!-- GroupBox para los botones con los procedimientos -->
+							<div class="card bg-white text-305 border-305">
+								<div th:text="${procedurelisth}" class="text-white card-header py-2 font-weight-bold" style="background-color:#101F3A" align="center"></div>
+								<div class="card-body" align="right">
+									<div class="container proceduresb2">
+										<a th:each="p: ${procedurelist}" class="btn btn-block btn-305 py-2"
+  									  	   th:href="@{/procedure-details/} + ${p.getId()}"
+				   						   th:text="${p.getName()}"></a>	
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<footer th:replace="layout/layout-doctor :: footer"></footer>
+    <script th:replace="doctor/js/utils-js.html :: utils"></script>
+</body>
+</html>

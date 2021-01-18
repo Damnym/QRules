@@ -37,13 +37,11 @@
 			                       </div>
 	                       		</div>
 	                        </div>
-	                        <div class="row mt-1">
+	                        <div class="row mt-1" style="height: 10em;">
 	                        	<div class="col">
 	                        		<div class="card border-warning card-border-diferent">
-					            	<div class="card-body"><!-- Observaciones-->
-					                	<span th:text="'Observation: '" class="font-weight-bold"></span> 
-					                    <span th:text="${order.observation}"></span>
-					                 </div>
+	                        			<div th:text="'Observations'" class="card-header py-2 font-weight-bold bg-warning"  align="center"></div>
+					                    <textarea th:text="${order.observation}" readonly="readonly" style="height:10em; border-width: 0" class="px-3"></textarea>
 					                 </div>
 	                        	</div>
 	                        </div>
@@ -68,13 +66,24 @@
 	                                       	</tr>
 		                                </tbody>
 	    	                        </table>
+	    	                        <h6 th:if="${order.discount} > 0" th:text="'* The order has discount in items'"></h6>
 	                           </div>
 	                        </div>
 	                     </div>          
 	                 </div>
 	                 <div class="row"> <!-- Precio total -->
-					 	<div class="col">
-	                    	<h5 align="right">Total order: <span th:text="'$ ' + ${order.totalOrder}" class="badge badge-success">0</span></h5>
+					 	<div class="col" >
+	                    	<h6 align="right" th:text="'Payment method: ' + ${order.payMethod}" style="text-decoration: underline"></h6>
+	                    	<h6 th:if="${order.vip} != null" align="right" th:text="'VIP price: ' + ${order.vip.priceForVIP}" style="text-decoration: underline"></h6>
+	                    	<h6 align="right">
+	                    		Total order: 
+	                    		<span th:unless="${order.discount} > 0" th:text="'$ ' + ${order.totalOrder}" class="badge badge-success">0</span>
+	                    		<span th:if="${order.discount} > 0" th:text="'$ ' + ${order.totalOrder}" class="badge badge-secondary">0</span>
+	                    	</h6>
+	                    	<h6 th:if="${order.discount} > 0" align="right">Discount: <span th:text="'$ ' + ${order.discount}" class="badge badge-secondary">0</span></h6>
+	                    	<h6 th:if="${order.discount} > 0" align="right">
+	                    		Total order with discount: <span th:text="'$ ' + ${order.totalOrderWithDiscount}" class="badge badge-success">0</span>
+	                    	</h6>
 	                    </div>
 	                 </div>
 	                 <div class="row my-1">

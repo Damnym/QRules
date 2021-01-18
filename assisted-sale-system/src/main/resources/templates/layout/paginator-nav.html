@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	<nav th:fragment="paginator">
+		<ul class="pagination justify-content-center py-4">
+			<li class="page-item">
+			    <span class="page-link bg-light text-dark" th:if="${page.first}">Primera</span> 
+			    <a class="page-link" th:if="${not page.first}" th:href="@{${page.url}(page=0)}">Primera</a>
+			</li>
+			<li class="page-item">
+				<span class="page-link bg-light text-dark" th:if="${not page.hasPrevious}">&laquo</span> 
+			    <a class="page-link" th:if="${page.hasPrevious}" 
+			       th:href="@{${page.url}(page=${page.actualPage-2})}">&laquo</a>
+			</li>
+			<li th:class="${i.actual? 'page-item active':'page-item'}" th:each="i : ${page.pages}">
+				<span class="page-link" th:if="${i.actual}" th:text="${i.number}"></span> 
+			    <a class="page-link" th:if="${not i.actual}" th:href="@{${page.url}(page=${i.number-1})}" 
+			       th:text="${i.number}"></a>
+			</li>
+			<li class="page-item">
+			    <span class="page-link bg-light text-dark" th:if="${not page.hasNext}">&raquo</span> 
+			    <a class="page-link" th:if="${page.hasNext}" 
+			       th:href="@{${page.url}(page=${page.actualPage})}">&raquo</a>
+			</li> 
+			<li class="page-item">
+				<span class="page-link bg-light text-dark" th:if="${page.last}">Última</span> 
+			    <a class="page-link" th:if="${not page.last}" 
+			       th:href="@{${page.url}(page=${page.pagesTotal-1})}">Última</a>
+			</li>
+		</ul>
+	</nav>
+</body>
+</html>

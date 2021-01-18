@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<script type="text/javascript" th:fragment="javascript2Form">
+	function actionForm(formid, act)
+	{
+		alert(1);
+	    document.getElementById(formid).action=act;
+	    document.getElementById(formid).submit();
+	};
+	
+	function actionMethodForm(formid, act, p_g)
+	{
+	    document.getElementById(formid).action=act;
+	    document.getElementById(formid).method=p_g;
+	    document.getElementById(formid).submit();
+	}
+	</script>
+</body>
+</html>

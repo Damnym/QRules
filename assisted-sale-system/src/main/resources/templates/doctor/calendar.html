@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-calendar :: head"></head>
+<body style="background-color: #27344D">
+	<header th:replace="layout/layout-calendar :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center"  >
+		<div class="card bg-white card-border-diferent" align="center" style="width: 60%;"> <!--  -->
+			<div class="card-header py-1 border-305 font-weight-bold text-white" th:text="'Dates availables for each surgeon'" align="center" 
+				  style="background-color:#14233E"></div>
+			<div class="card-body" align="center">
+				<table class="table table-striped  hover display compact" style="font-size: 14px" id="doctor-table-list">
+                     <!-- table-bordered -->
+                        <thead align="center">
+                           <tr>
+                              <th width="20%" th:text="'Surgeon'" scope="col" class="align-middle" align="center"></th>
+                              <th width="40%" th:text="Regular"   scope="col" class="align-middle" align="center"></th>
+                              <th width="40%" th:text="VIP"       scope="col" class="align-middle" align="center"></th>
+                           </tr>
+                        </thead>
+						<tbody>
+                        	<tr th:each="d: ${doctor_list}">
+    							<th th:text="${d.name}" align="justify"></th>
+   								<td align="center"> 
+   									<input type="date" id="date" th:value="${d.date}" />
+ 								</td>  
+  								<td align="center"> 
+  									<input type="date" id="date" th:value="${d.earlyDate}" />
+								</td>
+                           </tr>
+                        </tbody>
+                     </table>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-calendar :: footer"></footer>
+      <script th:replace="doctor/js/utils-js.html :: utils"></script>
+</body>
+</html>

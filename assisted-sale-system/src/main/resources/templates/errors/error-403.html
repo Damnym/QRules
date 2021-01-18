@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/meta-layout :: head"></head>  
+<!-- aqui cambiar el layout -->
+<body>
+	<header th:replace="layout/meta-layout :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<img src="/imgs/error-403.png" class="rounded mx-auto d-block">
+		<div class="alert alert-danger" style="width: 75%; border-color: red">
+		<!-- Se puede usar esto #httpServletRequest.remoteUser o lo que está debajo -->
+			<h5 th:text="${'Sorry ' + #authentication.name + ', you do not have sufficient permissions for this action'}"></h5>
+			<hr />
+			<a class="btn btn-outline-danger" role="button" href="javascript: history.go(-1)" th:text="'Go back'">
+				
+			</a>
+		</div>
+	</div>
+	<footer th:replace="layout/meta-layout :: footer"></footer>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-procedure :: head"></head>
+<body>
+	<header th:replace="layout/layout-procedure :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305" style="width: 40%;">
+			<div class="card-header py-2 border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
+			<div class="card-body " align="left">
+				<ul class="list-group border-success">
+					<li th:text="'Name: '+ ${doctor.name}" class="list-group-item py-2 list-group-item py-2 card-border-diferent" ></li>
+					<li th:text="'Surname: '+ ${doctor.surname}" class="list-group-item py-2 text-left card-border-light-diferent"></li>
+					<li th:text="'Available date: '+ ${doctor.date}" class="list-group-item py-2 text-left card-border-light-diferent"></li>
+					<li th:text="'Early date: '+ ${doctor.earlyDate}" class="list-group-item py-2 text-left card-border-light-diferent"></li>
+					<li th:if="${doctor.minBMI}" th:text="'Minimun BMI for surgery: '+ ${doctor.minBMI}" class="list-group-item py-2 text-left card-border-light-diferent"></li>
+					<li th:if="${doctor.maxBMI}" th:text="'Maximun BMI for surgery: '+ ${doctor.maxBMI}" class="list-group-item py-2 text-left card-border-light-diferent"></li>
+					<li th:if="${doctor.minWeight}" th:text="'Minimun weight for surgery: '+ ${doctor.minWeight}" class="list-group-item py-2 text-left card-border-light-diferent"></li>
+					<li th:if="${doctor.maxWeight}" th:text="'Maximun weight for surgery: '+ ${doctor.maxWeight}" class="list-group-item py-2 text-left card-border-light-diferent"></li>
+					<li th:if="${doctor.requiredCellSaver}" th:text="'Require Cell Saver for surgery'" class="list-group-item py-2 text-left card-border-light-diferent"></li>
+				</ul>
+				<div class="row mt-4">
+					<div class="col-6">
+						<a th:href="@{/doctor/add-condition/} + ${doctor.id}" th:text="${bAddCondition}" class="btn  btn-block btn-305"></a>	
+					</div>
+					<div class="col-6">
+						<a th:href="@{/doctor/add-procedure/} + ${doctor.id}" th:text="${bAddProcedure}" class="btn  btn-block btn-305"></a>	
+					</div>
+				</div>
+				<div class="row mt-2" >	
+					<div class="col-6">
+						<a th:href="@{/doctor/edit/} + ${doctor.id}" th:text="${bupdateData}" class="btn  btn-block btn-secondary"></a>	
+					</div>
+					<div class="col-6">
+						<a th:href="@{/doctor/list}" th:text="${bContinue}" class="btn  btn-block btn-dark"></a>	
+					</div>
+				</div>	
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-procedure :: footer"></footer>
+      <script th:replace="procedure/js/util-js.html :: util"></script>
+</body>
+</html>

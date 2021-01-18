@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-evaluation :: head"></head>
+<body style="font-size: 15px; background-color: #4C576C">
+	<header th:replace="layout/layout-evaluation :: header"></header>
+   <div class="container" style="margin-top: 5rem">
+		<div class="row">
+	   		<div class="col-3"> <!-- GroupBox de las elecciones -->
+				<ul th:if="${choices}" class="list-group border-success" >
+					<li th:text="${choice_h}" 
+						class="list-group-item py-2 list-group-item-success card-bordergreen-diferent text-center font-weight-bold">
+					</li>
+					<li th:each="c: ${choices}" th:text="${c}" class="list-group-item text-left card-bordergreen-diferent"></li>
+				</ul>
+		 	</div> 
+		 	<div class="col-9"> <!-- GroupBox para las listas de medicos y procedimientos -->
+				<div class="card bg-white card-border-diferent" >  
+			 		<form th:action="@{/result}" th:object="${client}" method="get">
+						<div th:text="${cardHeader}" class="card-header py-2 font-weight-bold text-white " align="center" 
+							 style="background-color:#101F3A">></div>
+						<div class="card-body" align="justify">
+							<div class="row">
+								<div class="col-3"> <!-- GroupBox para las listas de medicos -->
+									<div class="card text-305 bg-white border-305" >
+										<div th:text="${doctorlisth}" class="card-header card-border-diferent font-weight-bold" align="center"></div>
+										<div class="card-body" align="left">
+											<a th:each="d: ${doctorlist}" class="btn btn-lg btn-block btn-305"
+											   th:href="@{/choice-combo-by-doctor-by-p1/} + ${d.getId()}"
+				   				  			   th:text="${d.getName()} + ${d.getShortDate()}" style="font-size: 15px"></a>	
+										</div>
+									</div>
+								</div>
+								<div class="col-9"> <!-- GroupBox para las listas de procedimientos -->
+									<div class="card bg-white text-305 border-305" >
+										<div th:text="${procedurelisth}" class="text-white card-header font-weight-bold" style="background-color:#101F3A" align="center"></div>
+										<div class="card-body" align="right">
+											<div class="container">
+										   		<h4 th:unless="${procedurelist}" th:text="${procedurelistempty}" align="center" style="font-size: 18px"></h4>
+										   	</div>
+											<div class="container procedures">
+												<div th:if="${procedurelist}" th:each="p: ${procedurelist}" class="row">
+													<div class="mx-3"> 
+														<input type="radio" th:field="*{p2}" th:value="${p.getId()}">
+													</div>
+													<div class="mx-1">
+														<label th:for="${#ids.prev('p2')}" th:text="${p.getName()}"></label>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+		 					</div>
+							<hr/>
+							<div class="row"> 
+								<div class="col-6">
+									<a th:href="@{/choice_procedure_by_doctor/} + ${client.getDoctor()}" 
+									   th:text="${'Choice other principal procedure'}" class="btn btn-block text-white" style="background-color:#101F3A;"></a>	
+	  							</div>
+	  							<div class="col-6">
+									<input type="submit" value="Go to summary" class="btn btn-block btn-305">
+	  							</div>
+	  						</div>
+						</div>
+					</form>
+				</div>
+	  	   </div>
+	   </div>
+      </div>
+	<footer th:replace="layout/layout-evaluation :: footer"></footer>
+</body>
+</html>

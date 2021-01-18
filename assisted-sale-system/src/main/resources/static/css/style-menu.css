@@ -1,0 +1,175 @@
+#sidenav-305 a {
+  position: fixed;
+  left: -80px;
+  transition: 0.4s;
+  box-shadow: 3px 3px #101F3A;
+  padding: 8px;
+  width: 116px;
+  text-decoration: none;
+  text-align: right;
+  font-size: 16px;
+  color: #ffffff;
+  border-radius: 0 15px 15px 0;
+  border-top-color: #101F3A;
+  border-top-width: 5px;
+}
+
+#sidenav-305 a:hover {
+  left: 0;
+  background-color: #101F3A;
+  color: #ffffff;
+/*  box-shadow: 0px 0px #101F3A;" */
+}
+
+#sidenav-305 i:hover {
+  color: #ffffff;
+}
+
+#conditions {
+  top: 10%;
+  background-color: #f;
+}
+
+#conditions-active {
+  top: 10%;
+  background-color: #101F3A;
+}
+
+#doctor {
+  top: 18%;
+  background-color: #f;
+}
+#doctor-active {
+  top: 18%;
+  background-color: #101F3A;
+}
+
+
+#client {
+  top: 26%;
+  background-color: #f;
+}
+#client-active {
+  top: 26%;
+  background-color: #101F3A;
+}
+
+
+#item {
+  top: 34%;
+  background-color: #f
+}
+#item-active {
+  top: 34%;
+  background-color: #101F3A
+}
+
+
+#procedure {
+  top: 42%;
+  background-color: #f
+}
+#procedure-active {
+  top: 42%;
+  background-color: #101F3A
+}
+
+
+#combo {
+  top: 50%;
+  background-color: #f
+}
+#combo-active {
+  top: 50%;
+  background-color: #101F3A
+}
+
+/* sdfdfdffdfdfdfdfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsf */
+
+#sidenavi-305 a {
+  position: fixed;
+  left: -160px;
+  transition: 0.6s;
+  box-shadow: 3px 3px #101F3A;
+  padding: 8px;
+  width: 210px;
+  text-decoration: none;
+  text-align: right;
+  font-size: 16px;
+  border-radius: 0 15px 15px 0;
+  border-top-color: #101F3A;
+  border-top-width: 0px;
+  font-weight: bold;
+}
+#sidenavi-305 a:hover {
+  left: 0;
+  background-color: #ffffff;
+  color: #101F3A;
+}
+
+#sidenavinside-305 a {
+  position: fixed;
+  left: -160px;
+  transition: 0.6s;
+  box-shadow: 3px 3px #101F3A;
+  padding: 8px;
+  width: 210px;
+  text-decoration: none;
+  text-align: right;
+  font-size: 16px;
+  border-radius: 0 15px 15px 0;
+  border-top-color: #101F3A;
+  border-top-width: 0px;
+  font-weight: bold;
+}
+#sidenavinside-305 a:hover {
+  left: -160;
+  background-color: #ffffff;
+  color: #ffffff;
+}
+
+#calendar {
+  top: 38%;
+  background-color: #27344D;
+  color: #27344D;
+}
+#calendar-active {
+  top: 38%;
+  background-color: #ffffff;
+  color: #ffffff; 
+}
+
+
+#help {
+  top: 28%;
+  background-color: #888F9D;
+  color: #888F9D;
+}
+#help-active {
+  top: 28%;
+  background-color: #ffffff;
+  color: #ffffff; 
+  left: 0px;
+}
+
+
+#financed {
+  top: 18%;
+  background-color: #313D55;
+  color: #313D55;
+}
+
+#evaluation {
+  top: 48%;
+  background-color: #4C576C;
+  color: #4C576C;
+}
+#evaluation-active {
+  top: 48%;
+  background-color: #ffffff;
+  color: #ffffff;
+}
+
+
+
+

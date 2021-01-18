@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+   <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+   <head th:replace="layout/layout-doctor :: head"></head>
+   <body>
+      <header th:replace="layout/layout-doctor :: header"></header>
+      <div class="container mb-4" style="margin-top: 5rem" align="center">
+         <div class="card bg-white border-305" style="width: 80%;">
+            <div th:text="${tittle} + ${doctor.name}" class="card-header border-305 py-2 text-white font-weight-bold" style="background-color: #101F3A" align="center"></div>
+            <div class="card-body">
+               <div class="row">
+                  <div class="col" align="right">
+                      <a sec:authorize="hasRole('ROLE_ADMIN')" data-toggle="tooltip" data-placement="left" 
+                      	 th:href="@{/doctor/add-condition/} + ${doctor.id}" title="Add condition to surgeon">
+                      	 <span class="a a-305 fas fa-notes-medical fa-2x"></span>  
+                      	 <span class="a a-305 fas fa-long-arrow-alt-right"></span>  
+                      	 <span class="a a-305 fas fas fa-user-md fa-2x"></span>  
+                      </a>
+                  </div>
+               </div>
+               <div class="row py-3">
+                  <div class="col">
+                  	 
+                     <table th:unless="${#lists.isEmpty(doctor.sufferingsList)}" id="doctor-table-list" class="table table-striped hover display compact" 
+                     		style="font-size: 14px">
+                     <!-- table-bordered -->
+                        <thead align="center">
+                           <tr>
+                              <th width="25%" th:text="'Condition'" scope="col" class="align-middle" align="center"></th>
+                              <th width="65%" th:text="'Remarks'" scope="col" class="align-middle" align="center"></th>
+                              <th width="10%" th:text="Remove" sec:authorize="hasRole('ROLE_ADMIN')" scope="col" class="align-middle" align="center"></th>
+                           </tr>
+                        </thead>
+						<tbody>
+                        	<tr th:each="condOfDoctor: ${doctor.sufferingsList}">
+        	<!-- Name -->    	<td th:text="${condOfDoctor.suffering.name}" align="justify"></td>
+   			<!-- Remarks --> 	<td th:text="${condOfDoctor.suffering.warning}" align="justify"></td>
+			<!-- Remove -->		<td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
+                                	<a th:href="'/doctor/delete-condition/' + ${condOfDoctor.id} + '/' + ${doctor.id}" type="button"
+                                	   onclick="return confirm('Do you want to unlink this condition from this Surgeon?');"  
+                                	   class="btn fas fa-eraser"></a> 
+                              	</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                     <div th:if="${#lists.isEmpty(doctor.sufferingsList)}" class="row">
+                     	<div class="col" align="center">
+							<span class="far fa-folder-open fa-10x"></span>
+                     	</div>
+                  </div>
+               </div>   
+            </div>
+         </div>
+      </div>
+      </div>
+      <footer th:replace="layout/layout-doctor :: footer"></footer>
+      <script th:src="@{/js/jquery.dataTables.min.js}"></script>
+      <script th:replace="doctor/js/utils-js.html :: utils"></script>
+   </body>
+</html>

@@ -29,7 +29,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "clients")
-public class Client implements Serializable { private static final long serialVersionUID = 6439305829659849320L;
+public class Client implements Serializable 
+{ private static final long serialVersionUID = 6439305829659849320L;
 // DB
 //****
 	@Id
@@ -85,6 +86,12 @@ public class Client implements Serializable { private static final long serialVe
 	@Transient  
 	private List<Procedure> aditionalProcedures;
 	
+	@Transient  
+	private List<Procedure> vipAditionalProcedures;
+
+	@Transient  
+	private VIP vip ;
+	
 	private boolean moreOneLipo;
 	
 	private boolean hasWeightLoss;
@@ -106,6 +113,15 @@ public class Client implements Serializable { private static final long serialVe
 	private Date date;
 	
 	//  <<<<< IMPLEMENTATION >>>>>
+	
+
+	public Client() 
+	{
+		conditionsList = new ArrayList<Suffering>(); 
+		superOrderList  = new ArrayList<SuperOrder>();  // aqui era order 
+		aditionalProcedures = new ArrayList<Procedure>();
+		vipAditionalProcedures = new ArrayList<Procedure>();
+	}
 	
 	public boolean isMoreOneLipo() {
 		return moreOneLipo;
@@ -350,12 +366,6 @@ public class Client implements Serializable { private static final long serialVe
 		this.conditionsList = conditionsList;
 	}
 
-	public Client() {
-		conditionsList = new ArrayList<Suffering>(); 
-		superOrderList  = new ArrayList<SuperOrder>();  // aqui era order 
-		aditionalProcedures = new ArrayList<Procedure>();
-	}
-
 	public boolean isMakeCellSaver() {
 		return makeCellSaver;
 	}
@@ -370,6 +380,22 @@ public class Client implements Serializable { private static final long serialVe
 
 	public void setSuperOrderList(List<SuperOrder> superOrderList) {
 		this.superOrderList = superOrderList;
+	}
+
+	public List<Procedure> getVipAditionalProcedures() {
+		return vipAditionalProcedures;
+	}
+
+	public void setVipAditionalProcedures(List<Procedure> vipAditionalProcedures) {
+		this.vipAditionalProcedures = vipAditionalProcedures;
+	}
+
+	public VIP getVip() {
+		return vip;
+	}
+
+	public void setVip(VIP vip) {
+		this.vip = vip;
 	}
 
 //	public List<Order> getOrderList() {

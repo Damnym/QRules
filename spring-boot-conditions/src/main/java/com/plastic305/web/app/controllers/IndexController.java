@@ -23,14 +23,18 @@ import com.plastic305.web.app.models.entities.Client;
 import com.plastic305.web.app.models.entities.Order;
 import com.plastic305.web.app.models.entities.OrderProcedure;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.Promos305;
 import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.models.entities.SuperOrder;
 import com.plastic305.web.app.models.entities.SuperOrderStatus;
+import com.plastic305.web.app.models.entities.VIPDoctorProcedure;
 import com.plastic305.web.app.services.IClientService;
 import com.plastic305.web.app.services.IDoctorService;
 import com.plastic305.web.app.services.IProcedureService;
 import com.plastic305.web.app.services.IProductService;
+import com.plastic305.web.app.services.IPromo305Service;
 import com.plastic305.web.app.services.ISufferingService;
+import com.plastic305.web.app.services.IVIPService;
 
 @Secured("ROLE_USER")
 @Controller
@@ -67,6 +71,10 @@ public class IndexController {
 	private static final String needCellT = "Information needed to perform Lipo" ;
 	private static final String aditionalProcedureH = "Select aditional procedures" ;
 	
+	private static final String observationCellByWeightLoss = "Added mandatory Cell Saver item for presenting a history of weight loss surgery. " ;
+	private static final String observationCellByMoreOneLipo = "Added mandatory Cell saver due to having performed another similar surgery previously. " ;
+	private static final String observationCellIncluded = "The Cell Saver is included in the price of the surgery" ;
+
 	private static final Double hbgFUpperLimit = Double.valueOf(16) ;
 	private static final Double hbgFLowerLimit = Double.valueOf(12) ;
 	private static final Double hbgMUpperLimit = Double.valueOf(18) ;
@@ -80,6 +88,8 @@ public class IndexController {
 	@Autowired IDoctorService dService;
 	@Autowired IProcedureService pService;
 	@Autowired IProductService prodService; 
+	@Autowired IPromo305Service promo305Service; 
+	@Autowired IVIPService vipService; 
 	
 	
 // *******************      
@@ -150,7 +160,8 @@ public class IndexController {
 		String url = "redirect:/doctor_or_procedure" ;
 		cliente.setAccepted(Long.valueOf(1));
 		for (Suffering c: cliente.getConditionsList()) {
-			if (sService.getDoctorCountsByConditionsId(c.getId())!=0 && sService.getDoctorCountsByConditionsId(c.getId()) < dService.findAll().size())  // Quité esto pq creo q está de más	url = "redirect:/somedoctors";
+			if (sService.getDoctorCountsByConditionsId(c.getId())!=0 && sService.getDoctorCountsByConditionsId(c.getId()) < dService.findAll().size())  
+				// Quité esto pq creo q está de más	url = "redirect:/somedoctors";
 				cliente.setAccepted(Long.valueOf(2));
 			  else if (sService.getDoctorCountsByConditionsId(c.getId())==0) {
 				cliente.setAccepted(Long.valueOf(0));  
@@ -313,7 +324,8 @@ public class IndexController {
 // *******************
 // *******EN USO******
 	@GetMapping({"choice_procedure_by_doctor/{iddoct}"})       /// ///    // 30/10/20    EMPEZAR A VER EL TRABAJO CON LOS COMBOS 
-	public String choiceProcedureByDoctorSelect(@PathVariable(value = "iddoct") Long iddoct, Client cliente, Model model, SessionStatus s) {
+	public String choiceProcedureByDoctorSelect(@PathVariable(value = "iddoct") Long iddoct, Client cliente, Model model, SessionStatus s) 
+	{
 		cliente.setDoctor(iddoct);
 		cliente.setP1(null);
 
@@ -325,6 +337,24 @@ public class IndexController {
 		else 
 			model.addAttribute("doctorlist", dService.findAllbyConditions(cliente.getConditionsList())) ;
 		
+		// TRABAJO CON LAS PROMOCIONES ( POR AHORA SOLO LAS Q ESTÁN)
+		//**********************************************************
+		List<Promos305> activesPromos = promo305Service.findActivePromosForDoctor(new Date(), iddoct);  // para obtener las fechas si algo solo coger la fechas
+		List<Date> untilDates = new ArrayList<Date>();
+		for (Promos305 promos305 : activesPromos) 
+			untilDates.add(promos305.getMaxDateValid());
+			// estamos pensando q solo sea una...sino hacer un metodo q en vez de pasar la fecha pase el id de cada activa
+		List<VIPDoctorProcedure> promo = null ;
+		promo = promo305Service.findActivePromosXForDoctor(new Date(), iddoct); // activas para este doctor
+		
+		model.addAttribute("untildates", untilDates);
+		if (promo.size()>0) 
+		{
+		model.addAttribute("promo", promo);
+		model.addAttribute("doctorId", iddoct);
+		model.addAttribute("doctorName", dService.findOne(iddoct).getName());
+		}
+		
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("choices", choices);
 		model.addAttribute("cardHeader", "Choose the surgeon, then the procedure");
@@ -335,6 +365,37 @@ public class IndexController {
 		
 		return "choice_procedure_by_doctor";
 	}		
+	
+	
+	
+	@GetMapping({"view-active-promo/{iddoct}"})       /// ///    // 30/10/20    EMPEZAR A VER EL TRABAJO CON LOS COMBOS 
+	public String viewActivePromoDoct(@PathVariable(value = "iddoct") Long iddoct, Model model) 
+	{
+		// TRABAJO CON LAS PROMOCIONES ( POR AHORA SOLO LAS Q ESTÁN)
+		//**********************************************************
+		List<Promos305> activesPromos = promo305Service.findActivePromos(new Date());  // para obtener las fechas si algo solo coger la fechas
+		List<Date> untilDates = new ArrayList<Date>();
+		for (Promos305 promos305 : activesPromos) 
+			untilDates.add(promos305.getMaxDateValid());
+		// estamos pensando q solo sea una...sino hacer un metodo q en vez de pasar la fecha pase el id de cada activa
+		List<VIPDoctorProcedure> promo = null ;
+		promo = promo305Service.findActivePromosXForDoctor(new Date(), iddoct); // activas para este doctor
+		
+		model.addAttribute("untildates", untilDates);
+		if (promo.size()>0) 
+		{
+			model.addAttribute("promo", promo);
+			model.addAttribute("doctorName", dService.findOne(iddoct).getName());
+		}
+		model.addAttribute("tittle", "Deals of doctor " + dService.findOne(iddoct).getName());
+		
+		
+		
+		return "/promo/view-doctor-promo-sales" ;
+	}
+	
+	
+	
 	
 // *******************
 // *******EN USO******    
@@ -476,14 +537,14 @@ public class IndexController {
 		model.addAttribute("choice_h", "Answers to the questionnaire");
 		model.addAttribute("explanationb", "Only the surgeon: "); 
 		model.addAttribute("explanationc", "perform the procedures on patients who have or are suffering " 
-				                         + cService.getConditionsWithValueNewAll(cliente, 2)
- 										 + " condition(s). Do you agree to be treated by any of these? \r\n Do you want choice the surgeon now or see first the procedures?");
+				                        + cService.getConditionsWithValueNewAll(cliente, 2)
+ 									    + " condition(s). Do you agree to be treated by any of these? \r\n Do you want choice the surgeon now or see first the procedures?");
 		model.addAttribute("tips", "Do you want choice the surgeon now or see first the procedures?");
 		model.addAttribute("doctors", dService.findAllbyConditions(cliente.getConditionsList()));
 		model.addAttribute("tittle", "Some Surgeon for theese Condition");
 		
 		if ((cliente.getGender().equals("Woman") && (cliente.getHbg()>hbgFUpperLimit || cliente.getHbg()<hbgFLowerLimit)) ||  // Mujer con hemoglobina fuera del rango		
-			    (cliente.getGender().equals("Man")   && (cliente.getHbg()>hbgMUpperLimit || cliente.getHbg()<hbgMLowerLimit)))    // Hombre con la hemoglobina fuera del rango
+			    (cliente.getGender().equals("Man")   && (cliente.getHbg()>hbgMUpperLimit || cliente.getHbg()<hbgMLowerLimit)))  // Hombre con la hemoglobina fuera del rango
 				model.addAttribute("hbgOutsideRange", hbgOutsideLimits);
 		
 		return "somedoctors";
@@ -492,7 +553,8 @@ public class IndexController {
 //****************
 // *******EN USO******
 	@GetMapping({"result"})
-	public String result(Client cliente, Model model, SessionStatus st) {  
+	public String result(Client cliente, Model model, SessionStatus st) 
+	{  
 		List <String> choices = new ArrayList<>() ;
 		String observation = notRemarkHeader ;
 		Boolean needAddCell = false ;
@@ -500,9 +562,12 @@ public class IndexController {
 		choices.add("Condition: " + cService.getConditionsListCSV(cliente));
 		observation = cService.getRemarksListCSV(cliente);
 		
-		if (cliente.getDoctor()!=null) {
+		if (cliente.getDoctor()!=null) 
+		{
 			choices.add("Surgeon: " + dService.findOne(cliente.getDoctor()).getName());
 			choices.add("Availability date: " + dService.findOne(cliente.getDoctor()).getDate());
+			choices.add("Availability early date: " + dService.findOne(cliente.getDoctor()).getEarlyDate());
+			
 			if (cliente.getP1()!=null) {
 				choices.add(p1 + pService.findOne(cliente.getP1()).getName()); 
 				model.addAttribute("observation", observation);
@@ -515,7 +580,7 @@ public class IndexController {
 			else  
 				choices.add(decideNO);
 			
-//			// CALCULANDO EL BMI y el Peso     
+			// CALCULANDO EL BMI y el Peso     
 			Double weightA = (cliente.getHeightInches() == null)? cliente.getWeight()*1000/460: cliente.getWeight();  // Por si era en KG, ya están en libras
 
 			if (dService.findOne(cliente.getDoctor()).isUseBMI()) { // Si el doctor se fija en el BMI
@@ -523,14 +588,14 @@ public class IndexController {
 					// si el bmi es mayor q el max
 					model.addAttribute("weightProblem", noAcceptedByBMIH  + String.format("%.2f",cService.getBMI(cliente)) + noAcceptedByBMIUpperExp);
 					model.addAttribute("weightCalculate", weightUpperHPre  + 
-							             String.format("%.2f", weightA * (cService.getBMI(cliente) - dService.findOne(cliente.getDoctor()).getMaxBMI()) / cService.getBMI(cliente)) + 
-													      weightHPost + dService.findOne(cliente.getDoctor()).getName());
+							             String.format("%.2f", weightA * (cService.getBMI(cliente) - dService.findOne(cliente.getDoctor()).getMaxBMI()) 
+							            		                       / cService.getBMI(cliente)) + weightHPost + dService.findOne(cliente.getDoctor()).getName());
 				}
 				else if (cService.getBMI(cliente) < dService.findOne(cliente.getDoctor()).getMinBMI()) {
 					model.addAttribute("weightProblem", noAcceptedByBMIH  + String.format("%.2f",cService.getBMI(cliente)) + noAcceptedByBMILowerExp);
 					model.addAttribute("weightCalculate", weightLowerHPre  + 
-							             String.format("%.2f", weightA * (dService.findOne(cliente.getDoctor()).getMinBMI() - cService.getBMI(cliente)) / cService.getBMI(cliente)) + 
-													      weightHPost + dService.findOne(cliente.getDoctor()).getName());
+							             String.format("%.2f", weightA * (dService.findOne(cliente.getDoctor()).getMinBMI() - cService.getBMI(cliente)) 
+							            		 					   / cService.getBMI(cliente)) + weightHPost + dService.findOne(cliente.getDoctor()).getName());
 				}
 			}
 			else { // Si el doctor se fija solo en el peso
@@ -545,10 +610,19 @@ public class IndexController {
 														  weightHPost + dService.findOne(cliente.getDoctor()).getName());
 				}
 			}
-//			// CALCULANDO EL BMI y el Peso    
+			// CALCULANDO EL BMI y el Peso    
 			
 			model.addAttribute("aditionalProcedureH", aditionalProcedureH);
-			model.addAttribute("aditionalProcedures", dService.findAllAditionalProcedurebyDoctorIdbyCombo(cliente.getDoctor(), cliente.getP1(), cliente.getP2()));
+			List<Procedure> aditionalProcedures = dService.findAllAditionalProcedurebyDoctorIdbyCombo(cliente.getDoctor(), cliente.getP1(), cliente.getP2());
+			
+			if (((dService.getProcByDoct(cliente.getDoctor(), cliente.getP1())).getCellIncludedInPrice())  // Si el Cell está incluido en el precio de P1 o de P2
+				|| ((cliente.getP2() != null) && (dService.getProcByDoct(cliente.getDoctor(), cliente.getP2())).getCellIncludedInPrice())) 
+			{
+		//		cliente.setMakeCellSaver(true);   // el cliente se hace el cell
+				aditionalProcedures.remove(pService.findProceduresByName("Cell").get(0)); // se quita de los opcionales
+			}
+			model.addAttribute("aditionalProcedures", aditionalProcedures);
+			
 		}
 		else {
 			if (cliente.getP1()!=null) 
@@ -557,13 +631,20 @@ public class IndexController {
 		}
 		
 		String header4Calendar = date4Surgery ;
-		Date minDate = dService.findOne(cliente.getDoctor()).getDate() ;
+		Date minDate = null ;
+		if (cliente.getVip() == null)
+			minDate = dService.findOne(cliente.getDoctor()).getDate() ;
+		else
+			minDate = dService.findOne(cliente.getDoctor()).getEarlyDate() ;
+			
+
 		// Veo si hay una superorden activa
 		SuperOrder sOrder = cService.getSuperOrderWithSpecificStatusByClient(cliente.getId(), SuperOrderStatus.IN_PROCESS);
 		if (sOrder != null)
 		{
 			Integer recoveryTime = sOrder.getSuperOrderRecoveryTime();  // Mayor tiempo de recuperación
 			Calendar datewithRecovery = new GregorianCalendar();
+			
 			datewithRecovery.setTime(sOrder.getOrderList().get(sOrder.getOrderList().size()-1).getDateSurgery()); // tiempo elegido de la cirugía previa
 			choices.add("Previus surgery date: " + datewithRecovery.get(Calendar.YEAR) + "-" + 
 												   Integer.toString(datewithRecovery.get(Calendar.MONTH)+1) + "-" +  
@@ -571,7 +652,8 @@ public class IndexController {
 			choices.add("Previus surgery recovery time: " + recoveryTime + " months");  // paso la fecha previa para la traza
 			datewithRecovery.add(Calendar.MONTH, recoveryTime); // adiciono el tiempo de recuperacion
 
-			if (datewithRecovery.getTime().after(dService.findOne(cliente.getDoctor()).getDate()))
+			if (cliente.getVip() == null && datewithRecovery.getTime().after(dService.findOne(cliente.getDoctor()).getDate()) || 
+			   (cliente.getVip() != null && datewithRecovery.getTime().after(dService.findOne(cliente.getDoctor()).getEarlyDate())))
 			{
 				minDate = datewithRecovery.getTime() ;
 				header4Calendar = date4SurgeryRecovery ;
@@ -587,40 +669,102 @@ public class IndexController {
 		model.addAttribute("tittle", "Summary");
 		model.addAttribute("needCellT", needCellT);
 		
+		
+		model.addAttribute("vip", vipService.findAll());
+		model.addAttribute("vipProcedureH", aditionalProcedureH + " included in VIP");
+		List<Procedure> vipProcedures = dService.findAllAditionalProcedurebyDoctorIdbyCombo(cliente.getDoctor(), cliente.getP1(), cliente.getP2());
+		vipProcedures.remove(pService.findProceduresByName("Cell").get(0)); // se quita de los opcionales
+		model.addAttribute("vipProcedures", vipProcedures);
+		
 		return "result";
 	}
 	
+	
+	@PostMapping("vip-result")
+	public String vipResult(Client cliente, Model model, SessionStatus st)
+	{
+		logger.info(cliente.getVip().getLipoAreasCount());
+		return "redirect:/result" ;
+	}
+	
+	
 //****************
+//	String cName = cService.getConditionsListCSV4Save(cliente);
+//	cliente.setConditionsName(cName); // condiciones como string
+	//logger.info("INDEX\\Result(POST)\\conditions >>>> " + cliente.getName() + "  <<<>>> " +cName);
 // *******desarrollo******	
 	@PostMapping("result")
 	public String resultProcess(Client cliente, Model model, SessionStatus st) 
-	{ //logger.info("INDEX\\Result(POST)\\conditions >>>> " + cliente.getName() + "  <<<>>> " +cName); 
-
+	{  
+		Boolean cellIncluded = false ;
 		//Actualizo la condicion del paciente
-//		String cName = cService.getConditionsListCSV4Save(cliente);
-//		cliente.setConditionsName(cName); // condiciones como string
 		cService.save(cliente);
 		
-		//Creo la nueva Sub-Orden con sus procedimientos principales
+		//Creo la nueva Sub-Orden
 		Order order = new Order();
-		OrderProcedure lineP = null ;
-
-		lineP = new OrderProcedure();
-		lineP.setProcedure(pService.findOne(cliente.getP1()));
-		order.addProcedure(lineP);
+		order.setVip(cliente.getVip());
 		
-		if (cliente.getP2() != null) {
+		
+		// Agrego proc principales
+		OrderProcedure lineP = new OrderProcedure();
+		
+		lineP.setProcedure(pService.findOne(cliente.getP1()));
+		lineP.setIncludedInPrice(false);
+		order.addProcedure(lineP);
+		cellIncluded = dService.getProcByDoct(cliente.getDoctor(), cliente.getP1()).getCellIncludedInPrice() ;
+		
+		if (cliente.getP2() != null) 
+		{
 			lineP = new OrderProcedure();
 			lineP.setProcedure(pService.findOne(cliente.getP2()));
+			lineP.setIncludedInPrice(false);
+			order.addProcedure(lineP);
+			cellIncluded |= dService.getProcByDoct(cliente.getDoctor(), cliente.getP2()).getCellIncludedInPrice() ;
+		}
+		
+		//Agrego los adicionales si VIP
+		for (Procedure aditionalsVIP: cliente.getVipAditionalProcedures()) 
+		{
+			lineP = new OrderProcedure();
+			lineP.setProcedure(aditionalsVIP);
+			lineP.setIncludedInPrice(true);
 			order.addProcedure(lineP);
 		}
 		
-		for (Procedure aditionals: cliente.getAditionalProcedures()) {
+		// Agrego los adicionales
+		Boolean cell = false ;
+		for (Procedure aditionals: cliente.getAditionalProcedures()) 
+		{
 			lineP = new OrderProcedure();
 			lineP.setProcedure(aditionals);
+			lineP.setIncludedInPrice(false);
+			order.addProcedure(lineP);
+			if (pService.findProceduresByName("Cell").get(0).getName().equals(aditionals.getName())) // pregunto si ya está el cell seleccionado
+				cell = true ;
+		}
+		         // sino está seleccionado y es necesario lo agrego           // o si está incluido en el precio
+		if ( (!cell && (cliente.isHasWeightLoss() || cliente.isMoreOneLipo())) || cellIncluded )
+		{
+			lineP = new OrderProcedure();
+			lineP.setProcedure(pService.findProceduresByName("Cell").get(0));
+			
+			if (cellIncluded)
+			{
+				lineP.setIncludedInPrice(true);
+				order.setObservation(observationCellIncluded + changeLine);
+			}
+			else 
+			{
+				lineP.setIncludedInPrice(false);
+				if (cliente.isHasWeightLoss())
+					order.setObservation(observationCellByWeightLoss + changeLine);
+				else
+					order.setObservation(observationCellByMoreOneLipo + changeLine);
+			}
 			order.addProcedure(lineP);
 		}
-
+		
+		// Doctor y Fecha de operacion
 		order.setDoctorName(dService.findOne(cliente.getDoctor()).getName());
 		order.setDateSurgery(cliente.getDate());
 
@@ -634,7 +778,7 @@ public class IndexController {
 			sOrder.setDate(new Date());
 		}
 		else
-		{
+		{ 
 			String observation = sOrder.getObservation();
 			if (observation == null)
 				observation = " ";
@@ -646,15 +790,14 @@ public class IndexController {
 											 "of previus " + procedures + " surgery. " + changeLine);
 			sOrder.setObservation(observation);
 		}
+		
+		
 		sOrder.getOrderList().add(order);
 		cService.saveSuperOrder(sOrder);
 		
 		st.setComplete();
 		
-		//***********************************
-//		return "redirect:/orders/order-form/" + order.getId();  // aqui pasar ahora el seuperorder
 		return "redirect:/orders/order-form/" + sOrder.getId();  // aqui pasar ahora el seuperorder
 	} 
-	//*********************************************************************************************
 	
 }

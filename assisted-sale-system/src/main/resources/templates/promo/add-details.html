@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-promo :: head"></head>
+<body>
+	<header th:replace="layout/layout-promo :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305" style="width: 40%;">
+			<div class="card-header border-305 font-weight-bold py-2 text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
+			<div class="card-body" align="left">
+				<form id="newpromo305"  th:object="${promotion}" method="post">
+					<div class="form-group row">
+     					<div class="input-group col">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="lmindate">Type of deals:</span>
+					 		</div>
+							<select id="type" class="form-control">
+								<option th:each="t: ${typeDeals}" th:text="${t.getDescription()}" th:value="${t}"></option>
+							</select> 
+						</div>
+					</div>	
+					<div class="form-group row">	
+						<div class="input-group col">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="lmaxdate">Apply to:</span>
+					 		</div>                                
+							<select id="country" class="form-control">
+								<option th:each="a: ${applyTo}" th:text="${a.getApplyTo()}" th:value="${a}"></option>
+							</select> 
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="input-group col">
+							<div class="input-group-prepend ">
+						    	<span class="input-group-text" id="discount">Discount or price:</span>
+						  	</div>
+						  	<input type="number" id="discount" min="0" step="0.1" th:field="*{discount}" 
+						  		   aria-label="discount" class="form-control col" aria-describedby="discount" th:errorclass="'form-control alert-danger'"/>
+							<small th:if="${#fields.hasErrors('discount')}" th:errors="*{discount}" class="form-text text-danger"></small>
+						</div>
+					</div>
+					<div class="form-group row">
+	                    <div class="input-group col">
+								<div class="input-group-prepend ">
+							    	<span class="input-group-text" id="name">Find item:</span>
+							  	</div>
+							  	<input type="text" name="find_item" id="find_item"
+							  		   aria-label="find_item" class="form-control col-sm-11" aria-describedby="find_item" placeholder="Type for autocomplete"/>
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col-sm-12">
+                    		<table th:replace="procedure/items-layout :: procedureItems"></table>  
+                    		<table id="loadProcedureItems" class="table  table-sm table-striped table-hover">
+                      			<thead>
+                          			<tr>
+		                            	<th width="70%"></th>
+		                             	<th width="20%"></th>
+		                             	<th width="10%" class="align-middle" align="center"></th>
+                          			</tr>
+                       			</thead>
+                       			<tbody></tbody>
+                    		</table>
+                    	</div>
+                    </div>
+				
+				
+				
+				
+				
+				
+<!-- 					<div class="row"> -->
+<!-- 						<div class="col"> -->
+<!-- 							<small th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="form-text text-danger"></small> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 		<div class="form-group row"> -->
+<!-- 						<div class="input-group mb-1 col"> -->
+<!-- 							<div class="input-group-prepend "> -->
+<!-- 						    	<span class="input-group-text" id="lname">Description:</span> -->
+<!-- 						  	</div> -->
+<!-- 						  	<input type="text" id="edescription" th:field="*{description}"  -->
+<!-- 						  		   aria-label="description" class="form-control col" aria-describedby="description"   -->
+<!-- 						  		   th:errorclass="'form-control alert-danger'" /> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 					<div class="row"> -->
+<!-- 						<div class="col-6"> -->
+<!-- 							<small th:if="${#fields.hasErrors('minDateValid')}" th:errors="*{minDateValid}" class="form-text text-danger"></small> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-6"> -->
+<!-- 							<small th:if="${#fields.hasErrors('maxDateValid')}" th:errors="*{maxDateValid}" class="form-text text-danger"></small> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 					<div th:if="${errorDate}" class="alert alert-dismissible fade show border-danger my-2" align="center" role="alert"  -->
+<!-- 			               		 style="background-color:#FFFFFF; border-width: 2px; border-color: #00FF00"> -->
+<!-- 			        	<span th:text="'The Until date: ' + ${fromDate} + ' must be after the From date: ' + ${afterDate}"  -->
+<!-- 			                  style="color: #101F3A; font-weight: bold;"></span> -->
+<!-- 			            <button type="button" class="close" style="color:#101F3A" data-dismiss="alert" aria-label="Close"> -->
+<!-- 			           		<span aria-hidden="true">&times;</span> -->
+<!-- 			            </button> -->
+<!-- 			        </div> -->
+<!-- 					<div class="form-group row"> -->
+<!-- 	<div class="input-group mb-1 col-6"> -->
+<!-- 							<div class="input-group-prepend "> -->
+<!-- 								<span class="input-group-text" id="lmindate">From date:</span> -->
+<!-- 					 		</div> -->
+<!-- 							<input type="date" id="eminDateValid" th:field="*{minDateValid}" class="form-control"/>  -->
+<!-- 						</div> -->
+<!-- 						<div class="input-group mb-1 col-6"> -->
+<!-- 							<div class="input-group-prepend"> -->
+<!-- 								<span class="input-group-text" id="lmaxdate">Until date:</span> -->
+<!-- 					 		</div>                                 -->
+<!-- 							<input type="date" id="date-max" class="form-control" th:field="*{maxDateValid}" th:min="${datemin}" />  -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+					
+					<!--  SUBMIT   -->
+					<div class="row">
+						<div class="col-6">     <!--  NUEVA PROMO Y AGREGAR DETALLES -->
+							<input type="submit" th:value="${buttonactionContinue}" class="btn btn-block btn-dark"
+					               onClick="actionForm(this.form.id, '/promo/form-details'); return false;"/>
+	  					</div>
+ 
+	  					<div class="col-6">    <!--  NUEVA PROMO -->
+	  						<input type="submit" th:value="${buttonaction}" class="btn  btn-block btn-305"
+						           onClick="actionForm(this.form.id, '/promo/form'); return false;" />
+	  					</div>
+	  				</div> 
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-promo :: footer"></footer>
+	<script th:replace="js/twoForm :: javascript2Form"></script>
+	<script th:replace="procedure/js/util-js.html :: util"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

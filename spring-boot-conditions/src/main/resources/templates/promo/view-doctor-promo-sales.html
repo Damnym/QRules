@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
+	   <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+<head th:replace="layout/layout-promo :: head"></head>
+<body style="font-size: 14px">
+		<div class="card bg-white border-305">
+<!-- 			<div th:text="'Deals of doctor ' + ${doctorName}" class="card-header py-2 border-305 text-white font-weight-bold"  style="background-color:#101F3A"  -->
+<!-- 				 align="center"></div> -->
+			<div class="card-body">
+				<div th:each="date: ${untildates}" class="row">
+					<div class="col">
+						<div class="row">
+							<div class="col" align="center">
+								<h5 th:text="'Until ' + ${date}"></h5>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col"> 
+								<table class=" table-bordered table table-striped hover compact compact" id="promo-table-list">
+									<thead align="center">
+										<tr>
+											<th hidden="true" scope="col">ID</th>
+											<th width="20%" th:text="'Procedure(s)'"   scope="col"></th>
+											<th width="20%" th:text="'Type'"        scope="col" class="align-middle" align="center"></th>
+											<th width="10%" th:text="'Value'"       scope="col" class="align-middle" align="center"></th>
+											<th width="15%" th:text="'Apply to'" scope="col" class="align-middle" align="center"></th>
+											<th width="35%" th:text="'Items free'"  scope="col" class="align-middle" align="center"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="p: ${promo}">
+											<th hidden="true" scope="row" th:text="${p.id}"></th>
+											<td class="align-middle">
+												<ul class="list-group">
+							      					<li th:each="proc: ${p.procList}" th:text="${proc.procedure.name}" 
+							      					    class="list-group-item text-left py-1" style="border-width: 0; background-color: transparent;"> </li>
+							      				</ul>
+											</td>
+											<td th:text="${p.type.getDescription()}" class="align-middle"></td>
+											<td th:text="${p.discount}" class="align-middle"></td>
+											<td th:text="${p.promoProcOrItems.getApplyTo()}" class="align-middle"></td> 
+											<td  class="align-middle">
+												<ul th:unless="${#lists.isEmpty(p.freeItemsList)}" class="list-group">
+							      					<li th:each="ifree: ${p.freeItemsList}" th:text="'(' + ${ifree.amount} + ') ' + ${ifree.item.name}" 
+							      					    class="list-group-item text-left py-1" style="border-width: 0; background-color: transparent;"></li>
+							      				</ul>
+							      				<span th:if="${#lists.isEmpty(p.freeItemsList)}">No has item free</span>
+											</td>
+										</tr>
+									</tbody>
+								</table>		
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<footer th:replace="layout/layout-promo :: footer"></footer>
+	<script th:src="@{/js/jquery.dataTables.min.js}"></script>
+	<script th:replace="promo/js/promo-js.html :: promoUtils"></script>
+</body>
+</html>

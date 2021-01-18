@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-index :: head"></head>
+</head>
+<body style="background-color: #14233E">  <!-- 101F3A -->
+	<header th:replace="layout/layout-index :: header"></header>
+	<div class="container my-5" align="center" style="width: 60%">
+		<div class="row">
+			<table class="table table-bordered hover mt-5 display compact" style="font-size: 10px">
+				<thead>
+					<tr>
+                       	<th width="30%" scope="col" class="align-middle" align="center" style="border-style: hidden; "></th>
+                        <th width="5%" scope="col" class="align-middle" align="center" style="border-style: hidden;"></th>
+                        <th width="30%" scope="col" class="align-middle" align="center" style="border-style: hidden;"></th>
+                        <th width="5%" scope="col" class="align-middle" align="center" style="border-style: hidden;"></th>
+                        <th width="30%" scope="col" class="align-middle" align="center" style="border-style: hidden; "></th>
+                    </tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td align="center" style="border-width: 10px; border-color: #313D55; background-color: #313D55;">
+						
+<!-- 								<div class="dropdown"> -->
+<!-- 								  <span  class="dropbtn fas fa-money-check-alt fa-8x" style="color:#ffffff "></span> -->
+<!-- 							  	  <h5 th:text="'Financing options'" style="color: #ffffff"></h5> -->
+<!-- 								  <div class="dropdown-content"> -->
+<!-- 								    <a th:each="doc: ${documents}" th:href="@{'/documents/' + ${doc}}" target="_blank" th:text="${doc}"></a> -->
+<!-- 								  </div> -->
+<!-- 								</div> -->
+						
+						
+							<a th:href="@{'/documents/' + '1.pdf'}" target="_blank" class="fas fa-money-check-alt fa-8x btn" style="color:#ffffff "></a> 
+							<h5 th:text="'Financing options'" style="color: #ffffff"></h5>
+						</td>
+						<td align="center" style="border-style: hidden; border-left-style: solid; border-right-style: solid;">
+						</td>
+						<td align="center" style="border-width: 10px; border-color: #888F9D; background-color: #888F9D;">
+							<a th:href="@{/procedure/procedure-decide}" class="fas fa-hands-helping fa-8x btn" style="color:#ffffff "></a> 
+							<h5 th:text="'Help deciding surgery'" style="color: #ffffff"></h5>
+						</td>
+						<td align="center" style="border-style: hidden; border-left-style: solid">
+						</td>
+						<td align="center" style="border-style: hidden">
+						</td>
+					</tr>
+					<tr height="1px"> <td style="border-style: hidden; border-top-style: solid; border-bottom-style: solid;"></td></tr>
+					<tr>
+						<td align="center" style="border-style: hidden">
+						</td>
+						<td align="center" style="border-style: hidden; border-right-style: solid">">
+						</td>
+						<td align="center" style="border-width: 10px; border-color: #27344D; background-color: #27344D;">
+							<a th:href="@{/doctor/calendar}" class="far fa-calendar-alt fa-8x btn" style="color:#ffffff;"></a> 
+							<h5 th:text="'Regular / VIP schedule'" style="color: #ffffff"></h5>	
+						</td>
+						<td align="center" style="border-style: hidden; border-left-style: solid; border-right-style: solid; ">
+						</td>
+						<td align="center" style="border-width: 10px; border-color: #4C576C; background-color: #4C576C;">
+							<a th:href="@{/clients/form}" class="fas fa-procedures fa-8x btn" style="color:#ffffff "></a>
+							<h5 th:text="'Evaluation system'" style="color: #ffffff"></h5> 
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>	
+	</div>
+	<footer th:replace="layout/layout-index :: footer"></footer>
+</body>
+</html>

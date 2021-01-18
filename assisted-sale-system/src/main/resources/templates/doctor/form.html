@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-doctor :: head"></head>
+<body>
+	<header th:replace="layout/layout-doctor :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305" style="width: 90%;">
+			<div class="card-header py-2 border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
+			<div class="card-body " align="left">
+				<form th:object="${doctor}"  th:action="@{/doctor/form}" method="post"> <!--  method="post" -->
+					<div class="form-group row">
+<!-- NOMBRE -->
+						<div class="input-group mb-1 col-6">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="name">Name:</span>
+					  		</div>
+					  		<input type="text" id="name" th:field="*{name}" aria-label="name" class="form-control" aria-describedby="name" placeholder="Surgeon name" 
+							 	  th:errorclass="'form-control alert-danger'" /> 
+							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>
+						</div>
+<!-- APELLIDO -->
+						<div class="input-group mb-1 col-6">
+							<div class="input-group-prepend ">
+								<span class="input-group-text" id="surname">Surname:</span>
+					  		</div>
+					  		<input type="text" id="surname" th:field="*{surname}" aria-label="surname" class="form-control" aria-describedby="surname" 
+					  		       placeholder="Surgeon surname" th:errorclass="'form-control alert-danger'" /> 
+							<small th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}" class="form-text text-danger"></small>
+						</div>
+					</div>
+<!-- Cell Saver? -->
+                    <div class="form-group row">
+                    	<div class="col-6" align="right">
+                    		<div class="row form-check pr-3">
+	                       		<input type="checkbox" th:field="*{requiredCellSaver}" th:value="False" class="form-check-input "/>
+	                       		<label th:for="${#ids.prev('requiredCellSaver')}" th:text="'Mandatory Cell Saver?'" class="form-check-label "></label>
+                    		</div>
+<!-- Fecha disponible -->
+                    		<div class="row mt-2">
+                    			<div class="col-4 ml-1">
+	    	                   		<label class="form-label" for="date">Availability date:</label>
+            	           		</div>
+                	       		<div class="col">
+                    	      		<input type="date" id="date" th:field="*{date}" class="form-control" />  
+                       			</div>
+                    		</div>
+<!-- Fecha VIP -->
+                    		<div class="row mt-2">
+                    			<div class="col-4 ml-1">
+	    	                   		<label class="form-label" for="earlyDate">Early date:</label>
+            	           		</div>
+                	       		<div class="col">
+                    	      		<input type="date" id="earlyDate" th:field="*{earlyDate}" class="form-control" />  
+                       			</div>
+                    		</div>
+                    	</div>
+<!--  BMI -->
+                       	<div class="col-6" align="right">
+                       		<div class="row form-check pr-3">
+	                       		<input type="checkbox" th:field="*{useBMI}" th:value="True" class="form-check-input" checked="checked"
+	                       			   th:onchange="'itemsHelper.activeAmount(' + this.checked + ');'"/>
+	                       		<label th:for="${#ids.prev('useBMI')}" th:text="'Use BMI?'" class="form-check-label"></label>
+                    		</div>
+                    		<div class="row mt-2">
+                    			<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="min_spanB">Min BMI:</span>
+							  		</div>
+							  		<input type="number" id="minBMI" min="0" step="0.1" th:field="*{minBMI}" aria-label="minBMI" class="form-control" 
+							  		       aria-describedby="minBMI" th:errorclass="'form-control alert-danger'"/>  <!--  placeholder="Min BMI"  --> 
+									<small th:if="${#fields.hasErrors('minBMI')}" th:errors="*{minBMI}" class="form-text text-danger"></small>
+								</div>
+                    			<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="min_spanW">Min Weight:</span>
+							  		</div>
+							  		<input type="number" id="minWeight" min="0" step="0.1" disabled="disabled" 
+							  		       th:field="*{minWeight}" aria-label="minWeight" class="form-control" 
+							  		       aria-describedby="minWeight" th:errorclass="'form-control alert-danger'"/>  <!--  placeholder="Min BMI"  --> 
+									<small th:if="${#fields.hasErrors('minWeight')}" th:errors="*{minWeight}" class="form-text text-danger"></small>
+								</div>
+                    		</div>
+                    		<div class="row mt-2">
+                    			<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="max_spanB">Max BMI:</span>
+							  		</div>
+							  		<input type="number" id="maxBMI" min="0" step="0.1" th:field="*{maxBMI}" aria-label="maxBMI" class="form-control" 
+							  		       aria-describedby="maxBMI" th:errorclass="'form-control alert-danger'"/>  <!--  placeholder="Min BMI"  --> 
+									<small th:if="${#fields.hasErrors('maxBMI')}" th:errors="*{maxBMI}" class="form-text text-danger"></small>
+								</div>
+                    			<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="max_spanW">Max Weight:</span>
+							  		</div>
+							  		<input type="number" id="maxWeight" min="0" step="0.1" disabled="disabled" 
+							  			   th:field="*{maxWeight}" 
+							  			   aria-label="maxWeight" aria-describedby="maxWeight" 
+							  		       class="form-control" th:errorclass="'form-control alert-danger'"/>  <!--  placeholder="Min BMI"  --> 
+									<small th:if="${#fields.hasErrors('maxWeight')}" th:errors="*{maxWeight}" class="form-text text-danger"></small>
+								</div>
+                    		</div>
+                       	</div>
+                     </div>
+<!--                      <div class="container"> -->
+<!-- <!-- INICIO DEL ACORDEON -->
+<!--                         <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" align="center"> -->
+<!--                            <div class="col" align="right"> -->
+<!--                               <div class="col " align="right"> -->
+
+<!-- <!-- Accordion 3 ¡¡¡CONDITIONS!!!!--> 
+<!--                                  <div class="card my-1" style="border-color: #101F3A; border-right-width: 3px">   -->
+<!--                                  Card header                                                           -->
+<!--                                     <div class="card-header py-2" style="background-color:#fff; border-color: #101F3A; border-bottom-width: 3px" role="tab"  -->
+<!--                                          th:id="'heading_condition'"> -->
+<!--                                        <a data-toggle="collapse" data-parent="#accordionEx" aria-expanded="false" class="a a-305 fas fa-angle-down rotate-icon"  -->
+<!--                                           th:href="'#collapse_condition'" th:aria-controls="'collapse_condition'"> -->
+<!--                                           <span th:text="'Asign condition'" class="text-center font-weight-bold"  -->
+<!--                                                 data-toggle="tooltip" data-placement="right" title="" -->
+<!--                                                 style="font-family:sans-serif; font-size: 14px; color:#101F3A;"></span> -->
+<!--                                        </a> -->
+<!--                                        </div> -->
+<!--                                     Card body   -->
+<!--                                        <div th:id="'collapse_condition'" class="collapse" role="tabpanel" th:aria-labelledby="'heading_condition'"  -->
+<!--                                             data-parent="#accordionEx"> -->
+<!--                                           <div class="card-body"> -->
+<!--                                              <div class="row"> -->
+<!--                                                 <div class="col combos" align="right"> -->
+<!--                                                 	<div th:each="sbyd: ${sList}" class="row" style="font-size: 13px;"> -->
+<!--                                                       <div class="mx-2 my-1">  -->
+<!--                                                          <input type="checkbox" th:field="*{sufferingsListPre}" th:value="${sbyd.id}"  -->
+<!--                                                                 th:checked="${#lists.contains(doctor.sufferingsListPre, sbyd)}">  -->
+<!--                                                       </div> -->
+<!--                                                       <div class="">  -->
+<!--                                                          <label th:for="${#ids.prev('sufferingsListPre')}" th:text="${sbyd.name}"></label> -->
+<!--                                                       </div> -->
+<!--                                                    </div> -->
+<!--                                                 </div> -->
+<!--                                              </div>    -->
+<!--                                           </div> -->
+<!--                                        </div> -->
+<!--                                     </div>Accordion card 2 -->
+<!--                                  </div> -->
+<!--                               </div> -->
+<!--                            </div>FIN DEL ACORDEON -->
+<!--                         </div> -->
+					<!--  SUBMIT   -->
+					<div class="row mt-5">
+						<div class="col-6">  
+							<input type="reset" th:value="'Clear'" class="btn btn-block btn-secondary"/>
+	  					</div>
+	  					<div class="col-6">  
+	  						<input type="submit" th:value="${bSave}" class="btn btn-block btn-305"/> 
+	  					</div>
+	  				</div> 
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-doctor :: footer"></footer>
+    <script th:replace="doctor/js/utils-js.html :: utils"></script>
+    <script th:replace="js/twoForm :: javascript2Form"></script>
+</body>
+</html>

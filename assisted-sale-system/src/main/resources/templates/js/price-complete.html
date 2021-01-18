@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<script type="text/javascript" th:fragment="javascriptAutoComplete">
+
+	
+		$(document).ready(function() {
+
+			$("#find_product").autocomplete({
+
+				source : function(request, response) {
+					$.ajax({
+						url : "/invoice/load-products/" + request.term,
+						dataType : "json",
+						data : {
+							term : request.term
+						},
+						success : function(data) {
+							response($.map(data, function(item) {
+								return {
+									value : item.id,
+									label : item.description,
+									price : item.price,
+								};
+							}));
+						},
+					});
+				},
+				select : function(event, ui) {
+					//$("#find_product").val(ui.item.label);
+					if (itemsHelper.hasProduct(ui.item.value)){
+						itemsHelper.incAmount(ui.item.value, ui.item.price);
+						return false;
+					}
+					
+					var line = $("#invoiceItemsLayout").html();
+
+					line = line.replace(/{ID}/g, ui.item.value);
+					line = line.replace(/{DESCRIPTION}/g, ui.item.label);
+					line = line.replace(/{PRICE}/g, ui.item.price);
+					
+					$("#loadProductItems tbody").append(line);
+					itemsHelper.getSubtotal(ui.item.value, ui.item.price, 1);
+					return false;
+				}
+			});
+			$("form").submit(function(){
+				$("#invoiceItemsLayout").remove();
+				return;
+			})
+		});
+		
+		
+		var itemsHelper = {
+				getSubtotal: function(id, price, amount, ofertList){
+		//subtotal se encuentra en items-layout, el método html inyecta html en la plantilla
+					alert(1);
+				},
+				
+				hasProduct: function(id){
+					var result = false;
+					$('input[name="item_id[]"]').each(function(){
+						if (parseInt(id) == parseInt($(this).val())){
+							result = true;
+					    }
+					});
+					return result;
+				},
+				
+				incAmount: function(id, price){
+					var amount = $("#amount_" + id).val() ? parseInt($("#amount_" + id).val()) : 0;
+					$("#amount_" + id).val(++amount);
+					this.getSubtotal(id, price, amount);
+				},
+				
+				deleteLine: function(id){
+					$("#row_" + id).remove();
+					this.getTotal();
+				},
+				
+				getTotal: function(){
+					var total = 0 ;
+					$('span[id^="subtotal_"]').each(function(){
+						total += parseInt($(this).html());
+					});
+					$('#total').html(total);
+				}
+		}
+		
+	</script>
+</body>
+</html>

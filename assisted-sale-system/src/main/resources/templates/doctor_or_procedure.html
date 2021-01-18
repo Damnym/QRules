@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-evaluation :: head"></head>
+<body style="background-color: #4C576C">
+	<header th:replace="layout/layout-evaluation :: header"></header>
+      <div class="container" style="font-size: 15px; margin-top: 5rem">
+		<div class="row">    <!-- FILA PARA EL ALERTA -->
+			<div class="col">
+				<div th:if="${hbgOutsideRange}" class="alert alert-danger alert-dismissible fade show" role="alert">
+  						<span th:text="${hbgOutsideRange}"></span>
+  						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  							<span aria-hidden="true">&times;</span>
+ 						</button>
+				</div>
+			</div>
+		</div>				
+		<div class="row" style="font-size: 15px"> <!-- GENERAL -->    <!-- FILA PARA EL RESTO DEL CONTENIDO -->
+ 	 		<div class="col-3"> <!-- COLUMNA CON LA TRAZA -->
+				<ul th:if="${choice}" class="list-group card-bordergreen-diferent " >
+                  <li th:text="${choice_h}" class="list-group-item list-group-item-success py-1 card-bordergreen-diferent text-center font-weight-bold"></li>
+                  <li th:each="c: ${choice}" th:text="${c}" class="list-group-item text-left card-bordergreen-diferent"></li>
+                </ul>
+		 	</div> 
+   			<div class="col-9">   <!-- COLUMNA CON LAS OPCIONES -->
+				<div class="card bg-white card-border-diferent" >
+					<div th:text="${msg}" class="card-header font-weight-bold py-1 text-white" align="center" style="background-color:#101F3A"></div>
+					<div class="card-body" align="left">
+						<div class="container my-2">
+							<div class="row">
+								<div class="col-sm">
+									<ul class="list-group my-2 border-warning">  
+										<li th:text="${explanationb}" class="list-group-item border-white"></li>
+										<li class="list-group-item border-white">
+											<a th:href="@{/choice_procedure_by_doctor/}" th:text="'Choice the Surgeon'" class="btn btn-lg btn-block btn-305"></a>	
+										</li>
+										<li class="list-group-item border-white">
+											<a th:href="@{/choice_doctor_by_procedure/}" th:text="'Choice the Procedure'" class="btn btn-lg btn-block btn-305"></a>	
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+	  		</div>
+	  	</div>
+      </div>
+	<footer th:replace="layout/layout-evaluation :: footer"></footer>
+</body>
+</html>

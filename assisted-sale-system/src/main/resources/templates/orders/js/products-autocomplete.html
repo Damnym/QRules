@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<script type="text/javascript" th:fragment="javascriptAutoComplete">
+	
+	   $(function(){
+		   itemsHelper.totalProcedureShow();
+		   itemsHelper.getTotalM();
+	//	   $("#accordionEx").accordion();
+		   $('[data-toggle="popover"]').popover();
+	   });
+	   	   
+		$(document).ready(function() {
+
+			$("#find_product").autocomplete({
+
+				source : function(request, response) {
+					$.ajax({
+						url : "/orders/load-products/" + request.term,
+						dataType : "json",
+						data : { term : request.term },
+						success : function(data) {
+							response($.map(data, function(item) {
+								return {
+									value   : item.id,
+									label   : item.name,
+									price   : item.price,
+									mind    : item.min,
+									can_inc : item.hasAmount,
+								};
+							}));
+						},
+					});
+				},
+				select : function(event, ui) {
+					//$("#find_product").val(ui.item.label);
+					//alert("select >>> " + ui.item.value); // OK
+					if (itemsHelper.hasProduct(ui.item.value)){  // hasProduct funcion mas abajo
+						itemsHelper.incAmount(ui.item.value, ui.item.label, ui.item.price);          // incAmount funcion mas abajo
+						return false;
+					}
+					
+					var line = $("#orderItemsLayout").html();
+
+					line = line.replace(/{ID}/g, ui.item.value);
+					line = line.replace(/{NAME}/g, ui.item.label);
+					line = line.replace(/{PRICE}/g, ui.item.price);
+					
+					$("#loadProductItems tbody").append(line);
+					
+					$('#amount_' + ui.item.value).val(ui.item.mind);
+					
+					if (!ui.item.can_inc){
+						 $('#amount_' + ui.item.value).attr({ 
+						     "max" : 1,  // substitute your own 
+						     "min" : 1   // values (or variables) here 
+						    }); 
+					}
+
+					var amount = $("#amount_" + ui.item.value).val() ? parseInt($("#amount_" + ui.item.value).val()) : 1;
+					itemsHelper.getSubtotal(ui.item.value, ui.item.price,ui.item.label, amount);
+					return false;
+				}
+			});
+			$("form").submit(function(){
+				$("#orderItemsLayout").remove();
+				return;
+			})
+		});
+		
+		
+		var itemsHelper = {
+				getSubtotal: function(id, price, name, amount){
+		//subtotal se encuentra en items-layout, el método html inyecta html en la plantilla
+					if (name === "Recovery H" && amount < 4)
+						bootbox.confirm({
+						    title: '<i class="fas fa-exclamation-triangle fa-2x" style="color: #FF0000"></i>' + "  Will you specify the quantity less than 4?",
+						    message: "Alert! You are trying to specify less than desired amount to " + name,
+						    buttons: {
+						        cancel: {
+						            label: '<i class="fa fa-times"></i> Cancel'
+						        },
+						        confirm: {
+						            label: '<i class="fa fa-check"></i> Confirm'
+						        }
+						    },
+						    callback: function (result) {
+						        		if (!result){
+						        			$('#amount_' + id).val(4);
+						        			$("#subtotal_" + id).html(parseInt(price) * parseInt(4));
+						        			itemsHelper.getTotalC();
+						        		}
+						    		  }
+						});
+					$("#subtotal_" + id).html(parseInt(price) * parseInt(amount));
+					this.getTotalC();
+				},
+
+				getSubtotalM: function(id, price, amount){
+					//subtotal se encuentra en items-layout, el método html inyecta html en la plantilla
+					$("#subtotalm_" + id).html(parseInt(price) * parseInt(amount));
+					this.getTotalM();
+				},
+				
+				hasProduct: function(id){
+					var result = false;
+					$('input[name="item_id_c[]"]').each(function(){
+						if (parseInt(id) == parseInt($(this).val())){
+							//alert("hasProduct");
+							result = true;
+					    }
+					});
+					return result;
+				},
+				
+				incAmount: function(id, name, price){
+					var amount = $("#amount_" + id).val() ? parseInt($("#amount_" + id).val()) : 0;
+					$("#amount_" + id).val(++amount);
+					this.getSubtotal(id, price, name, amount);
+				},
+				
+				deleteLine: function(id){
+					$("#row_" + id).remove();
+					this.getTotal();
+				},
+				
+				getTotalC: function(){
+					var total = 0 ;
+					$('span[id^="subtotal_"]').each(function(){
+						total += parseInt($(this).html());
+					});
+					$('#totalc').html(total);
+					$('#totalc_h').html(total);
+					this.getTotal();
+				},
+				
+				getTotalM: function(){
+					var total = 0 ;
+					$('span[id^="subtotalm_"]').each(function(){
+						total += parseInt($(this).html());
+					});
+					$('#totalm').html(total);
+					$('#totalm_h').html(total);
+					this.getTotal();
+				},
+				
+				getTotal: function(){
+					var total = 0 ;
+					total = parseInt($(totalc).html()) + parseInt($(totalp).html()) + parseInt($(vipPrice).html()); // parseInt($(totalm).html()) + 
+					$('#total').html(total);
+				},
+				
+				test: function(request, response){
+						$.ajax({
+							url : "/orders/load-products/cell" ,
+							dataType : "json",
+							data : { term : request.term },
+							success : function(data) {
+										response($.map(data, function(item) {
+																var line = $("#orderItemsLayout").html();
+																	line = line.replace(/{ID}/g, item.id);
+																	line = line.replace(/{NAME}/g, item.name);
+																	line = line.replace(/{PRICE}/g, item.price);
+						
+																	$("#loadProductItems tbody").append(line);
+																	itemsHelper.getSubtotal(item.id, item.price, item.name, 1);
+																	$("#seva").hide();
+																	
+																	return false;
+															 }
+													  )
+											   );
+										},
+						}); // aquí tengo el cell
+				},
+				
+				totalProcSelect: function (pc, pf, pv, option)
+				{
+				//	alert(pf); totalp
+					var total = 0 ;
+					var observationStr = $(observation).html() ;
+					var observationM = "";
+					
+					switch(option) 
+					{
+					  case "FINANCED":
+// 						alert(pf);  
+						total = pf ;
+						observationM = observationStr.replace("VIP order.","");
+						observationStr = "Financed pay. "  +  observationM;
+						$('#observation').html(observationStr);
+						if (document.getElementById("vipH")!= null)
+						{
+							document.getElementById("vipH").hidden = true;
+							document.getElementById("vipB").hidden = true;
+						}
+					    break;
+					  case "VIP":
+						total = pv ;
+						observationM = observationStr.replace("Financed pay.","");
+						observationStr = "VIP order. "  +  observationM;
+						$('#observation').html(observationStr);
+						if (document.getElementById("vipH")!= null)
+						{
+							document.getElementById("vipH").hidden = false;
+							document.getElementById("vipB").hidden = false;
+						}
+					    break;
+					  default:
+// 						alert(pc);
+						total = pc ;
+					  	observationM = observationStr.replace("Financed pay. ","");
+					  	observationStr = observationM.replace("VIP order.","");
+						$('#observation').html(observationStr);
+					  	if (document.getElementById("vipH")!= null)
+						{
+							document.getElementById("vipH").hidden = true;
+							document.getElementById("vipB").hidden = true;
+						}
+					}
+					
+					$('#totalp').html(total);
+					$('#totalp_h').html(total);
+					
+					this.getTotal();
+					
+			   	},
+			   	
+			   	/////////
+			   	discountProcOrItemSelect: function (pc, pv, option)
+				{
+					var total = 0 ;
+					var observationStr = $(observation).html() ;
+					var observationM = "";
+					
+					switch(option) 
+					{
+					  case "0": // Descuento en Procedure
+						total = pv ;
+					    break;
+					  case "1":  // DEscuento en ITEM
+						total = pc ;
+					    break;
+					}
+					
+					$('#totalp').html(total);
+					$('#totalp_h').html(total);
+					
+					this.getTotal();
+					
+			   	},
+				/////////
+				
+				totalProcedure: function (pc, pf, check){
+					var total = 0 ;
+					var observationStr = $(observation).html() ;
+					var observationM = "";
+					
+					if(check){  // es financiado
+	 					total = pf ;
+						observationStr = "Financed pay. "  +  observationStr;
+						$('#observation').html(observationStr);
+					}
+					else{   // cash        replace(substring_a_buscar,nuevoStr)
+						total = pc ;	
+						observationM = observationStr.replace("Financed pay. ","");
+						$('#observation').html(observationM);
+					}
+					
+					$('#totalp').html(total);
+					$('#totalp_h').html(total);
+					
+					this.getTotal();
+			   	},				
+			   					
+			   	totalProcedureShow: function (){  
+			   		var total = parseFloat($(procedurep).html()) ;	
+					$('#totalp').html(total);
+					$('#totalp_h').html(total);
+					
+					this.getTotal();
+			   	}				
+			   	
+			}
+	</script>
+</body>
+</html>

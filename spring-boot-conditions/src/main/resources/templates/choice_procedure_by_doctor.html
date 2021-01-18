@@ -3,7 +3,7 @@
 <head th:replace="layout/layout-client :: head"></head>
 <body style="font-size: 15px">
 	<header th:replace="layout/layout-client :: header"></header>
-      <div class="container" style="margin-top: 5rem">
+      <div class="container mb-3" style="margin-top: 5rem">
 		<div class="row">
 	   		<div class="col-3"> <!-- GroupBox de las elecciones -->
                <div class="row">
@@ -23,8 +23,9 @@
        							 return false;"></a>
                   </div>
                </div>
+              
 		 	</div> 
-		 	<div class="col-9"> <!-- GroupBox para las listas de medicos y procedimientos -->
+		 	<div class="col-9"> <!-- GroupBox para las listas de medicos y procedimientos class="btn btn-lg btn-block btn-305" -->
 				<div class="card bg-white card-border-diferent" >
 			 		<form id="f1"  th:object="${client}" method="get">
 						<div th:text="${cardHeader}" class="card-header py-2 font-weight-bold text-white " align="center" 
@@ -62,6 +63,26 @@
 											</div>
 										</div>
 									</div>
+									 <!-- aqui poner si hay promos para ese doctor -->
+									<div th:if="${promo}" class="alert alert-dismissible fade show border-305 font-weight-bold my-2" align="center" role="alert" 
+								         style="background-color:#FFFFFF; border-width: 2px">
+								    	<a id="viewpromo" style="font-size: 16px;" class="text-305"
+					               			 	th:text="'View actives deals for ' + ${doctorName}" 
+					               			 	th:href="@{/view-active-promo/} + ${doctorId}"
+					                     		onclick="window.open(this.href, 'newwindow', 'width=800, height=770, resizable=0, location=0'); return false;">
+					       					 </a>
+								            <button type="button" class="close" style="color:#ff0000" data-dismiss="alert" aria-label="Close">
+								           		<span class="fas fa-gifts"  style="color:#ff0000" aria-hidden="true"></span>
+								            </button>
+								    </div>
+					               <!-- aqui poner si hay promos para ese doctor -->
+<!-- 									<div class="alert alert-dismissible fade show border-danger font-weight-bold my-2" align="center" role="alert"  -->
+<!-- 								         style="background-color:#FFFFFF; border-width: 2px"> -->
+<!-- 								    	<span id="remark" style="font-size: 16px;" class="text-305" th:text="''"></span> -->
+<!-- 								            <button type="button" class="close" style="color:#ff0000" data-dismiss="alert" aria-label="Close"> -->
+<!-- 								           		<span  style="color:#ff0000" aria-hidden="true">X</span> -->
+<!-- 								            </button> -->
+<!-- 								    </div> -->
 								</div>
 		 					</div>
 							<hr/>

@@ -2,6 +2,9 @@ package com.plastic305.web.app.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+//import java.util.Calendar;
+import java.util.Date;
+//import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -23,18 +26,26 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.plastic305.web.app.models.dto.ProductRecommendedByProcedureDTO;
 import com.plastic305.web.app.models.entities.Client;
+import com.plastic305.web.app.models.entities.EnumPayMethods;
+import com.plastic305.web.app.models.entities.EnumPromoTo;
+//import com.plastic305.web.app.models.entities.EnumPromotionType;
+import com.plastic305.web.app.models.entities.ItemsAmountForVIP;
 import com.plastic305.web.app.models.entities.Order;
 import com.plastic305.web.app.models.entities.OrderItem;
 import com.plastic305.web.app.models.entities.OrderProcedure;
 import com.plastic305.web.app.models.entities.ProcedureCart;
 import com.plastic305.web.app.models.entities.Product;
+import com.plastic305.web.app.models.entities.ProductRecommendedByProcedure;
 import com.plastic305.web.app.models.entities.SuperOrder;
 import com.plastic305.web.app.models.entities.SuperOrderStatus;
+import com.plastic305.web.app.models.entities.VIPDoctorProcedure;
 import com.plastic305.web.app.services.IClientService;
 import com.plastic305.web.app.services.IDoctorService;
 import com.plastic305.web.app.services.IProcedureService;
 import com.plastic305.web.app.services.IProductService;
+import com.plastic305.web.app.services.IPromo305Service;
 import com.plastic305.web.app.services.ISufferingService;
 
 @Secured("ROLE_USER")
@@ -51,7 +62,7 @@ public class OrderController
 	private static final String itemsheader = "Items summary" ;
 	private static final String recommendedItemsHeader = "Recommended items for: " ;
 	private static final String surgeriesHeader = "Choosed surgeries" ;
-	private static final String mandatoryItemsHeader = "Mandatory items for Dr. " ;
+//	private static final String mandatoryItemsHeader = "Mandatory items for Dr. " ;
 	private static final String productTextH = "Post-surgical items" ; 
 	private static final String productText = "Post-surgical items exist to accomplish goals!\r\n" + 
 											  "These items listed below are necessary in order to protect and enhance the outcome of your procedure, prevent the formation "
@@ -60,8 +71,8 @@ public class OrderController
 	private static final String personalDataHeader = "Personal information" ;
 	private static final String HealthConditionHeader = "Health condition" ;
 	private static final String opDecision = "Surgery decision" ;
-	private static final String observationCellByWeightLoss = "Added mandatory Cell Saver item for presenting a history of weight loss surgery. " ;
-	private static final String observationCellByMoreOneLipo = "Added mandatory Cell saver due to having performed another similar surgery previously. " ;
+//	private static final String observationCellByWeightLoss = "Added mandatory Cell Saver item for presenting a history of weight loss surgery. " ;
+//	private static final String observationCellByMoreOneLipo = "Added mandatory Cell saver due to having performed another similar surgery previously. " ;
 	private static final String drain = " procedure need drain. " ;
 	private static final String timeRecoveryB = "You must stay " ;
 	private static final String timeRecoveryE = " days in Miami for recovery." ;
@@ -74,6 +85,7 @@ public class OrderController
 	@Autowired IDoctorService dService;
 	@Autowired IProcedureService pService;
 	@Autowired IProductService prodService; 
+	@Autowired IPromo305Service promoService; 
 	
 	//   <<<<<<   IMPLEMENTATION    >>>>>>
 	
@@ -97,133 +109,343 @@ public class OrderController
 	public String create(@PathVariable(value = "sorderid") Long sOrderId, Model model, RedirectAttributes flash, SessionStatus st)
 	{   //logger.info("ORDER-CREATE>>>> items count: " + order.getItemList().size());
 		
+		//Obtengo la orden actual
 		SuperOrder superOrder = cService.getSuperOrderById(sOrderId);
 		Order order = superOrder.getOrderList().get(superOrder.getOrderList().size()-1);
-				
-		int cell = 0 ; // no es obligatorio el Cell, si se cambia a 1 si
+		
 		String proceduresNames = " ";
-		Double procedureFinancedPrice = Double.valueOf(0) ;
-		Double procedureCashPrice = Double.valueOf(0) ;
-		List<ProcedureCart> proceduresData = new ArrayList<>();
-		String observationStr = "";
+		String observationStr = order.getObservation()!=null? order.getObservation(): " ";;
 		Integer minRecoveryTime = 0 ;
 		Integer maxRecoveryTime = 0 ;
+		Integer promoSize = 0 ;
 		
+		List<ProcedureCart> proceduresData = new ArrayList<>();
+
+		Double procedureFinancedPrice = Double.valueOf(0) ;
+		Double singleProcedureFinancedPrice = Double.valueOf(0) ;
+		Double procedureCashPrice = Double.valueOf(0) ;
+		Double singleProcedureCashPrice = Double.valueOf(0) ;
+		Double procedureVIPPrice = Double.valueOf(0) ;
+		Double procedureVIPTotalPrice = Double.valueOf(0) ;
+		
+		boolean hasPromo = false ;
+		List<VIPDoctorProcedure> promosDoctorNProc = new ArrayList<VIPDoctorProcedure>();
+		VIPDoctorProcedure singlePromoDoctorNProc = null;
+		
+		// por cada procedimiento de la orden
 		for (OrderProcedure procedure: order.getProcedureList()) 
 		{ 
+//			Obtengo el nombre
 			proceduresNames += procedure.getProcedure().getName() + ", " ;
-			procedureCashPrice += dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), false) ;
-			procedureFinancedPrice += dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), true) ;
-
+			logger.info("proceduresNames: " + proceduresNames);
+			// calculo precio total teniendo en cuenta si está incluido
+			if (!procedure.getIncludedInPrice()) 
+			{
+				procedureCashPrice += dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), false) ;
+				procedureFinancedPrice += dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), true) ;
+			}
+			
+			// observaciones de drenaje y tiempo de recuperacion
 			observationStr += (dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getHasDrains())? 
 								procedure.getProcedure().getName() + drain + changeLine:"";
-			
 			minRecoveryTime = (dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getPostSurgeryMinStayTime() > minRecoveryTime)? 
 								   dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getPostSurgeryMinStayTime(): minRecoveryTime;
 			maxRecoveryTime = (dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getPostSurgeryMaxStayTime() > maxRecoveryTime)? 
 								   dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getPostSurgeryMaxStayTime(): maxRecoveryTime;
-										
-			proceduresData.add(new ProcedureCart(procedure.getProcedure().getName(), 
-												 dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), false), 
-												 dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), true)));
 			
-			if (cell == 0 &&   // Si todavía no requiere CellSaver
-				procedure.getProcedure().isRequiredCellSaver() &&  // y el procedimiento la requiere 
-				(superOrder.getClient().isHasWeightLoss() || superOrder.getClient().isMoreOneLipo()) &&  // y el cliente ha presentado esto 
-				!dService.findOne(superOrder.getClient().getDoctor()).isRequiredCellSaver())  // y el doctor no la pide
-				cell = 1; 
+			// veo si hay promos 
+			promosDoctorNProc = promoService.findActivePromosForDoctorAndProcedure(new Date(), superOrder.getClient().getDoctor(), procedure.getProcedure().getId());
+			
+			// precio para promos si hay
+			if (promosDoctorNProc.size()>0) 
+			{
+				hasPromo = true ;
+				singlePromoDoctorNProc = promosDoctorNProc.get(0) ;
+				switch (singlePromoDoctorNProc.getType()) 
+				{
+				case NEW_PROCEDURE_PRICE:
+					procedureVIPPrice = singlePromoDoctorNProc.getDiscount() ;
+					break;
+				case PRICE_DISCOUNT:
+					procedureVIPPrice = dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), false) -
+											singlePromoDoctorNProc.getDiscount() ;
+					break;
+				case PERCENT_DISCOUNT:
+					procedureVIPPrice = dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), false) * 
+											(1-singlePromoDoctorNProc.getDiscount()/100) ;
+					break;
+				}
+			}
+			// sino precio cash
+			else  
+				procedureVIPPrice = procedureCashPrice;
+			procedureVIPTotalPrice += procedureVIPPrice ;
+			
+			// adicionar el proc al carrito
+			if (!procedure.getIncludedInPrice())
+			{
+				singleProcedureCashPrice = dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), false) ;
+				singleProcedureFinancedPrice= dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), true) ;
+			}
+			else
+			{
+				singleProcedureCashPrice = Double.valueOf(0) ;
+				singleProcedureFinancedPrice= Double.valueOf(0) ;
+			}
+			promoSize = promoService.countPromoTypeForDoctorAndProcedure(new Date(), superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).size();
+			proceduresData.add(new ProcedureCart(procedure.getProcedure().getName(), singleProcedureCashPrice, singleProcedureFinancedPrice, procedureVIPPrice, 
+												 procedure.getProcedure().getId(), promoSize));
 		}
 		proceduresNames = proceduresNames.substring(0, proceduresNames.length()-2);
 		
-		String mandatoryItemHeader = mandatoryItemsHeader + order.getDoctorName() + " and " + proceduresNames + " procedure(s)";
-		String recommendedItemStrHeader = recommendedItemsHeader + proceduresNames + " procedure(s)";
+		String recommendedItemStrHeader = recommendedItemsHeader + " for surgery" ; //proceduresNames + " procedure(s)";
 		observationStr += timeRecoveryB + minRecoveryTime + "-" + maxRecoveryTime + timeRecoveryE + recoveryH + changeLine ;
 		
-		if (cell == 1 && superOrder.getClient().isHasWeightLoss())
-			observationStr += observationCellByWeightLoss + changeLine ;
-		if (cell == 1 && superOrder.getClient().isMoreOneLipo())
-			observationStr = observationStr  + observationCellByMoreOneLipo ;
 		order.setObservation(observationStr);
+		
+		order.setPayMethod(EnumPayMethods.CASH);
 		
 		model.addAttribute("tittle", orderClientHeader);
 		model.addAttribute("productText", productText); 
 		model.addAttribute("productTexth", productTextH); 
-		model.addAttribute("mandatoryItemHeader", mandatoryItemHeader);
 		model.addAttribute("procedureHeader", surgeriesHeader);
+		model.addAttribute("freeItemHeader", "Free items");
 		model.addAttribute("recommendedItemStrHeader", recommendedItemStrHeader);
 		model.addAttribute("totalProcedureCashPrice", procedureCashPrice);  
+		model.addAttribute("totalProcedureVIPTotalPrice", procedureVIPTotalPrice);  
 		model.addAttribute("totalProcedureFinancedPrice", procedureFinancedPrice);  
 		model.addAttribute("proceduresData", proceduresData);  
 
-		model.addAttribute("mandatoryItemList", cService.findProductsMandatoryByDoctorByProcedure(superOrder.getClient().getDoctor(), order.getProcedureList(), cell));  
-		model.addAttribute("mandatoryAndIncludedItemList", cService.findProductsMandatoryAndIncludedByDoctorByProcedure(superOrder.getClient().getDoctor(), order.getProcedureList()));
 		model.addAttribute("recommendedItemList", cService.findProductsRecommendedByProcedure(superOrder.getClient().getDoctor(), order.getProcedureList()));  
-		model.addAttribute("restItemList", cService.findProductsNotMandatoryAndNotRecommended(order.getProcedureList(), superOrder.getClient().getDoctor(), cell));
+		model.addAttribute("restItemList", cService.findProductsNotMandatoryAndNotRecommended(order.getProcedureList(), superOrder.getClient().getDoctor(), 0));
+		
+		List <ProductRecommendedByProcedureDTO> itemIncludedList = new ArrayList<ProductRecommendedByProcedureDTO>();
+		if (order.getVip() !=null && order.getVip().getItemsFree())
+			for (ProductRecommendedByProcedure itemRecommended : cService.findProductsRecommendedByProcedure(superOrder.getClient().getDoctor(), order.getProcedureList())) 
+				itemIncludedList.add(new ProductRecommendedByProcedureDTO(itemRecommended.getProduct().getId(), 
+						  												  itemRecommended.getProduct().getName(), 
+						  												  itemRecommended.getAmountRecommended())) ;
+		// aqui tengo q ver si entra siempre o solo cuando hay promo
+		for (ItemsAmountForVIP itemIfVIP : promoService.findFreeItemByDoctorNProcedures(new Date(), superOrder.getClient().getDoctor(),order.getProcedureList())) 
+			itemIncludedList.add(new ProductRecommendedByProcedureDTO(itemIfVIP.getItem().getId(), 
+																	  itemIfVIP.getItem().getName(), 
+																	  itemIfVIP.getAmount().longValue())) ;
+		model.addAttribute("freeItemList", itemIncludedList);
 		
 		model.addAttribute("superOrder", superOrder);
 		model.addAttribute("order", order);
+		
+		model.addAttribute("hasPromo", hasPromo); // Aqui tengo que preguntar si este doctor tiene promociones sino solo cash y financiado
+		if (order.getVip()==null)
+			model.addAttribute("payMethods", EnumPayMethods.values()); // Aqui tengo que preguntar si este doctor tiene promociones sino solo cash y financiado
+		else
+		{
+			model.addAttribute("vipObj", order.getVip()); // Aqui tengo que preguntar si este doctor tiene promociones para agregarlas
+			model.addAttribute("payMethods", EnumPayMethods.CASH); // Aqui tengo que preguntar si este doctor tiene promociones para agregarlas
+		}
+			
+		model.addAttribute("promoTo", EnumPromoTo.values());
 			
 		return "/orders/order-form"; 
 	}
-	
-	/*******************
-	// *******DESARROLLANDO******/ 	
+
 	@PostMapping("/order-form")
+	// *******DESARROLLANDO******/ 	
+	/*******************
+	 * @param superOrder
+	 * @param bR
+	 * @param model
+	 * @param itemIdM
+	 * @param amountM
+	 * @param itemIdMI
+	 * @param itemIdC
+	 * @param amountC
+	 * @param payM
+	 * @param promoTo
+	 * @param flash
+	 * @param st
+	 * @return
+	 */
+//	logger.info("<<<<ORDER-UPDATE>>>> order id: " + order.getId());
+//	promosDoctorNProc = promoService.findActivePromosForDoctorAndProcedure(new Date(), 
+//																		   superOrder.getClient().getDoctor(), 
+//																		   procedureChoosed.getProcedure().getId());
+//List<VIPDoctorProcedure> promosDoctorNProc = new ArrayList<VIPDoctorProcedure>();
+	// Recorrer cada lista de items (Mandatories, includies, Chosen)
+//	if (itemIdM!=null) // Mandatories
+//		for (int i = 0; i < itemIdM.length; i++) {			
+//			item = prodService.findOne(itemIdM[i]);
+//			lineI = new OrderItem();
+//			lineI.setAmount(amountM[i]);
+//			lineI.setProduct(item);
+//			lineI.setSubTotal();
+//			order.addItem(lineI);
+//		}
+//	if (itemIdMI!=null) ///			Mandatories, includies,
+//		for (int i = 0; i < itemIdMI.length; i++) {		
+//			item = prodService.findOne(itemIdMI[i]);
+//			lineI = new OrderItem();
+//			lineI.setAmount(0);
+//			lineI.setProduct(item);
+//			lineI.setSubTotal();
+//			order.addItem(lineI);
+//		}
 	public String save(@Valid SuperOrder superOrder, BindingResult bR, Model model, 
 					   @RequestParam(name = "item_id_m[]", required = false) Long itemIdM[],  
 					   @RequestParam(name = "amount_m[]", required = false) Integer amountM[], 
 					   @RequestParam(name = "item_id_mi[]", required = false) Long itemIdMI[],
 					   @RequestParam(name = "item_id_c[]", required = false) Long itemIdC[],
 					   @RequestParam(name = "amount_c[]", required = false) Integer amountC[],
+					   @RequestParam(name = "payM", required = false) EnumPayMethods payM,
+					   @RequestParam(name = "promoTo", required = false) Integer promoTo,
 					   RedirectAttributes flash, SessionStatus st) 
-		{ //			logger.info("<<<<ORDER-UPDATE>>>> order id: " + order.getId());
-			Order order = superOrder.getOrderList().get(superOrder.getOrderList().size()-1);
-		
-			for (OrderProcedure procedureChoosed: order.getProcedureList()) 
-				procedureChoosed.setSubTotal(dService.getProcedurePrice(cService.findOne(superOrder.getClient().getId()).getDoctor(),
-																		procedureChoosed.getProcedure().getId(), order.isFinanced()));
-			OrderItem lineI = null ;
-			Product item = null ;
+		{ 
+			// Tengo la orden actual y le especifico el metodo de pago 
+		Order order = superOrder.getOrderList().get(superOrder.getOrderList().size()-1); // getLastOrder()
+		order.setPayMethod(payM);
 			
-			// Recorrer cada lista de items (Mandatories, includies, Chosen)
-			if (itemIdM!=null) // Mandatories
-				for (int i = 0; i < itemIdM.length; i++) {			
-					item = prodService.findOne(itemIdM[i]);
-					lineI = new OrderItem();
-					lineI.setAmount(amountM[i]);
-					lineI.setProduct(item);
-					lineI.setSubTotal();
-					order.addItem(lineI);
+		Double procedureSubtotal = 0.0 ; 
+		Double itemSubTotal = 0.0;
+		Double orderPreDiscount = 0.0;
+
+		String observation = order.getObservation()!=null? order.getObservation(): " ";
+		
+		OrderItem lineI = null ;
+		List<OrderItem> oi = new ArrayList<OrderItem>();
+
+		Product item = null ;
+		order.setDiscount(0.0);
+		order.setItemList(oi);
+
+		// Si existen items escogidos adicionarlos a la orden
+		if (itemIdC!=null)  
+			for (int i = 0; i < itemIdC.length; i++) 
+			{     
+				item = prodService.findOne(itemIdC[i]);
+				lineI = new OrderItem();
+				lineI.setAmount(amountC[i]);
+				lineI.setProduct(item);
+				lineI.setSubTotal();
+				itemSubTotal += lineI.getSubTotal();	
+				order.addItem(lineI);
+				if (item.getObservations()!=null)
+					observation = observation.concat(item.getObservations()).concat(changeLine) ;
+			}
+		
+		// ahora adicionar los procedimientos escogidos
+		VIPDoctorProcedure singlePromoDoctorNProc = null;
+		for (OrderProcedure procedureChoosed: order.getProcedureList())
+		{	
+			if (promoTo != null) //PARCHE!!!
+				switch (promoTo) 
+				{
+					case 0:
+						procedureChoosed.setPromoTo(EnumPromoTo.PROCEDURE);
+						break;
+					case 1:
+						procedureChoosed.setPromoTo(EnumPromoTo.ITEM);
+						break;
+				}//PARCHE!!!
+			
+			
+			procedureSubtotal = !procedureChoosed.getIncludedInPrice()? dService.getProcedurePrice(cService.findOne(superOrder.getClient().getId()).getDoctor(),
+	                   													procedureChoosed.getProcedure().getId(), order.isFinanced()): Double.valueOf(0);
+			
+			//Ya tengo si es Financiado o Cash, ahora a ver si hay ofertas y aplica a los procedimientos 
+			if (order.getPayMethod() == EnumPayMethods.VIP && promoService.findActivePromosForDoctorAndProcedure(new Date(), 
+																												 superOrder.getClient().getDoctor(), 
+																												 procedureChoosed.getProcedure().getId()).size()>0)
+			{
+				singlePromoDoctorNProc = promoService.findActivePromosForDoctorAndProcedure(new Date(), 
+																							superOrder.getClient().getDoctor(), 
+																							procedureChoosed.getProcedure().getId()).get(0) ;
+				switch (procedureChoosed.getPromoTo())  // el promoTo es por proc no por orden y por tanto hay q sumar...ver todo lo q hay q sumar
+				{
+					case PROCEDURE:
+						switch (singlePromoDoctorNProc.getType()) 
+						{
+								case NEW_PROCEDURE_PRICE:
+									procedureSubtotal = singlePromoDoctorNProc.getDiscount() ;
+									break;
+								case PRICE_DISCOUNT:
+									procedureSubtotal = Math.min(0, procedureSubtotal-singlePromoDoctorNProc.getDiscount()) ;
+									break;
+								case PERCENT_DISCOUNT:
+									procedureSubtotal *= (1-singlePromoDoctorNProc.getDiscount()/100) ;
+									break;
+							}
+							observation= observation.concat("VIP " + procedureChoosed.getProcedure().getName() + " price: $" + procedureSubtotal + ". ").concat(changeLine) ;
+							break;
+						case ITEM:
+							orderPreDiscount += singlePromoDoctorNProc.getDiscount() ;
+							break;
+					}
 				}
-			if (itemIdMI!=null) ///			Mandatories, includies,
-				for (int i = 0; i < itemIdMI.length; i++) {		
-					item = prodService.findOne(itemIdMI[i]);
+				procedureChoosed.setSubTotal(procedureSubtotal);
+			}
+			
+			order.setDiscount(Math.min(orderPreDiscount, itemSubTotal));
+			if (order.getDiscount()>0)
+				observation= observation.concat("Discount $" + order.getDiscount() + " in item for VIP pay method. " ).concat(changeLine) ;
+			 
+			//Adicionar items precargados en las promociones
+			for (ItemsAmountForVIP itemsForVIP : promoService.findFreeItemByDoctorNProcedures(new Date(), superOrder.getClient().getDoctor(), order.getProcedureList()))
+			{
+				int pos = order.getItemPos(itemsForVIP.getItem().getId()) ;
+				if (pos == -1) // No está en la lista
+				{
+					item = prodService.findOne(itemsForVIP.getItem().getId());
 					lineI = new OrderItem();
-					lineI.setAmount(0);
+					lineI.setAmount(itemsForVIP.getAmount());
 					lineI.setProduct(item);
-					lineI.setSubTotal();
-					order.addItem(lineI);
-				}
-			if (itemIdC!=null)  //Chosen
-				for (int i = 0; i < itemIdC.length; i++) {     
-					item = prodService.findOne(itemIdC[i]);
-					lineI = new OrderItem();
-					lineI.setAmount(amountC[i]);
-					lineI.setProduct(item);
-					lineI.setSubTotal();
+					lineI.setSubTotal(0.0);
 					order.addItem(lineI);
 					if (item.getObservations()!=null)
 						order.setObservation((order.getObservation() != null)? 
 												order.getObservation() + item.getObservations() + changeLine: 
 													item.getObservations() + changeLine) ;
 				}
+				else // está en la lista
+					order.updateItemAmount(pos, order.getItemList().get(pos).getAmount() + itemsForVIP.getAmount());
+
+				observation = observation.concat(itemsForVIP.getAmount() + " " + itemsForVIP.getItem().getName() + " free for VIP pay method. ").concat(changeLine) ;
+			}
 			
+			
+			// ver si la orden es VIP y adicionar los itemsVIP
+			if (order.getVip() !=null && order.getVip().getItemsFree())
+				for (ProductRecommendedByProcedure itemRecommended: cService.findProductsRecommendedByProcedure(superOrder.getClient().getDoctor(), order.getProcedureList()))
+				{
+					int pos = order.getItemPos(itemRecommended.getProduct().getId()) ;
+					if (pos == -1) // No está en la lista
+					{
+						item = prodService.findOne(itemRecommended.getProduct().getId());
+						lineI = new OrderItem();
+						lineI.setAmount(itemRecommended.getAmountRecommended().intValue());
+						lineI.setProduct(item);
+						lineI.setSubTotal(0.0);
+						order.addItem(lineI);
+						if (item.getObservations()!=null)
+							order.setObservation((order.getObservation() != null)? 
+													order.getObservation() + item.getObservations() + changeLine: 
+														item.getObservations() + changeLine) ;
+					}
+					else // está en la lista
+						order.updateItemAmount(pos, order.getItemList().get(pos).getAmount() + itemRecommended.getAmountRecommended().intValue());
+
+					observation = observation.concat(itemRecommended.getAmountRecommended().intValue() + " " + itemRecommended.getProduct().getName() + 
+														" free for VIP pay method. ").concat(changeLine) ;
+				}
+			
+			
+			order.setObservation(observation);
+				
 			cService.saveSuperOrder(superOrder);
 			st.setComplete();
 			
-//			return "redirect:/orders/summary/" + order.getId(); // order.getClient().getId() + "/" +
 			return "redirect:/orders/summary/" + superOrder.getId(); // order.getClient().getId() + "/" + AQUI MOSTRAR SOLO ESTA ORDEN EN EL SUMMARY
 		}
+	
 		
 	@GetMapping(value = "/summary/{sorderid}")
 	public String summary(@PathVariable(value = "sorderid") Long sOrderId, Model model, RedirectAttributes flash, SessionStatus st) 
@@ -302,135 +524,3 @@ public class OrderController
 	}
 	
 }
-
-
-// ERA EL CALCULO DE LOS TIEMPOS DE RECUPERACION GENERAL PERO NO LOS LLEVA PUES SON FECHAS INDEPENDIENTES
-//Integer minRTime = 0 ;
-//Integer maxRTime = 0 ;
-//for (Order order: superOrder.getOrderList())
-//	for (OrderProcedure procedure: order.getProcedureList()) 
-//	{
-//		minRTime = (dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getPostSurgeryMinStayTime() > minRTime)? 
-//				   dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getPostSurgeryMinStayTime(): minRTime;
-//		maxRTime = (dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getPostSurgeryMaxStayTime() > maxRTime)? 
-//				   dService.getProcByDoct(superOrder.getClient().getDoctor(), procedure.getProcedure().getId()).getPostSurgeryMaxStayTime(): maxRTime;
-//	}
-//String superObservationStr = timeRecoveryB + minRTime + "-" + maxRTime + timeRecoveryE + changeLine;
-//superObservationStr = (superOrder.getObservation()!= null)? superOrder.getObservation() + superObservationStr: superObservationStr ;
-//superOrder.setObservation(superObservationStr) ;
-		
-//	VER PARA QUÉ EL NOMBRE DEL DOCTOR SEPARADO
-//********************************************		
-//		if (superOrder.getClient().getDoctor()!=null)  // si es null es pq es una orden ya hecha
-//			model.addAttribute("doctor", dService.findOne(superOrder.getClient().getDoctor()).getName());
-//		else
-//			model.addAttribute("doctor", order.getDoctorName());
-		
-//		if (cliente.getP1()!=null) // si es null es pq es una orden ya hecha
-//			model.addAttribute("p1", pService.findOne(cliente.getP1()).getName());
-//		else
-//			model.addAttribute("p1", order.getProcedureList().get(0).getProcedure().getName());
-//		
-//		if (cliente.getP2() != null) // si es null es pq es una orden ya hecha o pq no hay P2
-//			model.addAttribute("combo", pService.findOne(cliente.getP2()).getName());
-//		else if (order.getProcedureList().size()>1)
-//			model.addAttribute("combo", order.getProcedureList().get(1).getProcedure().getName());
-//		else
-//			model.addAttribute("combo", null);
-	
-//		public String view(@PathVariable(value = "orderid") Long orderid, Model model, RedirectAttributes flash, SessionStatus st) { // @PathVariable(value = "clientid") Long clientid, 
-//			String flashMsg = "Order for the client: \"" + order.getClient().getName() + "\" created successfully!!!";
-//			flash.addFlashAttribute("success", flashMsg);
-			
-//			logger.info("ORDER<<<< " + orderid);
-//			
-//			Order order = null ;
-//			Client cliente = null;
-//			
-//			if (orderid > 0) {
-//				order = cService.findOrderById(orderid);
-//			//	logger.info("ORDER\\view<<<< " + order.getDoctorName() + "  " + order.getClient().getId());
-////				if (order == null) {
-////					flash.addFlashAttribute("error", "Don't exits order with this Id in the system");
-////					return "redirect:/clients/client-list";    // otra cosa tiene q ser
-////				}
-////				else
-//					cliente = cService.findOne(order.getClient().getId());
-//			}
-//			else {
-//					flash.addFlashAttribute("error", "Order id must to be <= 0"); 
-//					return "redirect:/clients/client-list";
-//				}
-//			
-//			//Esto leerlo de un fichero
-//			List <String> included = Arrays.asList("Drug test", "Nicotine test", "Pregnancy test", "Anesthesia Fees", "Operating Room Fees", "Surgeon's Fees", 
-//												   "Compression Socks", "All Pre Op Appointments", "All Post Op Appointments", "Prescriptions for medications");
-//			
-//			
-//			model.addAttribute("tittle", orderDetailsHeader);
-//			model.addAttribute("orderClientHeader", orderClientHeader + cliente.getName());
-//			model.addAttribute("personalDataHeader", personalDataHeader);
-//			model.addAttribute("healthConditionHeader", HealthConditionHeader);
-//			model.addAttribute("opDecision", opDecision);
-//			
-//			model.addAttribute("client", cliente);
-//			model.addAttribute("order", order);
-//			
-//			model.addAttribute("conditionList", cliente.getConditionsName());  
-//			// los incluidos de arriba
-//			model.addAttribute("included", included);
-//			
-//			if (cliente.getDoctor()!=null)  // si es null es pq es una orden ya hecha
-//				model.addAttribute("doctor", dService.findOne(cliente.getDoctor()).getName());
-//			else
-//				model.addAttribute("doctor", order.getDoctorName());
-//			
-//			if (cliente.getP1()!=null) // si es null es pq es una orden ya hecha
-//				model.addAttribute("p1", pService.findOne(cliente.getP1()).getName());
-//			else
-//				model.addAttribute("p1", order.getProcedureList().get(0).getProcedure().getName());
-//			
-//			if (cliente.getP2() != null) // si es null es pq es una orden ya hecha o pq no hay P2
-//				model.addAttribute("combo", pService.findOne(cliente.getP2()).getName());
-//			else if (order.getProcedureList().size()>1)
-//				model.addAttribute("combo", order.getProcedureList().get(1).getProcedure().getName());
-//			else
-//				model.addAttribute("combo", null);
-//
-//			// para lo del portapapeles
-//			String text = order.getDoctorName() + ", ";
-//			for (OrderProcedure procedureChoosed: order.getProcedureList()) 
-//				text = text.concat(procedureChoosed.getProcedure().getName()).concat(" + ");
-//			text = text.substring(0, text.length()-2);
-//			text = text.concat("$").concat(order.getTotalOrder().toString());
-//			text = text.concat(changeLine);
-//			text = text.concat("Descripción de lo que se hace en las cirugías");
-//			text = text.concat(changeLine);
-//			//Items
-//			for (OrderItem item: order.getItemList()) 
-//				text = text.concat(item.getProduct().getName()).concat(changeLine);
-//			for (String other: included)
-//				text = text.concat(other).concat(changeLine);
-//			text = text.concat("Puede fijar este precio con un pequeño depósito de $ 250.00");
-//			model.addAttribute("text", text);
-//			
-//			return "/orders/view-order";
-//		}
-		
-
-
-/*   	PARA LOS ERRORES DE CREAR LA ORDER
- * //			if (bR.hasErrors()) {
-//				model.addAttribute("tittle", tittle);
-//				model.addAttribute("msg", msg);
-//				return "invoice/form";
-//			}
-//			if (itemId==null || itemId.length==0) {
-//				model.addAttribute("tittle", tittle);
-//				model.addAttribute("msg", msg);
-//				model.addAttribute("error", msgENotLine);
-//				return "invoice/form";
-//			}
- * 
- * 
- * */

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/layout-evaluation :: head"></head>
+<body style="background-color: #4C576C">
+	<header th:replace="layout/layout-evaluation :: header"></header>
+	<div class="container" style="font-size: 15px; margin-top: 5rem">
+		<form th:action="@{/r1}" method="post" class="form-inline" th:object="${client}" id="r1form">
+	 		<div class="row">  <!-- Fila Principal  -->
+	 			<div class="col-9"> <!-- Columna Der. Condiciones  -->
+					<div class="card bg-white card-border-diferent" >
+						<div th:text="${conditionHeader}" class="card-header font-weight-bold text-white  py-1" align="center" style="background-color:#101F3A"></div>
+						<div class="card-body" align="left" style="font-size: 13px;">
+						   <div class="container newspaper1">
+						      <div th:each="s: ${sList}" class="row">
+							     <div class="my-1"> 
+								    <input type="checkbox" th:field="*{conditionsList}" th:value="${s.id}" th:checked="${#lists.contains(client.conditionsList, s)}"> 
+								 </div>
+								 <div class="mx-2 my-1"> 
+								    <label th:for="${#ids.prev('conditionsList')}" th:text="${s.name}"></label>
+						 		 </div>
+						      </div>
+						   </div>	
+						</div>
+					</div>
+				</div>
+	      		<div class="col-3" >    <!-- Columna Iz. con el cálculo de BMI y Hemoglobina -->
+	      			<div class="row" >
+						<div class="card bg-white card-border-diferent">
+							<div th:text="${bmiHeader}" class="card-header font-weight-bold bg-dark text-white py-1" align="center"></div>
+							<div class="card-body">
+								<!-- Método English -->
+								<div th:if="${bmiEnglish}" class="row px-2">
+								<!-- DESCOMENTAR PARA INCLUIR EL METRIC --> 
+	<!-- 								(English system&nbsp;|&nbsp; <a th:text="${bmiLink}" th:href="@{/r1-metric/}"></a>) -->
+									<div class="row "> <!-- my-1 -->
+										<div class="row px-4">
+											<b>Height</b>
+										</div>
+										<div class="form-group col">
+											<label for="heightFeetOrCentimeters" class="col-form-label col-7">Feet</label>
+											<input type="number" step="0.1" id="heightFeetOrCentimeters" th:field="*{heightFeetOrCentimeters}" class="form-control col-5"/> 
+											<small th:if="${#fields.hasErrors('heightFeetOrCentimeters')}" th:errors="*{heightFeetOrCentimeters}" 
+												   class="form-text text-danger"></small>
+											<label for="heightInches" class="col-form-label col-7 py-3">Inches</label>
+											<input type="number" step="0.1" id="heightInches" th:field="*{heightInches}" class="form-control col-5" /> 
+											<small th:if="${#fields.hasErrors('heightInches')}" th:errors="*{swswheightInches}" class="form-text text-danger"></small>
+										</div>
+									</div>
+									<div class="row">
+										<div class="row px-4">
+											<b>Weight</b>
+										</div>
+										<div class="form-group col">  
+											<label for="weight" class="col-form-label col-7">Pounds</label>
+											<input type="number" step="0.1" id="weight" th:field="*{weight}" class="form-control col-5" /> 
+											<small th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}" class="form-text text-danger"></small>
+										</div>
+									</div>
+								</div>
+								
+								<!-- QUITÉ EL METRIC POR AHORA -->
+	<!-- 							<div th:if="${bmiMetric}" class="row px-2"> Método Metric -->
+	<!-- 								(<a th:text="${bmiLink}" th:href="@{/r1-english/}"></a> &nbsp;|&nbsp;Metric system) -->
+	<!-- 								<div class="row my-1"> -->
+	<!-- 									<div class="row px-4"> -->
+	<!-- 										<b>Height</b> -->
+	<!-- 									</div> -->
+	<!-- 									<div class="form-group col"> -->
+	<!-- 										<label for="heightFeetOrCentimeters" class="col-form-label col-7">Centimeters</label> -->
+	<!-- 							<input type="number" step="0.1" id="heightFeetOrCentimeters" th:field="*{heightFeetOrCentimeters}" class="form-control col-5" />  -->
+	<!-- 									</div> -->
+	<!-- 								</div> -->
+	<!-- 								<div class="row"> -->
+	<!-- 									<div class="form-group px-2"> -->
+	<!-- 										<b>Weight</b> -->
+	<!-- 									</div> -->
+	<!-- 									<div class="form-group col">  class="col-form-label col-sm-3" -->
+	<!-- 										<label for="weight" class="col-form-label col-7">Kilograms</label> -->
+	<!-- 										<input type="number" step="0.1" id="weight" th:field="*{weight}" class="form-control col-5" />  -->
+	<!-- 									</div> -->
+	<!-- 								</div> -->
+	<!-- 							</div> -->
+								<!-- QUITÉ EL METRIC POR AHORA -->
+							</div>
+						</div>
+					</div>
+					<div class="row mt-3">
+						<div class="card bg-white card-border-diferent">
+							<div th:text="'Hemoglobin'" class="card-header font-weight-bold bg-dark text-white py-1" align="center"></div>
+							<div class="card-body">
+								<div class="form-group col">
+									<label for="hbg" class="col-form-label col-4">Value:</label>
+									<input type="number" step="0.1" id="hbg" th:field="*{hbg}" class="form-control col-8" aria-label="hbg" aria-describedby="hbg"
+									 	   th:errorclass="'form-control alert-danger'"/> 
+									<small th:if="${#fields.hasErrors('hbg')}" th:errors="*{hbg}" class="form-text text-danger"></small>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mt-5">
+						<input type="submit" value="Continue..." class="btn btn-lg btn-block btn-305"> 
+					</div>
+	     		</div> 
+	  		</div>
+	  	</form>
+	</div>
+	<footer th:replace="layout/layout-evaluation :: footer"></footer>
+</body>
+</html>

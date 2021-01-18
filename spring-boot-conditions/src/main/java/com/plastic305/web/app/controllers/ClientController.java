@@ -137,21 +137,35 @@ public class ClientController {
 		return "redirect:/clients/client-list";
 	}
 	
+	
+	@GetMapping("deleteSOrder/{SOrderid}/{iDC}")
+	public String eliminarSOrder(@PathVariable(value = "SOrderid") Long idSO, @PathVariable(value = "iDC") Long iDC, Model model, RedirectAttributes flash) 
+	{
+		cService.deleteSuperOrder(idSO);
+		return "redirect:/clients/view/" + iDC;
+	}
+	
+	
 	@GetMapping("view/{idclient}")
-	public String ver(@PathVariable(value = "idclient") Long idclient, Model model, RedirectAttributes flash) {
+	public String ver(@PathVariable(value = "idclient") Long idclient, Model model, RedirectAttributes flash) 
+	{
 		Client client = null;
-		if (idclient > 0) {
+		if (idclient > 0) 
+		{
 			client = cService.findOne(idclient);
-			if (client == null) {
+			if (client == null) 
+			{
 				flash.addFlashAttribute("error", "Patient no existe con ese Id"); // cambiar mensajes
 				return "redirect:/clients/client-list";
 			}
-		} else {
+		} else 
+		{
 			flash.addFlashAttribute("error", "Cliente no puede <= 0"); // cambiar mensajes
 			return "redirect:/clients/client-list";
 		}
+		
 		model.addAttribute("tittle", "Patient details");
-		model.addAttribute("msg", "'" + client.getName() + "' patient details");
+		model.addAttribute("msg", client.getName() + " patient details");
 		model.addAttribute("client", client);
 		return "/clients/view"; 
 	}	

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+   	<link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+   <head th:replace="layout/layout-procedure :: head"></head>
+   <body>
+      <header th:replace="layout/layout-procedure :: header"></header>
+      <div class="container" style="margin-top: 5rem">
+         <div class="card bg-white border-305">
+            <div th:text="${tittle}" class="card-header border-305 text-white font-weight-bold" style="background-color:#101F3A" align="center"></div>
+            <div class="card-body">
+               <div class="row">
+                  <div sec:authorize="hasRole('ROLE_POWER')" class="col" align="right">                              
+                      <a th:href="@{/users305/form/}" data-toggle="tooltip" data-placement="top" title="New user" class="a a-305 fas fa-user fa-2x"></a>
+                  </div>
+               </div>
+               <div class="row pt-2">
+                  <div class="col">
+                     <table class="table table-striped hover compact"  id="user-table-list" style="font-size: 14px">
+                     <!-- table-bordered -->
+                        <thead align="center">
+                           <tr>
+                              <th th:text="'Name'" scope="col"></th>
+                              <th th:text="'Username'" scope="col"></th>
+                              <th th:text="'Is admin?'" scope="col"></th>
+                              <th th:text="'Is power?'" scope="col"></th>
+                              <th sec:authorize="hasRole('ROLE_POWER')" th:text="Edit" scope="col"></th>
+                              <th sec:authorize="hasRole('ROLE_POWER')" th:text="Remove" scope="col"></th>
+                           </tr>
+                        </thead>
+                        <tbody >
+                           <tr th:each="u: ${user_list}">
+                              <td th:text="${u.name} + ' ' + ${u.lastname}" align="justify"></td>
+                              <td th:text="${u.username}" align="justify"></td>
+                              <td th:if ="${u.isAdmin()}" align="center"><span class="fas fa-check"></span></td>
+                                  <td th:unless ="${u.isAdmin()}" align="center"><span></span></td>
+                              <td th:if ="${u.isPower()}" align="center"><span class="fas fa-check"></span></td>
+                                  <td th:unless ="${u.isPower()}" align="center"><span></span></td>
+                           <!-- Editar user -->
+                              <td sec:authorize="hasRole('ROLE_POWER') and !hasRole('ROLE_ADMIN')" align="center">
+                                 <a th:unless ="${u.isAdmin()}" th:href="@{/users305/form/} + ${u.id}" class="a a-305 fas fa-pencil-alt" style="color: #000"></a>
+                                 <span th:if ="${u.isAdmin()}" ></span>
+                              </td>
+                              <td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
+                                 <a th:href="@{/users305/form/} + ${u.id}" class="a a-305 fas fa-pencil-alt" style="color: #000"></a>
+                              </td>
+                           <!-- Eliminar user -->
+                              <td sec:authorize="hasRole('ROLE_POWER') and !hasRole('ROLE_ADMIN')" align="center">
+                              	<a th:unless ="${u.isAdmin()}" th:href="'/users305/delete/' + ${u.id}" onclick="return confirm('Do you want remove this user?');" 
+                              	   type="button" class="btn fas fa-eraser"></a> 
+                                 <span th:if ="${u.isAdmin()}" ></span>
+                              </td>
+                              <td sec:authorize="hasRole('ROLE_ADMIN')" align="center">
+                              	<a th:href="'/users305/delete/' + ${u.id}" onclick="return confirm('Do you want remove this user?');" 
+                              	   type="button" class="btn fas fa-eraser"></a> 
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div> 
+            </div>
+         </div>
+      </div>
+        <div th:text="'Effective date: ' + ${update}" class="card-header font-weight-bold mb-5" style="background-color: ffffff; font-size: 14px; color: #101F3A"  align="center"></div>
+      <footer th:replace="layout/layout-procedure :: footer"></footer>
+      <script th:src="@{/js/jquery.dataTables.min.js}"></script>
+      <script th:replace="users305/js/util-js.html :: util"></script>
+   </body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<script type="text/javascript" th:fragment="util">
+	
+	$(function () {
+		  $('[data-toggle="tooltip"]').tooltip();
+		  
+		 
+// 	 	    if (document.find("min_span"))
+// 	 	    document.getElementById("min_span").disabled = true;
+// 	 		document.getElementById("min_input").disabled = true;
+		//  alert(1);
+		})
+	
+	$(document).ready( function () {
+	    $('#product-table-list').DataTable();
+	} )
+	
+	function showModal(elem){
+    var dataId = $(elem).data("name");
+    
+     // var button = $(event.relatedTarget) // Button that triggered the modal
+	  var id =  $(elem).data('id') // Extract info from data-* attributes
+	  var name =  $(elem).data('name') // Extract info from data-* attributes
+//	  alert(name)
+//      alert(id)
+	  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+	  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+//	  var modal = $(this)
+	  var href = $('#removep').attr('href');
+      
+      var modal = $(this)
+	  modal.find('.modal-titlep').text('Remove item ' + name + '?');
+	  modal.find('.modal-body span').text('Do you want to remove ' + name + ' item from the system? This operation is irreversible.')
+	  $('#removep' + id).attr('href', href+id);
+}
+	
+//	$(document).on('show.bs.modal','#modalDelete', function () {
+//		  var button = $(event.relatedTarget) // Button that triggered the modal
+//		  var id = button.data('id') // Extract info from data-* attributes
+//		  var name = button.data('name') // Extract info from data-* attributes
+//		  alert(name)
+//		  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+//		  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+//		  var modal = $(this)
+//		  var href = $('#remove').attr('href');
+//		  modal.find('.modal-title').text('Remove item ' + name + '?');
+//		  modal.find('.modal-body span').text('Do you want to remove ' + name + ' item from the system? This operation is irreversible.')
+//		  $('#remove').attr('href', href+id);
+//		});
+
+
+
+	var itemsHelper = {
+				activeAmount: function(ischeck){
+					if(ischeck){
+						//alert(document.getElementById("min_span"))
+						document.getElementById("min_span").disabled = false;
+						document.getElementById("min_input").disabled = false;
+					}
+					else {
+						document.getElementById("min_span").disabled = true;
+						document.getElementById("min_input").disabled = true;
+					}
+				},
+	}
+
+
+	</script>
+</body>
+</html>

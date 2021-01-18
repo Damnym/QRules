@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="layout/layout-client :: head"></head>
 <body>
 	<header th:replace="layout/layout-client :: header"></header>
 	<div class="container" style="margin-top: 5rem" align="center">
 		<div class="card bg-white border-305" style="width: 70%;">
-			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
-			<div class="card-body " align="left">
+			<div class="card-header border-305 font-weight-bold py-2 text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
+				<div class="card-body" align="left">
 				<form id="newclient"  th:object="${client}" enctype="multipart/form-data" method="post">
-					<div class="row ">
+					<div class="row">
 						<div class="col-6">
 							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>
 						</div>

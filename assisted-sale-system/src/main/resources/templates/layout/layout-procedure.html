@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="layout/meta-layout :: head"></head>
+
+<body>
+	<header th:replace="layout/meta-layout :: header"></header>
+	<header>
+	    <div id="sidenav-305" class="sidenav">
+	         <a th:href="@{/suffering/list}"  id="conditions"> 
+	            <span class="active-305">Conditions</span> 
+	            <i class="fas fa-notes-medical" style="color: #101F3A"></i>
+	         </a>
+	         <a th:href="@{/doctor/list}" id="doctor"> 
+	            <span>Surgeons</span> 
+	            <i class="fas fa-user-md" style="color: #101F3A"></i>
+	         </a> 
+	         <a th:href="@{/clients/client-list}" id="client"> 
+	            <span>Patient</span>  
+	            <i class="far fa-address-card" style="color: #101F3A"></i>
+	         </a> 
+	         <a th:href="@{/product/list-product}" id="item"> 
+	            <span>Items</span> 
+	            <i class="fas fa-tag" style="color: #101F3A"></i>
+	         </a> 
+	         <a th:href="@{/procedure/list-procedure}" id="procedure-active" style="left: 0; box-shadow: 0px 0px #101F3A;"> 
+	            <span>Procedures</span> 
+	            <i class="fas fa-window-maximize" style="color: #ffffff"></i>
+	         </a>
+	         <a th:href="@{/combo/list-combo}" id="combo"> 
+	            <span>Combos</span> 
+	            <i class="fas fa-window-restore" style="color: #101F3A"></i>
+	         </a>
+	      </div>
+	      
+	      <div class="alert alert-success" th:if="${success != null}"
+	         th:text="${success}"></div>
+	      <div class="alert alert-danger" th:if="${error != null}"
+	         th:text="${error}"></div>
+	      <div class="alert alert-warning" th:if="${warning != null}"
+	         th:text="${warning}"></div>
+	      <div class="alert alert-info" th:if="${info != null}"
+	         th:text="${info}"></div>
+   </header>
+
+   <footer th:replace="layout/meta-layout :: footer"></footer>
+</body>
+</html>

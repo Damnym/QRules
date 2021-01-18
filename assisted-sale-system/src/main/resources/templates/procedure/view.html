@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout-procedure :: head"></head>
+<body>
+	<header th:replace="layout/layout-procedure :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="card bg-white border-305" style="width: 70%;">
+			<div class="card-header border-305 font-weight-bold text-white" th:text="${msg}" align="center" style="background-color:#101F3A"></div>
+			<div class="card-body " align="left">
+				<form id="newprocedure" th:object="${procedure}" th:action="@{/procedure/form}" method="post" enctype="multipart/form-data" >
+				<fieldset disabled="disabled">
+					<div class="form-group row">
+<!-- NOMBRE -->			<div class="input-group mb-1 col ml-1">
+							<div class="input-group-prepend ">
+						    	<span class="input-group-text" id="name">Procedure:</span>
+						  	</div>
+						  	<input type="text" id="name" min="0" th:field="*{name}" 
+						  		   aria-label="name" class="form-control col-sm-8" aria-describedby="name" placeholder="Name" 
+						  		   th:errorclass="'form-control alert-danger'" />
+							<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="form-text text-danger"></small>
+						</div>
+<!-- recoveryTime -->	<div class="input-group mb-1 col ml-5">
+							<div class="input-group-prepend ">
+						    	<span class="input-group-text" id="recovery">Recovery Time:</span>
+						  	</div>
+						  	<input type="number" id="recoveryTime" min="0" th:field="*{recoveryTime}" 
+						  		   aria-label="Username" class="form-control col-sm-6" aria-describedby="recovery" placeholder="Months" 
+						  		   th:errorclass="'form-control alert-danger'" />
+							<small th:if="${#fields.hasErrors('recoveryTime')}" th:errors="*{recoveryTime}" class="form-text text-danger"></small>
+						</div>
+					</div>
+					<div class="form-group form-check row">
+<!-- Cell Saver? -->	<input type="checkbox" th:field="*{requiredCellSaver}" th:value="False" class="form-check-input ml-1"/>
+						<label th:for="${#ids.prev('requiredCellSaver')}" th:text="'Need Cell Saver?'" class="form-check-label ml-4"></label>
+<!-- aditional? -->		<input type="checkbox" th:field="*{aditional}" th:value="False" class="form-check-input ml-4"/>
+						<label th:for="${#ids.prev('aditional')}" th:text="'Is Aditional?'" class="form-check-label ml-5"></label>
+					</div>
+<!--Fotos UPDATE-->	<div class="form-group row">
+<!-- ${state.count} -->
+						<div th:each="pictures, state: ${procedure.imagesList}" class="col-3">
+							<div class="row">
+								<div class="col">
+									<img th:src="@{'/uploads/' + ${pictures.path}}" class="demo cursor" th:id="${state.count}" 
+										  style="width:100%;
+										  		border-style: solid;
+										  		border-width: 1px;
+										  		border-color: #ddd;
+										  		border-radius: 4px;
+										  		padding: 5px;">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+							  		<div class="custom-file">
+							    		<input type="file" class="custom-file-input" th:name="'file_' + ${state.count}" th:id="'file_' + ${state.count}"
+					  		    			   th:onchange="'readURL(' + this.files + ',' + ${state.count} + ');'" aria-describedby="inputGroupFileAddon01">
+							    		<label class="custom-file-label" th:for="'file_' + ${state.count}"></label>
+							  		</div>
+							  	</div>	
+							</div>
+						</div>
+					</div>
+<!-- Recommended items -->
+				<div class="form-group row mt-3">
+                    <div class="col">
+                       <h5  align="center" style="text-decoration: underline;">Recommended items</h5>
+                    </div>
+                    </div>
+<!-- LOS QUE YA ESTABAN -->
+                    <div th:if="${!procedure.productRecommendedList.isEmpty()}"  class="form-group row">
+						<div class="col-12">
+                    		<table class="table table-sm table-striped table-hover">
+                      			<thead>
+                          			<tr>
+		                            	<th width="70%" th:text="'Description'"></th>
+		                             	<th width="10%" th:text="'Amount'"></th>
+		                             	<th width="10%" th:text="'Delete'" class="align-middle" align="center"></th>
+                          			</tr>
+                       			</thead>
+                       			<tbody>
+                       				<tr th:each="recommendedItem: ${procedure.productRecommendedList}" th:id="'rowPrev_' + ${recommendedItem.product.id}">
+                       					<td class="d-none">
+											<input type="hidden" th:value="${recommendedItem.product.id}" name="itemPrev_id[]" /> <!-- ID para guardar -->
+										</td>
+                       					<td th:text="${recommendedItem.product.name}" align="justify"></td>
+                       					<td align="justify">
+											<input type="number" th:value="${recommendedItem.amountRecommended}" name="amountPrev[]" 
+											       th:id="'amountPrev_' + ${recommendedItem.product.id}" class="form-control" min="0" />
+                       					</td>
+                       					<!-- Eliminar Item -->
+                            			<td align="center">
+                              				<a th:href="'#' " onclick="return confirm('Do you want remove this procedure?');" type="button" class="btn fas fa-eraser"></a> 
+<!--                               				+ ${p.id} -->
+                              			</td>
+                       				</tr>
+                       			</tbody>
+                    		</table>
+                    	</div>
+                    </div>
+<!--                     </div> -->
+<!--PARA AGREGAR NUEVOS -->
+                    <div class="form-group row">
+	                    <div class="input-group col ml-1">
+								<div class="input-group-prepend ">
+							    	<span class="input-group-text" id="name">Find item:</span>
+							  	</div>
+							  	<input type="text" name="find_item" id="find_item"
+							  		   aria-label="find_item" class="form-control col-sm-11" aria-describedby="find_item" placeholder="Type for autocomplete"/>
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col-sm-12">
+                    		<table th:replace="procedure/items-layout :: procedureItems"></table>  
+                    		<table id="loadProcedureItems" class="table  table-sm table-striped table-hover">
+                      			<thead>
+                          			<tr>
+		                            	<th width="70%"></th>
+		                             	<th width="10%"></th>
+		                             	<th width="10%" class="align-middle" align="center"></th>
+                          			</tr>
+                       			</thead>
+                       			<tbody></tbody>
+                    		</table>
+                    	</div>
+                    </div>
+                    
+	  			</fieldset>
+					<!--  SUBMIT   -->
+					<div class="row">
+	  					<a class="btn btn-block btn-305" th:href="@{/procedure/list-procedure}" th:text="'Back to procedure list'"></a>
+	  				</div> 
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout-procedure :: footer"></footer>
+      <script th:replace="procedure/js/util-js.html :: util"></script>
+</body>
+</html>

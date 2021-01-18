@@ -40,6 +40,7 @@ public class DoctorController {
 	
 	private static final String tittleList= "Surgeons list" ;
 	private static final String tittleNewDoctor = "New Surgeon" ;
+	private static final String tittleUpdateProedure = "Update procedure-surgeon data" ;
 	
 	private static final String bNext = "Continue" ;
 	private static final String bSave = "Save" ;
@@ -49,6 +50,7 @@ public class DoctorController {
 	private static final String bUpdate = "Edit data" ;
 	
 	private static final String msgAddDoctorProcedure = "Form to add procedures to surgeon " ;
+	private static final String msgUpdateDoctorProcedure = "Form to update procedures to surgeon " ;
 	private static final String msgAddDoctorCondition = "Form to add conditions to surgeon " ;
 	private static final String msgNewDoctor = "New Surgeon form" ;
 	private static final String msgDoctorView = "Surgeon data" ;
@@ -167,10 +169,8 @@ public class DoctorController {
 	@GetMapping("/add-procedure/{id-doctor}")
 	public String addProcedure(@PathVariable(value = "id-doctor") Long id, Model model) 
 	{
-		ProcByDoct procedureByDoct = new ProcByDoct() ;
-
 		model.addAttribute("doctor", doctorService.findOne(id));
-		model.addAttribute("procedureByDoct", procedureByDoct);
+		model.addAttribute("procedureByDoct", new ProcByDoct());
 		
 		model.addAttribute("tittle", bAddProcedure);
 		model.addAttribute("msg", msgAddDoctorProcedure);
@@ -181,6 +181,58 @@ public class DoctorController {
 
 		return "/doctor/add-procedure"; 
 	}
+	
+	@Secured("ROLE_ADMIN")
+	@GetMapping("update-procbydoct/{idprocbydoct}/{iddoct}")
+	public String updateProcByDoct(@PathVariable(value = "idprocbydoct") Long idProcByDoct,
+								   @PathVariable(value = "iddoct") Long iddoct,
+								   Model model) 
+	{
+		model.addAttribute("doctor", doctorService.findOne(iddoct));
+		model.addAttribute("procedureByDoct", procByDoctService.findOne(idProcByDoct));
+		
+		model.addAttribute("tittle", tittleUpdateProedure);
+		model.addAttribute("msg", msgUpdateDoctorProcedure);
+		model.addAttribute("bContinue", bNext);
+		model.addAttribute("bSave", bSave);
+		model.addAttribute("bAddCondition", bAddCondition);
+		model.addAttribute("bAddCombo", bAddCombo);
+
+		return "/doctor/add-procedure"; 
+	}
+	
+	
+	@Secured("ROLE_ADMIN")
+	@PostMapping("/add-procedure")      
+	public String addProcedureSave(ProcByDoct procedureByDoct, 
+								   Doctor doctor, 
+								   @RequestParam(name = "procID", required = false) Long procID,  
+								   BindingResult bResult, Model model, SessionStatus st) 
+	{
+		if (doctor.indexOfProc(procID) != -1)
+		{
+			doctor.getProcList().get(doctor.indexOfProc(procID)).setPostSurgeryMaxStayTime(procedureByDoct.getPostSurgeryMaxStayTime());
+			doctor.getProcList().get(doctor.indexOfProc(procID)).setPostSurgeryMinStayTime(procedureByDoct.getPostSurgeryMinStayTime());
+			doctor.getProcList().get(doctor.indexOfProc(procID)).setPriceCash(procedureByDoct.getPriceCash());
+			doctor.getProcList().get(doctor.indexOfProc(procID)).setPriceFinanced(procedureByDoct.getPriceFinanced());
+			doctor.getProcList().get(doctor.indexOfProc(procID)).setHasDrains(procedureByDoct.getHasDrains());
+			doctorService.save(doctor);
+			
+			return "redirect:/doctor/admin-procedure/"  + doctor.getId();
+		}
+		else
+		{
+			procedureByDoct.setProcedure(procedureService.findOne(procID));
+			doctor.addProcedure(procedureByDoct);
+			doctorService.save(doctor);
+			
+			return "redirect:/doctor/add-procedure/" + doctor.getId();
+		}
+	}
+	
+	
+	
+	
 	
 	
 	@Secured("ROLE_ADMIN")
@@ -203,21 +255,6 @@ public class DoctorController {
 		doctorService.save(doctor);
 
 		return "redirect:/doctor/list";
-	}
-	
-	
-	@Secured("ROLE_ADMIN")
-	@PostMapping("/add-procedure")      
-	public String addProcedureSave(Doctor doctor, 
-								   ProcByDoct procedureByDoct, 
-								   @RequestParam(name = "procID", required = false) Long procID,  
-								   BindingResult bResult, Model model, SessionStatus st) 
-	{
-		procedureByDoct.setProcedure(procedureService.findOne(procID));
-		doctor.addProcedure(procedureByDoct);
-		doctorService.save(doctor);
-
-		return "redirect:/doctor/add-procedure/" + doctor.getId();
 	}
 	
 	
@@ -473,23 +510,6 @@ public class DoctorController {
 	}
 	
 	
-	@Secured("ROLE_ADMIN")
-	@GetMapping("update-procbydoct/{idprocbydoct}/{iddoct}")
-	public String updateProcByDoct(@PathVariable(value = "idprocbydoct") Long idProcByDoct,
-								   @PathVariable(value = "iddoct") Long iddoct,
-								   Model model, RedirectAttributes flash) 
-	{
-		model.addAttribute("doctor", doctorService.findOne(iddoct));
-		model.addAttribute("procedureByDoct", procByDoctService.findOne(idProcByDoct));
-		
-		model.addAttribute("tittle", bAddProcedure);
-		model.addAttribute("msg", msgAddDoctorProcedure);
-		model.addAttribute("bContinue", bNext);
-		model.addAttribute("bSave", bSave);
-		model.addAttribute("bAddCondition", bAddCondition);
-		model.addAttribute("bAddCombo", bAddCombo);
-
-		return "/doctor/add-procedure"; 
-	}
+	
 	
 }

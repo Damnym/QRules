@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<script type="text/javascript" th:fragment="utils">
+	
+	$(function () {
+		  $('[data-toggle="tooltip"]').tooltip();
+		  $('[data-toggle="popover"]').popover();
+		})
+	
+	$('.popover-dismiss').popover({
+  		trigger: 'focus'
+	})	
+		
+	$(document).ready( function () {
+	    $('#product-table-list').DataTable();
+	} );
+
+	$('#modalDelete').on('show.bs.modal', function (event) {
+		  alert("hola");
+		  var button = $(event.relatedTarget) // Button that triggered the modal
+		  var id = button.data('id') // Extract info from data-* attributes
+		  var name = button.data('name') // Extract info from data-* attributes
+		  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+		  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+		  var modal = $(this)
+		  var href = $('#remove').attr('href');
+		  modal.find('.modal-title').text('Remove doctor ' + name + '?');
+		  modal.find('.modal-body span').text('Do you want to remove Dr. ' + name + ' from the system? This operation is irreversible.')
+		  $('#remove').attr('href', href+id);
+		});
+	</script>
+</body>
+</html>
