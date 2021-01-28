@@ -2,9 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <body>
-	
 	<script type="text/javascript" th:fragment="utils">
-	
 	
 	$(function () {
 		  $('[data-toggle="tooltip"]').tooltip();
@@ -108,15 +106,27 @@
 				}
 			});
 	       
-	       
-	       
-	       
-	       
-	    
 		    $('#doctor-table-list').DataTable();
+
+		    
+		    $('#combo-table-list').DataTable( {
+		        responsive: true
+		    } );
+		    
+		    
+// 		    $('#combo-table-list').DataTable({
+// 			    responsive: true
+// 		    });
+		    
+		    $('#doctor-quota-table').DataTable();
+		    
+		    
+		    $('#calendar').evoCalendar({
+		        settingName: settingValue
+		    });
+		    
 	    
-	    
-	} );
+	});
 
 /*	$('#modalDelete').on('show.bs.modal', function (event) {
 		  var button = $(event.relatedTarget) // Button that triggered the modal

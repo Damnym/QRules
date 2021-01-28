@@ -186,7 +186,7 @@
 					  case "FINANCED":
 // 						alert(pf);  
 						total = pf ;
-						observationM = observationStr.replace("VIP order.","");
+						observationM = observationStr.replace("Special order.","");
 						observationStr = "Financed pay. "  +  observationM;
 						$('#observation').html(observationStr);
 						if (document.getElementById("vipH")!= null)
@@ -195,10 +195,10 @@
 							document.getElementById("vipB").hidden = true;
 						}
 					    break;
-					  case "VIP":
+					  case "SPECIAL":
 						total = pv ;
 						observationM = observationStr.replace("Financed pay.","");
-						observationStr = "VIP order. "  +  observationM;
+						observationStr = "Special order. "  +  observationM;
 						$('#observation').html(observationStr);
 						if (document.getElementById("vipH")!= null)
 						{
@@ -210,7 +210,7 @@
 // 						alert(pc);
 						total = pc ;
 					  	observationM = observationStr.replace("Financed pay. ","");
-					  	observationStr = observationM.replace("VIP order.","");
+					  	observationStr = observationM.replace("Special order.","");
 						$('#observation').html(observationStr);
 					  	if (document.getElementById("vipH")!= null)
 						{

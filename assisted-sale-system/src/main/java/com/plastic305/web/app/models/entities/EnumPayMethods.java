@@ -4,7 +4,7 @@ public enum EnumPayMethods
 {  
 	CASH("Cash"),
 	FINANCED("Financed"),
-	VIP("VIP");
+	SPECIAL("Special");
 
 	private String method; 
 	

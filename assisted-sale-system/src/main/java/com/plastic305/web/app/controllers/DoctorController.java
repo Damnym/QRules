@@ -1,6 +1,8 @@
 package com.plastic305.web.app.controllers;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -20,10 +22,13 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.plastic305.web.app.models.dao.IQuotaDAO;
+import com.plastic305.web.app.models.dto.QuotaCalendar;
 import com.plastic305.web.app.models.entities.Combo;
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.ProcByDoct;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.Quota;
 import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.services.IComboService;
 import com.plastic305.web.app.services.IDoctorService;
@@ -65,7 +70,9 @@ public class DoctorController {
 	@Autowired IComboService comboService ;
 	@Autowired IProcByDoctService procByDoctService ;
 	
-// <<< IMPLEMENTATION >>>	
+	@Autowired IQuotaDAO quotaDAO ;
+
+	// <<< IMPLEMENTATION >>>	
 	
 	@GetMapping(value = "/load-procedure/{idDoct}/{term}", produces = {"application/json"})
 	public @ResponseBody List<Procedure> loadProcedure(@PathVariable(value = "idDoct") Long id, @PathVariable String term) {
@@ -78,9 +85,9 @@ public class DoctorController {
 		else
 		{
 			List <Procedure> l = procedureService.findProceduresByName(term);
-			for (Procedure procedure : l) {
-				logger.info(">>>> " + procedure.getName());
-			}
+//			for (Procedure procedure : l) {
+//				logger.info(">>>> " + procedure.getName());
+//			}
 			return doctorService.findProceduresNotBelongToDoctorByName(id, term);
 		}
 	}
@@ -169,7 +176,7 @@ public class DoctorController {
 	}
 	
 	
-	@Secured("ROLE_ADMIN")
+	@Secured("ROLE_ADMIN")   // este para la cuotas
 	@GetMapping("/add-procedure/{id-doctor}")
 	public String addProcedure(@PathVariable(value = "id-doctor") Long id, Model model) 
 	{
@@ -184,6 +191,64 @@ public class DoctorController {
 		model.addAttribute("bAddCombo", bAddCombo);
 
 		return "/doctor/add-procedure"; 
+	}
+
+	@Secured("ROLE_ADMIN")   // este para la cuotas
+	@GetMapping("/admin-quotas/{id-doctor}")
+	public String adminQuotas(@PathVariable(value = "id-doctor") Long id, Model model) 
+	{
+		model.addAttribute("doctor", doctorService.findOne(id));
+		model.addAttribute("quota", new Quota());
+		
+		model.addAttribute("tittle", "Admin quotas");
+		model.addAttribute("msg", "Form to add quotas of surgeon ");
+		model.addAttribute("bContinue", bNext);
+		model.addAttribute("bSave", bSave);
+		
+		return "/doctor/admin-quotas"; 
+	}
+	
+	@Secured("ROLE_ADMIN")   // este para la cuotas
+	@PostMapping("/admin-quotas")
+	public String adminQuotasSave(Quota quota, Doctor doctor, Model model) 
+	{
+		doctor.getQuotaList().add(quota);
+		doctorService.save(doctor);
+		return "redirect:/doctor/admin-quotas/" + doctor.getId() ;
+	}
+	
+	@Secured("ROLE_ADMIN")   // este para la cuotas
+	@GetMapping("/add-quotas/{idq}")
+	public String incQuotas(@PathVariable(value = "idq") Long idQ, Doctor doctor, Model model) 
+	{
+		Quota q = quotaDAO.findById(idQ).orElse(null);
+		q.setQuotaAmount(q.getQuotaAmount()+1) ;
+		quotaDAO.save(q);
+		
+		return "redirect:/doctor/admin-quotas/" + doctor.getId() ;
+	}
+
+	@Secured("ROLE_ADMIN")   // este para la cuotas
+	@GetMapping("/dec-quotas/{idq}")
+	public String decQuotas(@PathVariable(value = "idq") Long idQ, Doctor doctor, Model model) 
+	{
+		Quota q = quotaDAO.findById(idQ).orElse(null);
+		q.setQuotaAmount(q.getQuotaAmount()-1) ;
+		if (q.getQuotaAmount()==0)
+			quotaDAO.deleteById(idQ);
+		else
+			quotaDAO.save(q);
+		
+		return "redirect:/doctor/admin-quotas/" + doctor.getId() ;
+	}
+	
+	@Secured("ROLE_ADMIN")
+	@GetMapping("delete-quotas/{idq}")
+	public String eliminarQuotas(@PathVariable(value = "idq") Long idQ, Doctor doctor, Model model)
+	{
+		quotaDAO.deleteById(idQ);
+		
+		return "redirect:/doctor/admin-quotas/" + doctor.getId() ;
 	}
 	
 	@Secured("ROLE_ADMIN")
@@ -233,11 +298,6 @@ public class DoctorController {
 			return "redirect:/doctor/add-procedure/" + doctor.getId();
 		}
 	}
-	
-	
-	
-	
-	
 	
 //	@Secured("ROLE_ADMIN")
 	@GetMapping("/change-date/{id-doctor}")
@@ -376,7 +436,7 @@ public class DoctorController {
 	}
 	
 
-	@Secured("ROLE_ADMIN")
+//	@Secured("ROLE_ADMIN")
 	@GetMapping("/admin-procedure/{id-doctor}")
 	public String adminProcedure(@PathVariable(value = "id-doctor") Long id, Model model)
 	{
@@ -389,7 +449,7 @@ public class DoctorController {
 		return "/doctor/admin-procedure";
 	}
 
-	@Secured("ROLE_ADMIN")
+//	@Secured("ROLE_ADMIN")
 	@GetMapping("/admin-condition/{id-doctor}")
 	public String adminCondition(@PathVariable(value = "id-doctor") Long id, Model model)
 	{
@@ -403,7 +463,7 @@ public class DoctorController {
 	}
 	
 	
-	@Secured("ROLE_ADMIN")
+//	@Secured("ROLE_ADMIN")
 	@GetMapping("/admin-combo/{id-doctor}")
 	public String adminCombos(@PathVariable(value = "id-doctor") Long id, Model model)
 	{
@@ -515,12 +575,92 @@ public class DoctorController {
 	
 	@Secured("ROLE_USER")
 	@GetMapping({"/calendar"})
-	public String vipCalendar(Model model) 
+	public String showCalendar(Model model) 
 	{
-		model.addAttribute("tittle", "VIP calendar for all surgeon");
-		model.addAttribute("doctor_list", doctorService.findAll());
+//		model.addAttribute("tittle", "VIP calendar for all surgeon");
+//		model.addAttribute("doctor_list", doctorService.findAll());
+		
+		List<Doctor> doctors = doctorService.findAll();
+		
+		Calendar cal = GregorianCalendar.getInstance();
+		cal.setTime(doctors.get(0).getDate());
+		Integer month = cal.get(Calendar.MONTH) ;
+		String date = cal.get(Calendar.YEAR) + "," + ++month + "," + cal.get(Calendar.DAY_OF_MONTH) ;
+		model.addAttribute("regularDate", date);
 
-		return "/doctor/calendar";
+		cal.setTime(doctors.get(0).getEarlyDate());
+		month = cal.get(Calendar.MONTH) ;
+		date = cal.get(Calendar.YEAR) + "," + ++month + "," + cal.get(Calendar.DAY_OF_MONTH) ;
+		model.addAttribute("VIPDate", date);
+        
+		List<Quota> qList = doctors.get(0).getQuotaList() ;
+		if (qList != null && qList.size()>0)
+		{
+			cal.setTime(qList.get(0).getDay());
+			month = cal.get(Calendar.MONTH) ;
+			date = cal.get(Calendar.YEAR) + "," + ++month + "," + cal.get(Calendar.DAY_OF_MONTH) ;
+			model.addAttribute("quotaDate", date);
+		}
+		
+		model.addAttribute("doctor", doctors.get(0));
+		model.addAttribute("doctors", doctors);
+
+		return "/doctor/calendar2";
+	}
+
+	@Secured("ROLE_USER")
+	@GetMapping({"/calendar/{iddoct}"})
+	public String showCalendarByDoctor(@PathVariable(value = "iddoct") Long idDoct, Model model) 
+	{
+		Calendar cal = GregorianCalendar.getInstance();
+		
+		cal.setTime(doctorService.findOne(idDoct).getDate());
+		Integer month = cal.get(Calendar.MONTH) ;
+		String date = cal.get(Calendar.YEAR) + "," + ++month + "," + cal.get(Calendar.DAY_OF_MONTH) ;
+		model.addAttribute("regularDate", date);
+		
+		cal.setTime(doctorService.findOne(idDoct).getEarlyDate());
+		month = cal.get(Calendar.MONTH) ;
+		date = cal.get(Calendar.YEAR) + "," + ++month + "," + cal.get(Calendar.DAY_OF_MONTH) ;
+		model.addAttribute("VIPDate", date);
+		
+		List<Quota> qList = doctorService.findOne(idDoct).getQuotaList() ; 
+		if (qList != null && qList.size()>0)
+		{
+			cal.setTime(qList.get(0).getDay());
+			month = cal.get(Calendar.MONTH) ;
+			date = cal.get(Calendar.YEAR) + "," + ++month + "," + cal.get(Calendar.DAY_OF_MONTH) ;
+			model.addAttribute("quotaDate", date);
+		}
+		
+		model.addAttribute("doctor", doctorService.findOne(idDoct));
+		model.addAttribute("doctors", doctorService.findAll());
+		
+		return "/doctor/calendar2";
+	}
+	
+	@GetMapping(value = "/load-quotas/{idDoct}", produces = {"application/json"})
+	public @ResponseBody List<QuotaCalendar> getQuotas(@PathVariable(value = "idDoct") Long id) 
+	{
+		List<Quota> quotas = doctorService.getDoctorQuotas(id);
+		List<QuotaCalendar> quotasCalendar = new ArrayList<QuotaCalendar>();
+		
+		Calendar cal = GregorianCalendar.getInstance();
+		String date ;
+		Integer month ;
+		
+		for (Quota quota : quotas) 
+		{
+			cal.setTime(quota.getDay());
+			month = cal.get(Calendar.MONTH) ;
+			date = cal.get(Calendar.YEAR) + "," + ++month + "," + cal.get(Calendar.DAY_OF_MONTH) ;
+			String text = "Quotas amount: " + quota.getQuotaAmount();
+			logger.info(date);
+			logger.info(text);
+			
+			quotasCalendar.add(new QuotaCalendar(quota.getId().toString(), text, "", date, "event", "#28A745", false));
+		}
+		return quotasCalendar ;
 	}
 	
 	

@@ -19,12 +19,14 @@ import com.plastic305.web.app.models.dao.IDoctorDAO;
 import com.plastic305.web.app.models.dao.IProcByDoctDAO;
 //import com.plastic305.web.app.models.dao.IProcedureDAO;
 import com.plastic305.web.app.models.dao.ISufferingByDoctDAO;
+import com.plastic305.web.app.models.dto.QuotaCalendar;
 import com.plastic305.web.app.models.entities.Combo;
 import com.plastic305.web.app.models.entities.ComboByDoctor;
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.ProcByCombo;
 import com.plastic305.web.app.models.entities.ProcByDoct;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.Quota;
 import com.plastic305.web.app.models.entities.Suffering;
 import com.plastic305.web.app.models.entities.SufferingByDoctor;
 
@@ -412,6 +414,12 @@ public class DoctorService implements IDoctorService{ protected final Log logger
 	public void unlinkCondition(Long id) 
 	{
 		condByDoctDAO.deleteById(id);
+	}
+
+	@Override
+	public List<Quota> getDoctorQuotas(Long id) 
+	{
+		return doctorDAO.getDoctorQuotas(id);
 	}
 	
 }

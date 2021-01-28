@@ -60,6 +60,10 @@ public class User305Service implements IUser305Service {
 	public Boolean exists(String username) {
 		return user305DAO.findByUsername(username) != null;
 	}
+	@Override
+	public User305 findByUsername(String username) {
+		return user305DAO.findByUsername(username);
+	}
 	
 
 }

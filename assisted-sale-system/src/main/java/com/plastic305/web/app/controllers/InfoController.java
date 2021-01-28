@@ -25,14 +25,22 @@ public class InfoController
 	@GetMapping({"/index"})
 	public String crear(Model model) 
 	{
-		List<String> docs = new ArrayList<String>();
-		File docsFolder = new File("documents");
-//		logger.info("cantidad: " + docsFolder.list().length);
-
-		model.addAttribute("documents", docsFolder.list());
-//		model.addAttribute("doc", docs.get(0));
-
 		return "/index";
+	}
+
+	@GetMapping({"/docs/documentationEN"})
+	public String docs(Model model) 
+	{
+		model.addAttribute("tittle", "Payment solution");
+		return "/docs/documentationEN"; 
+	}
+	
+	@GetMapping({"/docs/documentationES"})
+	public String docsES(Model model) 
+	{
+		
+		model.addAttribute("tittle", "Solución de pago");
+		return "/docs/documentationES"; 
 	}
 	
 	

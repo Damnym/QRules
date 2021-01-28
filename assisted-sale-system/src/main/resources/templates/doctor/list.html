@@ -22,13 +22,14 @@
                      <table class="table  table-striped  hover display compact" style="font-size: 14px" id="doctor-table-list">
                      <!-- table-bordered -->
                         <thead align="center">
-                           <tr>
+                           <tr> cambiar el cartel si es usuario a ver... tal cosa
                               <th width="25%" th:text="'Name'"               scope="col" class="align-middle" align="center"></th>
                               <th width="12%" th:text="'Available date'"     scope="col" class="align-middle" align="center"></th>
                               <th width="12%" th:text="'Available VIP date'" scope="col" class="align-middle" align="center"></th> 
-                              <th width="12%" th:text="'Admin procedures'"   scope="col" class="align-middle" align="center" sec:authorize="hasRole('ROLE_ADMIN')"></th> 
-                              <th width="12%" th:text="'Admin combos'"       scope="col" class="align-middle" align="center" sec:authorize="hasRole('ROLE_ADMIN')"></th> 
-                              <th width="12%" th:text="'Admin conditions'"   scope="col" class="align-middle" align="center" sec:authorize="hasRole('ROLE_ADMIN')"></th> 
+                              <th width="9%" th:text="'Admin procedures'"    scope="col" class="align-middle" align="center"></th> <!-- sec:authorize="hasRole('ROLE_ADMIN')" -->
+                              <th width="9%" th:text="'Admin combos'"        scope="col" class="align-middle" align="center"></th> <!-- sec:authorize="hasRole('ROLE_ADMIN')" -->
+                              <th width="9%" th:text="'Admin conditions'"    scope="col" class="align-middle" align="center"></th> <!-- sec:authorize="hasRole('ROLE_ADMIN')" --> 
+                              <th width="9%" th:text="'Admin quotas'"        scope="col" class="align-middle" align="center" sec:authorize="hasRole('ROLE_ADMIN')"></th> 
                               <th width="15%" th:text="Operations"           scope="col" class="align-middle" align="center" sec:authorize="hasRole('ROLE_ADMIN')"></th>
                            </tr>
                         </thead>
@@ -41,19 +42,22 @@
 <!-- Available VIP date  --> 	<td align="center">
 									<a th:href="@{/doctor/change-date/} + ${d.id}" th:text="${d.earlyDate}" style="color: #000"></a> 
 								</td>
-<!-- Admin procedures -->  		<td sec:authorize="hasRole('ROLE_ADMIN')" align="center"> 
+<!-- Admin procedures -->  		<td align="center"> <!-- sec:authorize="hasRole('ROLE_ADMIN')" -->
 									<a th:href="@{/doctor/admin-procedure/} + ${d.id}" class="fas fa-window-maximize" style="color: #000"></a> 
 								</td>
-<!-- Admin Combos -->  		<td sec:authorize="hasRole('ROLE_ADMIN')" align="center"> 
+<!-- Admin Combos -->  		<td align="center"> <!-- sec:authorize="hasRole('ROLE_ADMIN')" -->
 									<a th:href="@{/doctor/admin-combo/} + ${d.id}" class="fas fa-object-group" style="color: #000"></a> 
 								</td>
-<!-- Admin conditions -->  		<td sec:authorize="hasRole('ROLE_ADMIN')" align="center"> 
+<!-- Admin conditions -->  		<td align="center"> <!-- sec:authorize="hasRole('ROLE_ADMIN')" -->
 									<a th:href="@{/doctor/admin-condition/} + ${d.id}" class="fas fa-notes-medical" style="color: #000"></a> 
 								</td>
-<!-- Details -->  				<td sec:authorize="hasRole('ROLE_ADMIN')" align="center"> 
-									<a th:href="@{/doctor/view/} + ${d.id}" class="a a-305 fas fa-search" style="color: #000"></a> 
+<!-- Admin Quotas -->  			<td sec:authorize="hasRole('ROLE_ADMIN')" align="center" style="border-right-width: 1px; border-right-style: outset;"> 
+									<a th:href="@{/doctor/admin-quotas/} + ${d.id}" class="far fa-calendar-alt" style="color: #000"></a> 
+								</td>
+				 				<td sec:authorize="hasRole('ROLE_ADMIN')" align="center"> 
+<!-- Details --> 					<a th:href="@{/doctor/view/} + ${d.id}" class="a a-305 fas fa-search" style="color: #000"></a> 
 <!-- Edit -->					    <a th:href="@{/doctor/edit/} + ${d.id}" class="a a-305 fas fa-pencil-alt px-4" style="color: #000"></a>
-                                	<a th:href="@{/doctor/delete/} + ${d.id}" class="btn fas fa-eraser " type="button" 
+<!-- Delete -->                    	<a th:href="@{/doctor/delete/} + ${d.id}" class="btn fas fa-eraser " type="button" 
                                 	   onclick="return confirm('Do you want remove this Surgeon?');"></a> 
                               	</td>
                            </tr>

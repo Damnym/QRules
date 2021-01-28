@@ -10,6 +10,7 @@ public interface IUser305Service {
 //*******
 	public List<User305> findAll();
 	public User305 findOne(Long id);
+	public User305 findByUsername(String username);
 	public Boolean exists(String username);
 
 	public void save(User305 user);

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http:\www.thymeleaf.org" 	
+	  xmlns:sec="http:\www.thymeleaf.org/extras/spring-security">
+   	<link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+   <head th:replace="layout/layout-procedure :: head"></head>
+   <body style="background-color: #313D55">
+      <div class="container mb-4" style="margin-top: 1rem; width: 90%;">
+         <div class="card bg-white border-305">
+            <div class="card-header py-1 border-305 text-white" style="background-color:#101F3A" align="left">
+            	<div class="row">
+            	<div class="col-10" align="left">
+	            	<h4>Financiamiento propio para tu cirugía estética</h4>
+         		</div>
+            	<div class="col-2" align="right">
+	            	<a th:href="@{/docs/documentationEN}" style="color:#ffffff; font-weight: bold;">English</a> 
+         		</div>
+         		</div>
+            </div>
+            <div class="card-body " style="color: #101F3A; width: 100%; height: 35rem; overflow-y: scroll;">
+            	<h6>Realiza tu cirugía estética con una solución de pago sin complicaciones y rápida</h6>
+            	<div class="row ml-3">
+            		<span>En 305 Plastic Surgery facilitamos financiamiento propio mediante un depósito inicial que te da estas ventajas:</span>
+            	</div>	
+
+            	<h6 class="mt-3">No afecta tu crédito</h6>
+            	<div class="row ml-3">
+            		<span>Tienes 24 meses para completar tu pago a conveniencia.</span>
+            	</div>	
+            	<div class="row  ml-3">
+            		<span>Consigues un precio fijo garantizado.</span>
+            	</div>	
+            	<div class="row  ml-3">
+            		<span>Tú escoges la fecha para tu procedimiento.</span>
+            	</div>	
+
+            	<h6 class="mt-3">Opciones de crédito</h6>
+            	<div class="row  ml-3">
+            		<span>Contamos además con opciones para realizar la gestión de préstamo y satisfacer las necesidades de los pacientes con los mejores términos en su 
+            		      situación financiera.</span>
+            	</div>	 
+            	<div class="row  ml-3">	
+					<span>Estos servicios atienden todo tipo de crédito. Tu evaluación puede favorecerte con cómodos pagos mensuales, sin penalidad si anticipas tu pago, 
+						  tasas de interés atractivas y alternativa equivalente a financiamiento en efectivo.</span>
+            	</div>
+            		
+            	<h6 class="mt-3">Puedes aplicar aquí:</h6>
+            	<ul >
+            		<li class="ml-5" style="list-style-type: circle;">Alphaeon Credit</li>
+            		<li class="ml-5" style="list-style-type: circle;">Care Credit</li>
+            		<li class="ml-5" style="list-style-type: circle;">Protapay</li>
+            		<li class="ml-5" style="list-style-type: circle;">United Medical Credit</li>
+            	</ul>
+            	
+            	<h6 class="mt-3" style="font-style: italic;">¿Mal crédito?</h6>
+            	<div class="row  ml-3">	
+					<span>
+						Si tu crédito puede resultar una barrera, te proveemos asesoría que ayuda a repararlo y recuperar tu capacidad financiera para conseguir metas.
+					</span>
+            	</div>
+            	<hr>
+            	<div class="row  px-4">	
+					<span style="font-size: 13px; text-align: justify;">
+						Tenemos un plan de financiamiento interno donde puede hacer un depósito de $ 250 para fijar su fecha. Le enviamos un enlace a su portal donde tiene 
+						los detalles del procedimiento, lo que está incluido y el precio. Después de haber realizado el depósito, mostrará el pago y el saldo que debe. 
+						Siempre que desee realizar un pago para su procedimiento, puede informarnos y le enviaremos un nuevo enlace que lo llevará de regreso a su portal 
+						donde podrá realizar pagos adicionales. No cobramos intereses ni comisiones, ni exigimos pagos fijos, el monto y la frecuencia de los pagos depende 
+						de usted. Tiene hasta 2 semanas antes de la cirugía para usar el portal para realizar pagos con su tarjeta de débito / crédito. Cualquier saldo 
+						restante se puede traer en efectivo el día antes de la cirugía cuando venga a la operación preoperatoria.
+					</span>
+            	</div>
+            </div>
+         </div>
+      </div>
+      <footer th:replace="layout/layout-procedure :: footer"></footer>
+      <script th:src="@{/js/jquery.dataTables.min.js}"></script>
+      <script th:replace="procedure/js/util-js.html :: util"></script>
+   </body>
+</html>

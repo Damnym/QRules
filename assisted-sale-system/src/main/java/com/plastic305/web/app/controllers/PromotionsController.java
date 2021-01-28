@@ -81,6 +81,7 @@ public class PromotionsController {
 		{
 			if (promo305.getId() != null)  // ya existe es update
 			{
+				logger.info("Error"); 
 				model.addAttribute("tittle", tittleEditProduct);
 				model.addAttribute("msg", msgEditProduct);
 				model.addAttribute("buttonaction", bEditProduct); 

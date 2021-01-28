@@ -35,7 +35,7 @@
 											                                            + ${totalProcedureFinancedPrice} + ',' 
 											                                            + ${totalProcedureCashPrice} + ',' 
 											                                            + this.value + ');'">          
-										<option th:each="t: ${payMethods}" th:unless="${t.getMethod()} == 'VIP'" th:text="${t.getMethod()}" 
+										<option th:each="t: ${payMethods}" th:unless="${t.getMethod()} == 'SPECIAL'" th:text="${t.getMethod()}" 
 										        th:value="${t}" th:field="*{lastOrder.payMethod}"></option>
 									</select>                  														
 									<select th:if="${hasPromo}" id="type" class="form-control col" name="payM"  
@@ -46,8 +46,11 @@
 										<option th:each="t: ${payMethods}" th:text="${t.getMethod()}" th:value="${t}" th:field="*{lastOrder.payMethod}"></option>
 									</select>                  														
 								</div>
-								<div class="col" align="right">
-									<span>Ver ofertas del doctor</span>
+								<div th:if="${hasPromo}" class="col" align="right">
+									<a id="viewpromo" style="font-size: 16px;" class="text-305" th:text="'View specials for ' + ${order.doctorName}" 
+					               	   th:href="@{/view-active-promo/} + ${doctorId}" 
+					               	   onclick="window.open(this.href, 'newwindow', 'width=800, height=770, resizable=0, location=0'); return false;">
+					       			</a>
 								</div>
 							</div>
 							<table class="table table-sm table-striped table-hover">
@@ -56,8 +59,8 @@
 								     <th width="40%" th:text="'Surgery'" ></th>
 									 <th width="15%" th:text="'Price Cash'"></th>
 									 <th width="15%" th:text="'Price Financed'"></th>
-							 		 <th th:if="${hasPromo}" width="15%" th:text="'Price VIP'"></th>
-									 <th th:if="${hasPromo}" width="15%" id="vipH" th:text="'Deals apply To'" hidden="true"></th> <!--   -->
+							 		 <th th:if="${hasPromo}" width="15%" th:text="'Special price'"></th>
+									 <th th:if="${hasPromo}" width="15%" id="vipH" th:text="'Special apply To'" hidden="true"></th> <!--   -->
 								  </tr>
 							    </thead>
 								<tbody>
@@ -286,10 +289,10 @@
 							  	</div>
 							</li>
 							<li th:if="${vipObj}" class="list-group-item text-left border-305" style="border-radius: 0 0 0 0; border-right-width: 2px; border-bottom-width: 1px;">
-								<h5 align="right">VIP price: <span id="vipPrice" class="badge badge-warning" th:text="${vipObj.priceForVIP}"></span></h5>
+								<h5 align="right">Special price: <span id="vipPrice" class="badge badge-warning" th:text="${vipObj.priceForVIP}"></span></h5>
 							</li>
 							<li th:unless="${vipObj}" hidden="hidden" class="list-group-item text-left border-305" style="border-radius: 0 0 0 0; border-right-width: 2px; border-bottom-width: 1px;">
-								<h5 align="right">VIP price: <span id="vipPrice" class="badge badge-warning" th:text="0"></span></h5>
+								<h5 align="right">Special price: <span id="vipPrice" class="badge badge-warning" th:text="0"></span></h5>
 							</li>
 						</ul>
 					</div>

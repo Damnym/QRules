@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	  <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+<head th:replace="layout/layout-doctor :: head"></head>
+<body>
+	<header th:replace="layout/layout-doctor :: header"></header>
+	<div class="container" style="margin-top: 5rem" align="center">
+		<div class="row">
+			<div class="col-6"> <!-- GroupBox de las elecciones -->
+				<div class="row">
+					<div class="col">
+						<ul class="list-group border-success"> <!--  -->
+							<li th:text="'Quotas availables of ' + ${doctor.name}" 
+							    class="list-group-item py-1 list-group-item-success card-bordergreen-diferent text-center font-weight-bold"></li>
+						</ul>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<ul class="list-group border-success listWrapper"> <!-- aqui tabla de fecha y cantidad de cuotas -->
+							<li class="list-group-item text-left card-bordergreen-diferent py-1" style="font-size: 14px">
+								<form id="adminquotas" th:object="${doctor}"  method="post">
+								<table class="table table-striped  hover display compact" style="font-size: 14px" id="doctor-quota-table">
+                    				 <!-- table-bordered -->
+                       				<thead align="center">
+			                           <tr>
+			                              <th width="20%" th:text="'Date'"         scope="col" class="align-middle" align="center"/>
+			                              <th width="20%" th:text="'Amount'"       scope="col" class="align-middle" align="center"/>
+			                              <th width="20%" th:text="'Inc amount'"   scope="col" class="align-middle" align="center" sec:authorize="hasRole('ROLE_ADMIN')"/>
+			                              <th width="20%" th:text="'Dec amount'"   scope="col" class="align-middle" align="center" sec:authorize="hasRole('ROLE_ADMIN')"/> 
+			                              <th width="20%" th:text="'Delete qouta'" scope="col" class="align-middle" align="center" sec:authorize="hasRole('ROLE_ADMIN')"/> 
+			                           </tr>
+			                        </thead>
+			                        <tbody>
+			                        	<tr th:each="ql: ${doctor.quotaList}" th:field="*{quotaList}">
+			                        		<td hidden="hidden" th:text="${ql.day}" th:id="qID"></td>
+			<!-- Date -->      				<td th:text="${ql.day}"         align="justify"/>
+			<!-- Amount -->    				<td th:text="${ql.quotaAmount}" align="center"/>
+			    							<td align="center">
+			<!-- Inc -->   						<a th:href="@{/doctor/add-quotas/} + ${ql.id}" class="btn fas fa-arrow-up" style="color: #000"></a>
+											</td>
+			    							<td align="center">
+			<!-- Dec -->						<a th:href="@{/doctor/dec-quotas/} + ${ql.id}" class="btn fas fa-arrow-down" style="color: #000"></a>
+											</td>	  
+			    							<td align="center">
+			<!-- delete --> 					<a th:href="@{/doctor/delete-quotas/} + ${ql.id}" class="btn fas fa-eraser " type="button" 
+                                	   			   onclick="return confirm('Do you want remove all quotas for this day?');"></a>
+			 								</td>
+			 							</tr>
+			 						</tbody>			
+			                    </table> 
+			                    </form>  
+							</li>
+						</ul>
+					</div>
+				</div>
+		 	</div> 
+			<div class="col-6">
+				<div class="card bg-white border-305" >
+					<div class="card-header py-1 border-305 font-weight-bold text-white" th:text="${msg}+${doctor.name}" align="center" style="background-color:#101F3A"></div>
+					<div class="card-body " align="left">
+						<form id="addquotas" th:object="${quota}" th:action="@{/doctor/admin-quotas}" method="post">
+    		                <span hidden="true" th:id="idDoctor" th:text="${doctor.id}" class="form-control"> </span>
+            		        <div class="form-group row">
+								<div class="input-group mb-1 col" align="left">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="dayl">Availability date for quotas:</span>
+									</div>
+									<input type="date" id="dayd" th:field="*{day}" aria-label="day" class="form-control" aria-describedby="day" placeholder="day"
+									  	   th:errorclass="'form-control alert-danger'" />
+									<small th:if="${#fields.hasErrors('day')}" th:errors="*{day}" class="form-text text-danger"></small>
+								</div>
+							</div>
+ 		                    <div class="form-group row">
+								<div class="input-group mb-1 col-6">
+									<div class="input-group-prepend ">
+										<span class="input-group-text" id="sPriceFinanced">Quotas amount:</span>
+							  		</div>
+							  		<input type="number" min="0" step="1" id="idquotaAmount" th:field="*{quotaAmount}" tabindex=3
+							  			   class="form-control" th:errorclass="'form-control alert-danger'"aria-label="quotaAmount" aria-describedby="quotaAmount" />
+									<small th:if="${#fields.hasErrors('quotaAmount')}" th:errors="*{quotaAmount}" class="form-text text-danger"></small>
+								</div>
+								<div class="input-group mb-1 col-6">
+<!--  SUBMIT   -->					<input type="submit" th:value="${bSave}" class="btn btn-block btn-305"/>
+								</div>								
+							</div>
+							<div class="row">
+			  					<div class="col mt-3" align="right">  
+	  								<a th:href="@{/doctor/list}" th:text="${bContinue}" class="btn  btn-block btn-dark"></a>	
+	  							</div>
+			  				</div> 
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+					<embed src="documents/paymentSolution.pdf" width="500" height="375" 
+ 					type="application/pdf">
+		
+	</div>
+	<footer th:replace="layout/layout-doctor :: footer"></footer>
+    <script th:replace="doctor/js/utils-js.html :: utils"></script>
+    <script th:src="@{/js/jquery.dataTables.min.js}"></script>
+    <script th:replace="js/twoForm :: javascript2Form"></script>
+</body>
+</html>

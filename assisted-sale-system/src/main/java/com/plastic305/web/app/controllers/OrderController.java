@@ -112,7 +112,7 @@ public class OrderController
 		//Obtengo la orden actual
 		SuperOrder superOrder = cService.getSuperOrderById(sOrderId);
 		Order order = superOrder.getOrderList().get(superOrder.getOrderList().size()-1);
-		
+
 		String proceduresNames = " ";
 		String observationStr = order.getObservation()!=null? order.getObservation(): " ";;
 		Integer minRecoveryTime = 0 ;
@@ -134,13 +134,13 @@ public class OrderController
 		
 		// por cada procedimiento de la orden
 		for (OrderProcedure procedure: order.getProcedureList()) 
-		{ 
+		{
 //			Obtengo el nombre
 			proceduresNames += procedure.getProcedure().getName() + ", " ;
 			logger.info("proceduresNames: " + proceduresNames);
 			// calculo precio total teniendo en cuenta si está incluido
 			if (!procedure.getIncludedInPrice()) 
-			{
+			{	
 				procedureCashPrice += dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), false) ;
 				procedureFinancedPrice += dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), true) ;
 			}
@@ -178,7 +178,7 @@ public class OrderController
 			}
 			// sino precio cash
 			else  
-				procedureVIPPrice = procedureCashPrice;
+				procedureVIPPrice = dService.getProcedurePrice(superOrder.getClient().getDoctor(), procedure.getProcedure().getId(), false) ;
 			procedureVIPTotalPrice += procedureVIPPrice ;
 			
 			// adicionar el proc al carrito
@@ -215,6 +215,7 @@ public class OrderController
 		model.addAttribute("totalProcedureVIPTotalPrice", procedureVIPTotalPrice);  
 		model.addAttribute("totalProcedureFinancedPrice", procedureFinancedPrice);  
 		model.addAttribute("proceduresData", proceduresData);  
+		model.addAttribute("doctorId", superOrder.getClient().getDoctor());  
 
 		model.addAttribute("recommendedItemList", cService.findProductsRecommendedByProcedure(superOrder.getClient().getDoctor(), order.getProcedureList()));  
 		model.addAttribute("restItemList", cService.findProductsNotMandatoryAndNotRecommended(order.getProcedureList(), superOrder.getClient().getDoctor(), 0));
@@ -225,16 +226,16 @@ public class OrderController
 				itemIncludedList.add(new ProductRecommendedByProcedureDTO(itemRecommended.getProduct().getId(), 
 						  												  itemRecommended.getProduct().getName(), 
 						  												  itemRecommended.getAmountRecommended())) ;
-		// aqui tengo q ver si entra siempre o solo cuando hay promo
-		for (ItemsAmountForVIP itemIfVIP : promoService.findFreeItemByDoctorNProcedures(new Date(), superOrder.getClient().getDoctor(),order.getProcedureList())) 
-			itemIncludedList.add(new ProductRecommendedByProcedureDTO(itemIfVIP.getItem().getId(), 
-																	  itemIfVIP.getItem().getName(), 
-																	  itemIfVIP.getAmount().longValue())) ;
+		// aqui tengo q ver si entra siempre o solo cuando hay promo // ENTRA SIEMPRE
+		if (order.getVip() == null)
+			for (ItemsAmountForVIP itemIfVIP : promoService.findFreeItemByDoctorNProcedures(new Date(), superOrder.getClient().getDoctor(),order.getProcedureList())) 
+				itemIncludedList.add(new ProductRecommendedByProcedureDTO(itemIfVIP.getItem().getId(), 
+																		  itemIfVIP.getItem().getName(), 
+																		  itemIfVIP.getAmount().longValue())) ;
 		model.addAttribute("freeItemList", itemIncludedList);
-		
 		model.addAttribute("superOrder", superOrder);
 		model.addAttribute("order", order);
-		
+
 		model.addAttribute("hasPromo", hasPromo); // Aqui tengo que preguntar si este doctor tiene promociones sino solo cash y financiado
 		if (order.getVip()==null)
 			model.addAttribute("payMethods", EnumPayMethods.values()); // Aqui tengo que preguntar si este doctor tiene promociones sino solo cash y financiado
@@ -352,7 +353,7 @@ public class OrderController
 	                   													procedureChoosed.getProcedure().getId(), order.isFinanced()): Double.valueOf(0);
 			
 			//Ya tengo si es Financiado o Cash, ahora a ver si hay ofertas y aplica a los procedimientos 
-			if (order.getPayMethod() == EnumPayMethods.VIP && promoService.findActivePromosForDoctorAndProcedure(new Date(), 
+			if (order.getPayMethod() == EnumPayMethods.SPECIAL && promoService.findActivePromosForDoctorAndProcedure(new Date(), 
 																												 superOrder.getClient().getDoctor(), 
 																												 procedureChoosed.getProcedure().getId()).size()>0)
 			{
@@ -374,7 +375,7 @@ public class OrderController
 								procedureSubtotal *= (1-singlePromoDoctorNProc.getDiscount()/100) ;
 							break;
 							}
-							observation= observation.concat("VIP " + procedureChoosed.getProcedure().getName() + " price: $" + procedureSubtotal + ". ").concat(changeLine) ;
+							observation= observation.concat("Special " + procedureChoosed.getProcedure().getName() + " price: $" + procedureSubtotal + ". ").concat(changeLine) ;
 							break;
 						case ITEM:
 							orderPreDiscount += singlePromoDoctorNProc.getDiscount() ;
@@ -386,7 +387,7 @@ public class OrderController
 			
 			order.setDiscount(Math.min(orderPreDiscount, itemSubTotal));
 			if (order.getDiscount()>0)
-				observation= observation.concat("Discount $" + order.getDiscount() + " in item for VIP pay method. " ).concat(changeLine) ;
+				observation= observation.concat("Discount $" + order.getDiscount() + " in item for Special pay method. " ).concat(changeLine) ;
 			 
 			//Adicionar items precargados en las promociones
 			for (ItemsAmountForVIP itemsForVIP : promoService.findFreeItemByDoctorNProcedures(new Date(), superOrder.getClient().getDoctor(), order.getProcedureList()))
@@ -408,7 +409,7 @@ public class OrderController
 				else // está en la lista
 					order.updateItemAmount(pos, order.getItemList().get(pos).getAmount() + itemsForVIP.getAmount());
 
-				observation = observation.concat(itemsForVIP.getAmount() + " " + itemsForVIP.getItem().getName() + " free for VIP pay method. ").concat(changeLine) ;
+				observation = observation.concat(itemsForVIP.getAmount() + " " + itemsForVIP.getItem().getName() + " free for Special pay method. ").concat(changeLine) ;
 			}
 			
 			

@@ -28,10 +28,10 @@ public class Promotion implements Serializable
 	private Long id;
 	
 	@NotNull
-	private EnumPromotionType type ;    //0-Nuevo precio a procedimientos, 1-Descuento precio, 2-Descuento %
-
-	@NotNull
 	private EnumPromoTo promoProcOrItems ;    //0-Procedure, 1-Items
+	
+	@NotNull
+	private EnumPromotionType type ;    //0-Nuevo precio a procedimientos, 1-Descuento precio, 2-Descuento %
 	
 	@NotNull
 	private Double discount ;    

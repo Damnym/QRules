@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="layout/layout-index :: head"></head>
-</head>
 <body style="background-color: #14233E">  <!-- 101F3A -->
 	<header th:replace="layout/layout-index :: header"></header>
 	<div class="container my-5" align="center" style="width: 60%">
@@ -27,16 +26,15 @@
 <!-- 								    <a th:each="doc: ${documents}" th:href="@{'/documents/' + ${doc}}" target="_blank" th:text="${doc}"></a> -->
 <!-- 								  </div> -->
 <!-- 								</div> -->
-						
-						
-							<a th:href="@{'/documents/' + '1.pdf'}" target="_blank" class="fas fa-money-check-alt fa-8x btn" style="color:#ffffff "></a> 
+							<a th:href="@{/docs/documentationEN}"  target="_blank"  class="fas fa-money-check-alt fa-8x btn" style="color:#ffffff "></a> 
 							<h5 th:text="'Financing options'" style="color: #ffffff"></h5>
+<!-- 							'/uploads/' + 'paymentSolution.pdf' -->
 						</td>
 						<td align="center" style="border-style: hidden; border-left-style: solid; border-right-style: solid;">
 						</td>
 						<td align="center" style="border-width: 10px; border-color: #888F9D; background-color: #888F9D;">
-							<a th:href="@{/procedure/procedure-decide}" class="fas fa-hands-helping fa-8x btn" style="color:#ffffff "></a> 
-							<h5 th:text="'Help deciding surgery'" style="color: #ffffff"></h5>
+<!-- 							<a th:href="@{/procedure/procedure-decide}" class="fas fa-hands-helping fa-8x btn" style="color:#ffffff "></a>  -->
+<!-- 							<h5 th:text="'Help deciding surgery'" style="color: #ffffff"></h5> -->
 						</td>
 						<td align="center" style="border-style: hidden; border-left-style: solid">
 						</td>

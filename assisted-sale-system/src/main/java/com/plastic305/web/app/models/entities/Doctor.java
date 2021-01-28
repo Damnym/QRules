@@ -82,6 +82,10 @@ public class Doctor implements Serializable { private static final long serialVe
 	@Transient
 	private List<Procedure> procListPre;
 	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "doctor_id")
+	private List<Quota> quotaList;
+	
 	//  <<<<< IMPLEMENTATION >>>>>
 	
 	
@@ -93,7 +97,8 @@ public class Doctor implements Serializable { private static final long serialVe
 		this.useBMI= true ;
 		
 		comboList = new ArrayList<ComboByDoctor>(); 
-		procList = new ArrayList<ProcByDoct>(); 
+		procList = new ArrayList<ProcByDoct>();
+		quotaList = new ArrayList<Quota>();
 	}
 
 	public Double getMinWeight() {
@@ -312,6 +317,14 @@ public class Doctor implements Serializable { private static final long serialVe
 
 	public void setEarlyDate(Date earlyDate) {
 		this.earlyDate = earlyDate;
+	}
+
+	public List<Quota> getQuotaList() {
+		return quotaList;
+	}
+
+	public void setQuotaList(List<Quota> quotaList) {
+		this.quotaList = quotaList;
 	}
 
 }

@@ -459,7 +459,7 @@ public class IndexController {
 	
 	
 	
-	@GetMapping({"view-active-promo/{iddoct}"})       /// ///    // 30/10/20    EMPEZAR A VER EL TRABAJO CON LOS COMBOS 
+	@GetMapping({"view-active-promo/{iddoct}"})       /// ///    // 30/10/20    EMPEZAR A VER EL TRABAJO CON LOS COMBOS  O SEA SI dos proc que estan en promos
 	public String viewActivePromoDoct(@PathVariable(value = "iddoct") Long iddoct, Model model) 
 	{
 		// TRABAJO CON LAS PROMOCIONES ( POR AHORA SOLO LAS Q ESTÁN)
@@ -468,9 +468,11 @@ public class IndexController {
 		List<Date> untilDates = new ArrayList<Date>();
 		for (Promos305 promos305 : activesPromos) 
 			untilDates.add(promos305.getMaxDateValid());
+		
 		// estamos pensando q solo sea una...sino hacer un metodo q en vez de pasar la fecha pase el id de cada activa
-		List<VIPDoctorProcedure> promo = null ;
+		List<VIPDoctorProcedure> promo ;
 		promo = promo305Service.findActivePromosXForDoctor(new Date(), iddoct); // activas para este doctor
+		logger.info("Cantidad de promos:" + promo.size());
 		
 		model.addAttribute("untildates", untilDates);
 		if (promo.size()>0) 
@@ -478,7 +480,7 @@ public class IndexController {
 			model.addAttribute("promo", promo);
 			model.addAttribute("doctorName", dService.findOne(iddoct).getName());
 		}
-		model.addAttribute("tittle", "Deals of doctor " + dService.findOne(iddoct).getName());
+		model.addAttribute("tittle", "Specials of doctor " + dService.findOne(iddoct).getName());
 		
 		
 		
@@ -745,6 +747,16 @@ public class IndexController {
 			order.addProcedure(lineP);
 		}
 		
+		String remark="" ;
+		if (cService.getRemarksListCSV(cliente) != null && !cService.getRemarksListCSV(cliente).isBlank())
+		{
+			if (order.getObservation()!= null && !order.getObservation().isBlank())
+				remark = cService.getRemarksListCSV(cliente) + order.getObservation();
+			else
+				remark = cService.getRemarksListCSV(cliente) ;
+			order.setObservation(remark) ;
+		}
+		
 		// Doctor y Fecha de operacion
 		order.setDoctorName(dService.findOne(cliente.getDoctor()).getName());
 		order.setDateSurgery(cliente.getDate());
@@ -782,7 +794,7 @@ public class IndexController {
 	} 
 	
 	// *******************
-	// *******SE QUITO******	
+	// *******SE QUITÓ******	
 		@GetMapping({"somedoctors"})
 		public String somedoctor(Client cliente, Model model, SessionStatus st)
 		{

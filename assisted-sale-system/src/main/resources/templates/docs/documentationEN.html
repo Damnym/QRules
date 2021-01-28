@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http:\www.thymeleaf.org" 	
+	  xmlns:sec="http:\www.thymeleaf.org/extras/spring-security">
+   	<link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}">
+   <head th:replace="layout/layout-procedure :: head"></head>
+   <body style="background-color: #313D55">
+      <div class="container mb-4" style="margin-top: 1rem; width: 90%;">
+         <div class="card bg-white border-305">
+            <div class="card-header py-1 border-305 text-white" style="background-color:#101F3A" align="left">
+            	<div class="row">
+            	<div class="col-10" align="left">
+	            	<h4>In House Financing for Your Plastic Surgery</h4>
+         		</div>
+            	<div class="col-2" align="right">
+	            	<a th:href="@{/docs/documentationES}" style="color:#ffffff; font-weight: bold;">Español</a> 
+         		</div>
+         		</div>
+            </div>
+            <div class="card-body " style="color: #101F3A; width: 100%; height: 35rem; overflow-y: scroll;">
+            	<h6>Make your plastic surgery with a fast and easy payment solution</h6>
+            	<div class="row ml-3">
+            		<span>At 305 Plastic Surgery we provide in-house financing through an initial deposit that gives you these benefits:</span>
+            	</div>	
+
+            	<h6 class="mt-3">It doesn't affect your credit</h6>
+            	<div class="row ml-3">
+            		<span>You have 24 months to complete your payment at your convenience.</span>
+            	</div>	
+            	<div class="row  ml-3">
+            		<span>Get a guaranteed fixed price.</span>
+            	</div>	
+            	<div class="row  ml-3">
+            		<span>Choose a date for your procedure.</span>
+            	</div>	
+
+            	<h6 class="mt-3">Credit Options</h6>
+            	<div class="row  ml-3">
+            		<span>We also have choices that perform loan management and satisfy the needs of patients in the best terms for their financial situation.</span>
+            	</div>	 
+            	<div class="row  ml-3">	
+					<span>These services attend all types of credit. Your evaluation can favor you with convenient monthly installments, no penalty if you anticipate your
+						  payment, attractive interest rates and an alternative equivalent to cash financing.</span>
+            	</div>
+            		
+            	<h6 class="mt-3">You can apply here:</h6>
+            	<ul >
+            		<li class="ml-5" style="list-style-type: circle;">Alphaeon Credit</li>
+            		<li class="ml-5" style="list-style-type: circle;">Care Credit</li>
+            		<li class="ml-5" style="list-style-type: circle;">Protapay</li>
+            		<li class="ml-5" style="list-style-type: circle;">United Medical Credit</li>
+            	</ul>
+            	
+            	<h6 class="mt-3" style="font-style: italic;">Bad credit?</h6>
+            	<div class="row  ml-3">	
+					<span>If your credit can be a barrier, we provide advice to help repair it and regain your financial ability to achieve goals.</span>
+            	</div>
+            	<hr>
+            	<div class="row  px-4">	
+					<span style="font-size: 13px; text-align: justify;">
+						We do have an in house financing plan where you can make a deposit of $500 to lock in your date. We do send you a link to your portal where
+						it has the details of the procedure, what is included, and the pricing. After you have made the deposit it will show the payment and the
+						balance you owe. Whenever you would like to make a payment towards your procedure you can let us know and we will send you a new link that 
+						will take you back into your portal where you can make additional payments. We do not charge interest or fees, or require set payments, the 
+						amount and frequency of payments is up to you. You do have up until 2 weeks prior to surgery to use the portal to make payments with your 
+						debit/credit card. Any remaining balance can be brought in cash on the day before surgery when you come in for pre op.
+					</span>
+            	</div>
+            	<div class="row  px-4">	
+					<span style="font-size: 13px; text-align: justify;">
+						Alpheon is accepted at the regular price of the procedure. You will need to apply for Alphaeon on their website, and they do approve you based on 
+						your credit score and history. Once you are approved, you can do the deposit of $550 from the Alpheon account to lock in your procedure and the 
+						balance will be taken on the day of pre op. Please note that the account holder does need to be present at pre op to sign and approve the payment, 
+						not only the account user. 
+					</span>
+            	</div>
+            </div>
+         </div>
+      </div>
+      <footer th:replace="layout/layout-procedure :: footer"></footer>
+      <script th:src="@{/js/jquery.dataTables.min.js}"></script>
+      <script th:replace="procedure/js/util-js.html :: util"></script>
+   </body>
+</html>

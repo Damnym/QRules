@@ -7,7 +7,7 @@
 		<header th:replace="layout/layout-doctor :: header"></header>
       		<div class="container mb-4" style="margin-top: 5rem" align="center">
       			<div class="card bg-white border-305" >
-            		<div th:text="${tittle} + ${doctor.name}" class="card-header border-305 py-2 text-white font-weight-bold" style="background-color: #101F3A" 
+            		<div th:text="${tittle} + ${doctor.name}" class="card-header border-305 py-1 text-white font-weight-bold" style="background-color: #101F3A" 
             			 align="center"></div>
             		<div class="card-body">
 		            	<div class="row">
@@ -21,8 +21,8 @@
 		                  	</div>
 		               	</div>
 		               	<div class="row py-3">
-		               		<div class="col">
-		               			<table th:unless="${#lists.isEmpty(doctor.comboList)}"  id="doctor-table-list"  
+		               		<div class="col-12">
+		               			<table th:unless="${#lists.isEmpty(doctor.comboList)}"  id="combo-table-list"  
 		                    		   class="table table-striped hover display compact" style="font-size: 12px">
 <!-- 		                     			table-bordered -->
 		                        	<thead align="center">
@@ -34,11 +34,14 @@
 		                    	    <tbody>
 		                        		<tr th:each="row: ${combos}">
 								       		<td th:each="value: ${row}" class="align-middle" align="center">
-								       			<a th:if="${value[0]} != '(' and ${value} != 'n' and ${value} != 'x'" 
+								       			<a sec:authorize="hasRole('ROLE_ADMIN')" th:if="${value[0]} != '(' and ${value} != 'n' and ${value} != 'x'" 
 								       			   th:href="'/doctor/delete-combo/' + ${value} + '/' + ${doctor.id}" type="button" class="btn fas fa-eraser"
 		                                	   	   onclick="return confirm('Do you want to unlink this combo from this Surgeon?');"></a>
 		                                	   	<span th:if="${value[0]}=='('" th:text="${value}"></span>   
 		                                	   	<span th:if="${value[0]}=='x'" th:text="'N/A'" class="font-weight-bold" style="color: #ff0000"></span>   
+								       			
+								       			<span sec:authorize="hasRole('ROLE_USER') and not hasRole('ROLE_ADMIN')" 
+								       			      th:if="${value[0]} != '(' and ${value} != 'n' and ${value} != 'x'" class="fas fa-check"></span>
 								       		</td>
 		                           		</tr>
 		                        	</tbody>

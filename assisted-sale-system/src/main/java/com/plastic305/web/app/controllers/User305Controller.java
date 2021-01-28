@@ -65,7 +65,7 @@ public class User305Controller {
 	
 	
 	@PostMapping("/form")     
-	public String guardar(User305 user305, BindingResult bResult, Model model, RedirectAttributes flash) 
+	public String guardar(User305 newUser305, BindingResult bResult, Model model, RedirectAttributes flash) 
 	{
 		if (bResult.hasErrors()) 
 		{
@@ -79,19 +79,40 @@ public class User305Controller {
 			model.addAttribute("buttonUser", addNewUserB);
 			return "/users305/form";
 		}
-		
-		if (!user305Service.exists(user305.getUsername())) // si tiene el mismo nombre y el id es diferente son dos usuarios..error pensar bien
+		if (newUser305.getId() == null) // si no tiene id es nuevo
+			if (!user305Service.exists(newUser305.getUsername())) // entonces, preguntar si existe alguno con ese username ya...
+				user305Service.save(newUser305);
+			else
+			{
+				String flashMsg = ("\"" + newUser305.getUsername() + "\" username already exists!!, please check the username in use.");
+				model.addAttribute("error", flashMsg);
+				model.addAttribute("tittle", tittleNewUser);
+				model.addAttribute("msg", msgNewUser);
+				model.addAttribute("buttonUser", addNewUserB);
+				return "/users305/form";
+			}
+		else  // si tiene id, es actualizar, 
 		{
-			if (user305.getAdmin() == null)
-				user305.setAdmin(false);
-			if (user305.getId()!=null)
-				user305Service.delete(user305.getId());
-			user305Service.save(user305);
-		}
-		else
-		{
-			String flashMsg = (user305.getUsername() + " username already exists!!, please check the username in use.");
-			flash.addFlashAttribute("error", flashMsg);
+			if (!user305Service.exists(newUser305.getUsername()) || (user305Service.findByUsername(newUser305.getUsername()).getId() == newUser305.getId())) //preguntar si no existe un usuario con ese username
+				if (newUser305.getPassword() == null || newUser305.getPassword().isBlank())
+				{
+					model.addAttribute("error", "Rememeber, always enter a new Password");
+					model.addAttribute("tittle", tittleNewUser);
+					model.addAttribute("msg", msgNewUser);
+					model.addAttribute("buttonUser", addNewUserB);
+					return "/users305/form";
+				}
+				else	
+					user305Service.save(newUser305);
+		    else
+		    {
+				String flashMsg = ("\"" + newUser305.getUsername() + "\" username already exists!!, please check the username in use.");
+				model.addAttribute("error", flashMsg);
+				model.addAttribute("tittle", tittleNewUser);
+				model.addAttribute("msg", msgNewUser);
+				model.addAttribute("buttonUser", addNewUserB);
+				return "/users305/form";
+		    }
 		}
 		
 		return "redirect:/users305/user-list";

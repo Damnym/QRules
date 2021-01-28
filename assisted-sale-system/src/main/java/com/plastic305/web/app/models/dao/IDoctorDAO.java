@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import com.plastic305.web.app.models.dto.QuotaCalendar;
 import com.plastic305.web.app.models.entities.Combo;
 import com.plastic305.web.app.models.entities.ComboByDoctor;
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.ProcByDoct;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.Quota;
 import com.plastic305.web.app.models.entities.Suffering;
 
 public interface IDoctorDAO extends CrudRepository<Doctor, Long> {
@@ -153,6 +155,13 @@ public interface IDoctorDAO extends CrudRepository<Doctor, Long> {
 			+ 					   "WHERE d.id=?1) "
 			+ "ORDER BY proc.name")
 	public List<Procedure> findProceduresBelongToDoctorByName(Long id, String term);
+	
+	
+	@Query("SELECT qc "
+	+		"FROM Doctor d "
+	+      		"join d.quotaList qc "
+	+ 	   	"WHERE d.id=?1")
+	public List<Quota> getDoctorQuotas(Long id);
 	
 //	@Query("SELECT combos FROM Doctor d "
 //		+ 			        "join d.comboList cl "

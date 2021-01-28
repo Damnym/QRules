@@ -2,10 +2,12 @@ package com.plastic305.web.app.services;
 
 import java.util.List;
 
+import com.plastic305.web.app.models.dto.QuotaCalendar;
 import com.plastic305.web.app.models.entities.Combo;
 import com.plastic305.web.app.models.entities.Doctor;
 import com.plastic305.web.app.models.entities.ProcByDoct;
 import com.plastic305.web.app.models.entities.Procedure;
+import com.plastic305.web.app.models.entities.Quota;
 import com.plastic305.web.app.models.entities.Suffering;
 
 public interface IDoctorService {
@@ -55,5 +57,7 @@ public interface IDoctorService {
 	
 	//NEW  por los de los adicionales
 	List<Procedure> findAllAditionalProcedurebyDoctorIdbyCombo(Long idD, Long idP1, Long idP2);
+	
+	public List<Quota> getDoctorQuotas(Long id);
 
 }
